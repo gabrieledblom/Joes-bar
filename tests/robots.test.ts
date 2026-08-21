@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { site } from '../config/site';
-import { GET } from './robots.txt';
+import { site } from '../src/config/site';
+import { GET } from '../src/pages/robots.txt';
 
 describe('robots.txt', () => {
   it('följer flaggan sokmotorindexering', async () => {
