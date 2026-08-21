@@ -3,8 +3,8 @@
  * Europe/Stockholm) så att både klient, server och tester delar exakt
  * samma beteende – inklusive stängning efter midnatt.
  */
-import { dagNamn, dagOrdning, hours, type DayKey, type OpenWindow } from '../config/hours';
-import { ordering } from '../config/ordering';
+import { dagNamn, dagOrdning, hours, type DayKey, type OpenWindow } from '../config/hours.js';
+import { ordering } from '../config/ordering.js';
 
 export interface Klocka {
   /** YYYY-MM-DD i Europe/Stockholm */

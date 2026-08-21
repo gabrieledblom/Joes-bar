@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { handler } from './order';
-import { aterstallMinnesStore, orderStore } from '../src/lib/store';
+import { handler } from './order.js';
+import { aterstallMinnesStore, orderStore } from '../src/lib/store.js';
 
 /** Tisdag 2026-08-18 kl 15:00 i Stockholm (CEST = UTC+2) */
 const TISDAG_15 = new Date('2026-08-18T13:00:00Z');

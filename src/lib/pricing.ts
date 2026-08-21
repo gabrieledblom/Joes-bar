@@ -2,7 +2,7 @@
  * Prisberäkning – delas av klientens korg och serverns orderfunktion.
  * Servern räknar ALLTID om summan härifrån; klientens siffror används aldrig.
  */
-import { rattMedId } from '../config/menu';
+import { rattMedId } from '../config/menu.js';
 
 export interface OrderRad {
   id: string;

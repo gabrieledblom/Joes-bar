@@ -11,12 +11,12 @@
  * med ett tydligt fel i stället för att låtsas lyckas.
  */
 import { z } from 'zod';
-import { ordering } from '../src/config/ordering';
-import { harTelefon, site } from '../src/config/site';
-import { nuIStockholm, valideraHamtningstid } from '../src/lib/hours';
-import { normaliseraMobil } from '../src/lib/phone';
-import { beraknaOrder, type BeraknadRad } from '../src/lib/pricing';
-import { orderStore } from '../src/lib/store';
+import { ordering } from '../src/config/ordering.js';
+import { harTelefon, site } from '../src/config/site.js';
+import { nuIStockholm, valideraHamtningstid } from '../src/lib/hours.js';
+import { normaliseraMobil } from '../src/lib/phone.js';
+import { beraknaOrder, type BeraknadRad } from '../src/lib/pricing.js';
+import { orderStore } from '../src/lib/store.js';
 
 const TRETTIO_DAGAR_SEK = 30 * 86_400;
 
