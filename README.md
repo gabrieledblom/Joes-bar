@@ -76,6 +76,14 @@ stödelement, staggered scroll-reveal via `--fordrojning`, linjer som växer
 fram under länkar och en dämpad modalanimation. Allt tystnar under
 `prefers-reduced-motion`.
 
+## Hero-bilden
+
+`Hero.astro` letar efter `public/hero.{jpg,jpeg,webp,avif,png}` **vid
+bygget**. Hittas ingen fil renderas varken `<img>` eller den mörka
+gradienten, så det blir ingen 404 – bara den svarta bottnen. Det är
+avsiktligt: en `<img>` som alltid pekar på en fil som kanske inte finns
+kostade 4 poäng i Best Practices och 1,2 s Speed Index.
+
 ## Beställningsmodalen
 
 `OrderModal.astro` renderas på alla sidor utom `/bestall*` och öppnas av

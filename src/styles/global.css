@@ -287,3 +287,78 @@ dialog[open]::backdrop { animation: backdrop-in 300ms ease; }
   .btn, .btn-linje, .btn-plus, .lank::after, .falt { transition: none; }
   .btn:active { transform: none; }
 }
+
+/* ------------------------------------------------------------ Hero -- */
+/*
+ * Knappvarianter på mörk botten. Ljus knapp med mörk text är den enda
+ * som håller kontrasten över ett foto.
+ */
+.btn-ljus {
+  background: var(--brand-white);
+  color: var(--brand-black);
+  border-color: var(--brand-white);
+}
+.btn-linje-ljus {
+  color: var(--brand-white);
+  border-color: rgba(255, 255, 255, 0.45);
+}
+.btn-linje-ljus:hover {
+  border-color: var(--brand-white);
+  background: rgba(255, 255, 255, 0.1);
+}
+.hero :focus-visible {
+  outline-color: var(--brand-white);
+}
+
+/*
+ * Utan /hero.jpg finns ingen bild att visa – då står den mörka bottnen
+ * ensam med en svag struktur så ytan inte blir platt och död.
+ */
+.hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -20;
+  background:
+    radial-gradient(ellipse at 22% 18%, rgba(255, 255, 255, 0.08) 0%, transparent 55%),
+    radial-gradient(ellipse at 78% 82%, rgba(255, 255, 255, 0.06) 0%, transparent 55%),
+    var(--brand-black);
+}
+
+/* Långsam, knappt märkbar inzoomning som ger fotot liv */
+@keyframes hero-zoom {
+  from { transform: scale(1); }
+  to   { transform: scale(1.06); }
+}
+html.js .hero-bild {
+  animation: hero-zoom 24s ease-out forwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.js .hero-bild { animation: none; }
+}
+
+/*
+ * Headern ligger genomskinlig ovanpå heron. Allt inuti måste vändas till
+ * ljust, inklusive knappen och den dämpade öppettidstexten.
+ */
+[data-header][data-over-hero] {
+  border-color: transparent;
+  background: transparent;
+  backdrop-filter: none;
+  color: var(--brand-white);
+}
+[data-header][data-over-hero] .text-muted {
+  color: rgba(255, 255, 255, 0.72);
+}
+[data-header][data-over-hero] .btn {
+  background: var(--brand-white);
+  color: var(--brand-black);
+  border-color: var(--brand-white);
+}
+[data-header][data-over-hero] .btn [data-korg-antal] {
+  background: var(--brand-black);
+  color: var(--brand-white);
+}
+[data-header][data-over-hero] :focus-visible {
+  outline-color: var(--brand-white);
+}

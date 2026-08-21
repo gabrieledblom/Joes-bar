@@ -1,10 +1,14 @@
 ---
 /**
- * Ordmärket satt i ren typografi. Spärrad versal i medelvikt – lugnare
- * än en tung display-logotyp och passar den nordiska hållningen.
- * TODO: ersätt med riktig SVG från ägaren när den finns.
+ * Ordmärket enligt ägarens logotyp: JOE'S över BAR, med BAR spärrat så
+ * de två raderna får samma bredd, och MAT & DRYCK spärrat under.
+ *
+ * Satt i sajtens egen typsnittsfamilj i stället för en bildfil – blir
+ * knivskarpt i alla storlekar och väger ingenting.
+ * TODO: byt till ägarens SVG när den finns (se HANDOVER punkt 10).
  */
 interface Props {
+  /** 'rad' = kompakt en rad (header), 'staplad' = ordmärket som i logotypen */
   variant?: 'rad' | 'staplad';
   class?: string;
 }
@@ -12,12 +16,16 @@ const { variant = 'rad', class: klass = '' } = Astro.props;
 ---
 {variant === 'rad' ? (
   <span class:list={['inline-flex items-baseline gap-2.5', klass]}>
-    <span class="text-[0.95rem] font-semibold tracking-[0.18em] uppercase">Joe's Bar</span>
-    <span class="hidden text-[0.6rem] tracking-[0.2em] uppercase text-muted min-[420px]:inline">Järna</span>
+    <span class="text-[0.95rem] font-semibold tracking-[0.16em] uppercase">Joe's Bar</span>
+    <span class="hidden text-[0.6rem] tracking-[0.2em] uppercase opacity-60 min-[420px]:inline">Järna</span>
   </span>
 ) : (
-  <span class:list={['inline-flex flex-col gap-1.5', klass]}>
-    <span class="text-lg font-semibold tracking-[0.18em] uppercase">Joe's Bar</span>
-    <span class="text-[0.65rem] tracking-[0.2em] uppercase text-muted">Mat &amp; dryck · Järna</span>
+  /* Storleken styrs av font-size på wrappern; allt inuti skalar med em. */
+  <span class:list={['inline-flex flex-col items-center leading-[0.94]', klass]}>
+    <span class="text-[1em] font-bold tracking-[-0.01em] uppercase">Joe's</span>
+    <span class="text-[1em] font-bold tracking-[0.235em] uppercase indent-[0.235em]">Bar</span>
+    <span class="mt-[0.42em] text-[0.2em] font-semibold tracking-[0.42em] uppercase indent-[0.42em] opacity-80">
+      Mat &amp; Dryck
+    </span>
   </span>
 )}

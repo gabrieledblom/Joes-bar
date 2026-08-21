@@ -1,0 +1,62 @@
+---
+/**
+ * Helbleed-hero med foto, mörk gradient och ordmärket.
+ *
+ * Bilden läses från /hero.jpg i public/. Finns ingen fil visas den mörka
+ * bottnen ensam – det ser avsiktligt ut, inte trasigt. Ägaren byter bild
+ * genom att lägga en ny fil på samma plats, utan att röra koden.
+ */
+import { existsSync } from 'node:fs';
+import Logo from './Logo.astro';
+import { ordering } from '../config/ordering';
+import { site } from '../config/site';
+
+/*
+ * Fotot upptäcks vid bygget. Lägg en fil på public/hero.jpg så dyker den
+ * upp – ingen kodändring behövs. Saknas den görs ingen bildförfrågan
+ * alls, så vi slipper en 404 och den mörka bottnen står ensam.
+ */
+const heroBild = ['hero.jpg', 'hero.jpeg', 'hero.webp', 'hero.avif', 'hero.png']
+  .find((namn) => existsSync(new URL(`../../public/${namn}`, import.meta.url)));
+---
+<!--
+  -mt-16 pt-16 drar upp sektionen under den klibbiga headern (h-16) så att
+  bilden syns bakom den, medan innehållet ändå centreras rätt.
+-->
+<section class="hero relative isolate -mt-16 flex min-h-[min(86svh,44rem)] items-center justify-center overflow-hidden bg-black pt-16">
+  <!--
+    Bilden ligger som eget element, inte som background på sektionen, så
+    webbläsaren kan prioritera den som LCP-resurs.
+  -->
+  {heroBild && (
+    <img
+      src={`/${heroBild}`}
+      alt=""
+      aria-hidden="true"
+      fetchpriority="high"
+      decoding="async"
+      class="hero-bild absolute inset-0 -z-10 h-full w-full object-cover"
+    />
+  )}
+  <!-- Gradient över fotot: mörkast där texten ligger, så kontrasten håller -->
+  {heroBild && (
+    <div
+      class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(0,0,0,0.72)_0%,rgba(0,0,0,0.62)_45%,rgba(0,0,0,0.78)_100%)]"
+      aria-hidden="true"
+    ></div>
+  )}
+
+  <div class="ram flex flex-col items-center py-24 text-center text-white">
+    <Logo variant="staplad" class="text-[clamp(2.75rem,8vw,5rem)]" />
+
+    <p data-entre style="--fordrojning: 120ms" class="mt-10 max-w-md text-lg leading-relaxed text-white/85">
+      Kvarterets restaurang och bar i {site.ort}. Husmanskost, burgare, kebab
+      och sallader – avhämtning på cirka {ordering.forberedelseMin} minuter.
+    </p>
+
+    <div data-entre style="--fordrojning: 220ms" class="mt-9 flex flex-wrap items-center justify-center gap-3">
+      <a href="/bestall" data-oppna-order class="btn btn-ljus">Beställ mat</a>
+      <a href="/meny" class="btn-linje btn-linje-ljus">Se menyn</a>
+    </div>
+  </div>
+</section>

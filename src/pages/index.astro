@@ -1,6 +1,7 @@
 ---
 import AddToCart from '../components/AddToCart.astro';
 import Layout from '../components/Layout.astro';
+import Hero from '../components/Hero.astro';
 import MapEmbed from '../components/MapEmbed.astro';
 import MenuItem from '../components/MenuItem.astro';
 import { meny } from '../config/menu';
@@ -18,30 +19,10 @@ const harAdress = !site.adress.gata.includes('TODO');
   beskrivning={`Restaurang och bar i ${site.ort}. Husmanskost, burgare, kebab och sallader – beställ mat för avhämtning online och betala när du hämtar.`}
   jsonLd={restaurangJsonLd()}
 >
-  <!-- Hero -->
-  <section class="ram pt-20 pb-24 sm:pt-32 sm:pb-32">
-    <p data-entre class="etikett">{site.tagline} · {site.ort}</p>
-    <!--
-      Rubriken animeras med flit inte in: på en vit sida betyder opacity 0
-      att skärmen står tom tills animationen är klar, vilket både känns
-      trögt och sänker Speed Index rejält. Stödtexterna får röra sig.
-    -->
-    <h1 class="mt-6 max-w-3xl text-[clamp(2.5rem,7vw,4.5rem)]">
-      <span class="block">Kvarterets restaurang</span>
-      <span class="block text-muted">och bar i {site.ort}</span>
-    </h1>
-    <p data-entre style="--fordrojning: 120ms" class="mt-8 max-w-md text-lg leading-relaxed text-muted">
-      Husmanskost, burgare, kebab och sallader. Beställ för avhämtning –
-      klart på cirka {ordering.forberedelseMin} minuter, du betalar när du hämtar.
-    </p>
-    <div data-entre style="--fordrojning: 200ms" class="mt-10 flex flex-wrap items-center gap-3">
-      <a href="/bestall" data-oppna-order class="btn">Beställ mat</a>
-      <a href="/meny" class="btn-linje">Se hela menyn</a>
-    </div>
-  </section>
+  <Hero />
 
   <!-- Ett urval -->
-  <section class="ram pb-24 sm:pb-32" aria-labelledby="urval-rubrik">
+  <section class="ram pt-24 pb-24 sm:pt-32 sm:pb-32" aria-labelledby="urval-rubrik">
     <div class="flex flex-wrap items-baseline justify-between gap-4 border-b border-line pb-5" data-reveal>
       <h2 id="urval-rubrik" class="text-2xl sm:text-3xl">Ett urval</h2>
       <a href="/meny" class="lank lank-in text-sm">Hela menyn</a>

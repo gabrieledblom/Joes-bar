@@ -1,7 +1,10 @@
 ---
 import Logo from './Logo.astro';
 ---
-<header class="sticky top-0 z-40 border-b border-line bg-white/85 backdrop-blur-md">
+<header
+  data-header
+  class="sticky top-0 z-40 border-b border-line bg-white/85 backdrop-blur-md transition-colors duration-300 data-[over-hero]:border-transparent data-[over-hero]:bg-transparent data-[over-hero]:text-white data-[over-hero]:backdrop-blur-none"
+>
   <div class="ram flex h-16 items-center gap-6">
     <a href="/" class="shrink-0" aria-label="Joe's Bar – till startsidan">
       <Logo variant="rad" />
@@ -41,6 +44,22 @@ import Logo from './Logo.astro';
   }
   uppdateraStatus();
   setInterval(uppdateraStatus, 60_000);
+
+  // Headern ligger genomskinlig ovanpå heron och blir vit när man skrollat förbi.
+  const header = document.querySelector<HTMLElement>('[data-header]');
+  const hero = document.querySelector<HTMLElement>('.hero');
+  if (header && hero) {
+    const satt = (over: boolean) => {
+      header.toggleAttribute('data-over-hero', over);
+    };
+    if ('IntersectionObserver' in window) {
+      new IntersectionObserver(
+        ([post]) => satt(Boolean(post?.isIntersecting)),
+        { rootMargin: `-${header.offsetHeight}px 0px 0px 0px`, threshold: 0 },
+      ).observe(hero);
+    }
+    satt(true);
+  }
 
   const antalEl = document.querySelector<HTMLElement>('[data-korg-antal]');
   function visaAntal(antal: number) {
