@@ -24,6 +24,18 @@ export const site = {
 
   /** TODO: byt till riktig domän när den finns. Driver sitemap + schema.org. */
   url: 'https://joes-bar.vercel.app',
+
+  /**
+   * Ska Google och andra sökmotorer få indexera sajten?
+   *
+   * Står den på `false` är sajten fullt besökbar via länken, men märkt
+   * "noindex" och robots.txt ber sökmotorerna hålla sig borta. Det skyddar
+   * mot att en halvfärdig sida med platshållare hamnar i Googles resultat
+   * för "restaurang Järna" – något som tar veckor att få bort igen.
+   *
+   * Sätt till `true` när adress, telefonnummer och menyn är kompletta.
+   */
+  sokmotorindexering: false,
   prisklass: '100–200 kr',
   koket: ['Husmanskost', 'Hamburgare', 'Kebab', 'Sallader'],
 } as const;

@@ -49,6 +49,13 @@ fallback. Nycklar läggs i Vercel – aldrig i repot.
   öppettid, axe (WCAG 2.2 AA) utan fel på alla sidor
 - Lighthouse mobil: 100/100/100/100 på alla sidor vid senaste mätning
 
+## Sökmotorindexering
+
+`site.sokmotorindexering` i `src/config/site.ts` styr om sajten får
+indexeras. Den står på `false` tills adress och telefonnummer är ifyllda:
+sidorna får `noindex`, robots.txt svarar `Disallow: /` och ingen sitemap
+genereras. Sätt `true` när innehållet är komplett.
+
 ---
 
 ## Agent skills

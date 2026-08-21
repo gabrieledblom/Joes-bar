@@ -26,6 +26,16 @@ Sajten är fullt fungerande men väntar på följande uppgifter från dig:
 | 12 | **46elks-konto + API-nycklar** (för riktiga SMS) | se "Aktivera SMS" nedan |
 | 13 | **Riktig domän** (t.ex. joesbar.se) | `src/config/site.ts` → `url`, plus domäninställning i Vercel |
 | 14 | **Exakta kartkoordinater** när adressen är bekräftad | `src/components/MapEmbed.astro` → `lat`/`lon` |
+| 15 | **Släpp in Google** när punkt 1–2 är klara | `src/config/site.ts` → `sokmotorindexering: true` |
+
+> **Sajten är osynlig för Google tills vidare.** Så länge
+> `sokmotorindexering` står på `false` i `src/config/site.ts` fungerar
+> sajten som vanligt för alla som har länken, men den är märkt "noindex"
+> och robots.txt ber sökmotorerna hålla sig borta. Det är med flit: en
+> halvfärdig sida med "gatuadress publiceras inom kort" som hamnar i
+> Googles resultat för "restaurang Järna" tar veckor att få bort igen.
+> Ändra till `true` när adress och telefonnummer är ifyllda – då börjar
+> sajten också generera sin sitemap.
 
 **Viktigt om öppettiderna:** sajten använder de bekräftade tiderna
 (mån stängt · tis–tors 14:30–23 · fre 14:30–01 · lör 13–01 · sön 13–21).

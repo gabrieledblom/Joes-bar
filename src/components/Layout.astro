@@ -31,7 +31,11 @@ const kanonisk = new URL(Astro.url.pathname, site.url).href;
     <meta name="description" content={beskrivning} />
     <link rel="canonical" href={kanonisk} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="sitemap" href="/sitemap-index.xml" />
+    {site.sokmotorindexering ? (
+      <link rel="sitemap" href="/sitemap-index.xml" />
+    ) : (
+      <meta name="robots" content="noindex, nofollow" />
+    )}
     <link rel="preload" as="font" type="font/woff2" href={antonUrl} crossorigin />
     <link rel="preload" as="font" type="font/woff2" href={archivoUrl} crossorigin />
     <meta property="og:title" content={titel} />

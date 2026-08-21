@@ -6,7 +6,7 @@ import { site } from './src/config/site.ts';
 
 export default defineConfig({
   site: site.url,
-  integrations: [sitemap()],
+  integrations: site.sokmotorindexering ? [sitemap()] : [],
   vite: {
     plugins: [tailwindcss()],
   },
