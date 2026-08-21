@@ -23,7 +23,7 @@ Sajten är fullt fungerande men väntar på följande uppgifter från dig:
 | 9 | **Allergener per rätt** | `src/config/menu.ts` → `allergener: []` på varje rätt |
 | 10 | **Logotyp som SVG** (eller PNG minst 1000 px, transparent bakgrund) | ersätter `src/components/Logo.astro` |
 | 11 | **Foton på maten och lokalen** | ersätter `Placeholder`-ytorna – inga stockfoton! |
-| 11b | **Stor bild högst upp på startsidan** | lägg filen som `public/hero.jpg` – se nedan |
+| 11b | **Stor bild högst upp på startsidan** | lägg filen som `src/assets/hero.jpg` – se nedan |
 | 12 | **46elks-konto + API-nycklar** (för riktiga SMS) | se "Aktivera SMS" nedan |
 | 13 | **Riktig domän** (t.ex. joesbar.se) | `src/config/site.ts` → `url`, plus domäninställning i Vercel |
 | 14 | **Exakta kartkoordinater** när adressen är bekräftad | `src/components/MapEmbed.astro` → `lat`/`lon` |
@@ -52,22 +52,25 @@ Facebook-sidans text säger däremot "öppet från 12:00", vilket avviker –
 
 ### Lägga in den stora bilden högst upp på startsidan
 
-Spara bilden som **`public/hero.jpg`** i projektet. Mer än så behövs inte –
-sajten upptäcker filen när den byggs och lägger den bakom logotypen med en
-mörk toning över, så att texten syns. Finns ingen fil visas en svart yta i
-stället, vilket också ser bra ut.
+Spara bilden som **`src/assets/hero.jpg`** i projektet. Mer än så behövs
+inte – sajten hittar filen när den byggs och lägger den bakom logotypen med
+en mörk toning över, så att texten syns. Finns ingen fil visas en svart yta
+i stället, vilket också ser bra ut.
+
+**Du behöver inte tänka på filstorleken.** Bygget krymper bilden åt dig,
+gör om den till ett modernt format och skapar fyra storlekar så att mobiler
+laddar en mindre variant än datorer. Lägg in originalet rakt av.
 
 Bra att tänka på när du väljer bild:
 
-- **Liggande format**, gärna 1600–2000 pixlar bred. Större filer gör bara
-  sajten långsammare, eftersom bilden ändå mörkas ned.
-- **Mörk eller dämpad bild** fungerar bäst. En ljus, brokig bild gör texten
-  svårläst.
+- **Liggande format**, gärna minst 1600 pixlar bred.
+- **Mörk eller dämpad bild** klär designen bäst – men texten är läsbar även
+  över en ljus bild, det är testat.
 - **Egna foton är alltid bäst.** En bild på er egen mat och lokal säljer
-  stället; en köpt bild på någon annans burgare gör inte det.
+  stället; en generisk bild på någon annans burgare gör inte det.
 
-Vill du använda `.png` eller `.webp` i stället går det bra – döp filen till
-`hero.png` respektive `hero.webp`.
+`.png`, `.webp` och `.avif` fungerar också – döp filen till `hero.png`,
+`hero.webp` eller `hero.avif`.
 
 ### Var kommer beställningsfönstret ifrån?
 

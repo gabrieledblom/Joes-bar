@@ -78,11 +78,18 @@ fram under länkar och en dämpad modalanimation. Allt tystnar under
 
 ## Hero-bilden
 
-`Hero.astro` letar efter `public/hero.{jpg,jpeg,webp,avif,png}` **vid
-bygget**. Hittas ingen fil renderas varken `<img>` eller den mörka
-gradienten, så det blir ingen 404 – bara den svarta bottnen. Det är
-avsiktligt: en `<img>` som alltid pekar på en fil som kanske inte finns
-kostade 4 poäng i Best Practices och 1,2 s Speed Index.
+`Hero.astro` plockar upp `src/assets/hero.{jpg,jpeg,png,webp,avif}` via
+`import.meta.glob` och kör den genom `astro:assets`, som komprimerar,
+konverterar till webp och genererar srcset i fyra bredder. Ägaren kan
+alltså lägga in en obehandlad originalfil utan att prestandan tar skada.
+
+Hittas ingen fil renderas varken bilden eller den mörka gradienten, så det
+blir ingen 404 – bara den svarta bottnen. Det är avsiktligt: en `<img>` som
+alltid pekade på en fil som kanske inte fanns kostade 4 poäng i Best
+Practices och 1,2 s Speed Index.
+
+Gradienten är satt så att vit text är läsbar även över en nästan vit bild
+(stresstestat), utan att mörka ned ett redan mörkt foto i onödan.
 
 ## Beställningsmodalen
 
