@@ -7,12 +7,12 @@ import { harTelefon, site } from '../config/site';
   beskrivning={`Så hanterar ${site.namn} i ${site.ort} dina personuppgifter när du beställer mat: vad som samlas in, varför och hur länge.`}
 >
   <article class="mx-auto max-w-prose px-4 py-12 sm:py-16">
-    <h1 class="font-display text-4xl text-green">Integritetspolicy</h1>
-    <p class="mt-2 text-sm text-ink/70">Senast uppdaterad 21 augusti 2026</p>
+    <h1 class="font-display text-4xl text-black">Integritetspolicy</h1>
+    <p class="mt-2 text-sm text-grey-text">Senast uppdaterad 21 augusti 2026</p>
 
     <div class="mt-8 space-y-8 leading-relaxed">
       <section>
-        <h2 class="font-display text-2xl text-green">Vad vi samlar in</h2>
+        <h2 class="font-display text-2xl text-black">Vad vi samlar in</h2>
         <p class="mt-3">
           När du beställer mat för avhämtning behandlar vi de uppgifter du själv lämnar:
           ditt namn, ditt mobilnummer, beställningens innehåll, önskad avhämtningstid
@@ -22,7 +22,7 @@ import { harTelefon, site } from '../config/site';
       </section>
 
       <section>
-        <h2 class="font-display text-2xl text-green">Varför</h2>
+        <h2 class="font-display text-2xl text-black">Varför</h2>
         <p class="mt-3">
           Uppgifterna behövs för att kunna ta emot, bekräfta och lämna ut din beställning:
           namnet ropas upp vid disken, och mobilnumret används för att skicka
@@ -32,7 +32,7 @@ import { harTelefon, site } from '../config/site';
       </section>
 
       <section>
-        <h2 class="font-display text-2xl text-green">Hur länge</h2>
+        <h2 class="font-display text-2xl text-black">Hur länge</h2>
         <p class="mt-3">
           Beställningar loggas som säkerhetsnät om ett SMS inte skulle komma fram.
           Mobilnummer rensas ur loggen efter 30 dagar; kvar blir bara ordernummer,
@@ -42,7 +42,7 @@ import { harTelefon, site } from '../config/site';
       </section>
 
       <section>
-        <h2 class="font-display text-2xl text-green">Vilka som hjälper oss</h2>
+        <h2 class="font-display text-2xl text-black">Vilka som hjälper oss</h2>
         <p class="mt-3">
           SMS:en skickas via <strong>46elks AB</strong> (svensk leverantör), sajten
           driftas på <strong>Vercel</strong> och orderloggen lagras hos
@@ -52,16 +52,16 @@ import { harTelefon, site } from '../config/site';
       </section>
 
       <section>
-        <h2 class="font-display text-2xl text-green">Dina rättigheter</h2>
+        <h2 class="font-display text-2xl text-black">Dina rättigheter</h2>
         <p class="mt-3">
           Du har rätt att få veta vilka uppgifter vi har om dig, få dem rättade eller
-          raderade. Hör av dig till oss{harTelefon && <> på <a class="font-semibold text-green underline underline-offset-4" href={`tel:${site.telefonE164}`}>{site.telefon}</a></>}{site.epost && <> eller <a class="font-semibold text-green underline underline-offset-4" href={`mailto:${site.epost}`}>{site.epost}</a></>} så
+          raderade. Hör av dig till oss{harTelefon && <> på <a class="font-semibold text-black underline underline-offset-4" href={`tel:${site.telefonE164}`}>{site.telefon}</a></>}{site.epost && <> eller <a class="font-semibold text-black underline underline-offset-4" href={`mailto:${site.epost}`}>{site.epost}</a></>} så
           hjälper vi dig. Du kan också klaga hos Integritetsskyddsmyndigheten (IMY).
         </p>
       </section>
 
       <section>
-        <h2 class="font-display text-2xl text-green">Personuppgiftsansvarig</h2>
+        <h2 class="font-display text-2xl text-black">Personuppgiftsansvarig</h2>
         <p class="mt-3">
           {site.namn}, {site.adress.postort}{site.orgnr && <>, org.nr {site.orgnr}</>}.
         </p>

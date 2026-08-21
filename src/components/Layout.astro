@@ -6,6 +6,7 @@ import { theme } from '../config/theme';
 import { site } from '../config/site';
 import Header from './Header.astro';
 import Footer from './Footer.astro';
+import OrderModal from './OrderModal.astro';
 import StickyOrderCTA from './StickyOrderCTA.astro';
 
 interface Props {
@@ -19,7 +20,7 @@ interface Props {
 
 const { titel, beskrivning, dolBestallCta = false, jsonLd } = Astro.props;
 const f = theme.farger;
-const brandCss = `:root{--brand-green:${f.green};--brand-green-deep:${f.greenDeep};--brand-cream:${f.cream};--brand-ink:${f.ink};--brand-amber:${f.amber};--brand-amber-text:${f.amberText};--brand-sage:${f.sage};--brand-font-display:${theme.typsnitt.display};--brand-font-body:${theme.typsnitt.body};--brand-radius-kort:${theme.radie.kort};--brand-radius-knapp:${theme.radie.knapp}}`;
+const brandCss = `:root{--brand-white:${f.white};--brand-black:${f.black};--brand-grey-light:${f.greyLight};--brand-grey-line:${f.greyLine};--brand-grey-text:${f.greyText};--brand-font-display:${theme.typsnitt.display};--brand-font-body:${theme.typsnitt.body};--brand-radius-kort:${theme.radie.kort};--brand-radius-knapp:${theme.radie.knapp}}`;
 const kanonisk = new URL(Astro.url.pathname, site.url).href;
 ---
 <!doctype html>
@@ -43,7 +44,7 @@ const kanonisk = new URL(Astro.url.pathname, site.url).href;
     <meta property="og:type" content="website" />
     <meta property="og:url" content={kanonisk} />
     <meta property="og:locale" content="sv_SE" />
-    <meta name="theme-color" content={f.green} />
+    <meta name="theme-color" content={f.black} />
     <Fragment set:html={`<style>${brandCss}</style>`} />
     <script is:inline>document.documentElement.classList.add('js');</script>
     {jsonLd && <Fragment set:html={`<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`} />}
@@ -51,7 +52,7 @@ const kanonisk = new URL(Astro.url.pathname, site.url).href;
   <body class:list={['min-h-svh flex flex-col', !dolBestallCta && 'pb-20 sm:pb-0']}>
     <a
       href="#innehall"
-      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-amber focus:text-ink focus:px-4 focus:py-2 focus:rounded-md focus:font-bold"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-black focus:text-white focus:px-4 focus:py-2 focus:rounded-md focus:font-bold"
     >Hoppa till innehållet</a>
     <Header />
     <main id="innehall" class="grow">
@@ -59,6 +60,7 @@ const kanonisk = new URL(Astro.url.pathname, site.url).href;
     </main>
     <Footer />
     {!dolBestallCta && <StickyOrderCTA />}
+    {!dolBestallCta && <OrderModal />}
     <script>
       // Diskret fade-in vid scroll – respekterar prefers-reduced-motion via CSS.
       const element = document.querySelectorAll('[data-reveal]');

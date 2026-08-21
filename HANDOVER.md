@@ -49,6 +49,13 @@ Facebook-sidans text säger däremot "öppet från 12:00", vilket avviker –
 
 ## Vanliga ändringar
 
+### Var kommer beställningsfönstret ifrån?
+
+När en gäst klickar "Beställ mat" öppnas ett fönster med hela menyn där
+hen kan plocka rätter direkt. Det fönstret hämtar allt från samma
+`src/config/menu.ts` som resten av sajten – ändrar du ett pris där ändras
+det i fönstret också. Du behöver aldrig underhålla det separat.
+
 ### Ändra ett pris eller en beskrivning
 Öppna `src/config/menu.ts`. Varje rätt är en rad, t.ex.:
 

@@ -38,17 +38,43 @@ try {
   await page.route('**/api/order', async (route) => {
     const body = route.request().postDataJSON();
     if (body.namn === 'Testina' && body.mobil === '+46701234567' && body.rader?.length === 2 && !body.summa) {
-      await route.fulfill({ json: { ok: true, ordernummer: '42', tid: body.pickupAt.slice(11), summa: 337 } });
+      await route.fulfill({ json: { ok: true, ordernummer: '42', tid: body.pickupAt.slice(11), summa: 427 } });
     } else {
       await route.fulfill({ status: 400, json: { ok: false, fel: 'Oväntad payload i testet' } });
     }
   });
 
+  // Beställningsmodalen: öppna från startsidans CTA, välj rätter där
+  await page.goto(BAS);
+  await page.locator('header [data-oppna-order]').click();
+  const modal = page.locator('[data-order-modal]');
+  await modal.waitFor({ state: 'visible', timeout: 5000 });
+  if (await modal.evaluate((d) => d.open)) ok('modalen öppnas från "Beställ mat"');
+  else misslyckat('modalen öppnas från "Beställ mat"', 'dialog ej öppen');
+
+  // Tillval krävs även i modalen
+  const modalKebab = modal.locator('[data-ratt-id="kebabtallrik"]');
+  await modal.locator('[data-modal-flik="kebab"]').click();
+  await modalKebab.locator('[data-modal-lagg-till]').click();
+  if (await modalKebab.locator('[data-tillval].behover-val').count()) ok('modalen kräver tillval');
+  else misslyckat('modalen kräver tillval', 'ingen markering på select');
+
+  await modal.locator('[data-modal-flik="burgare"]').click();
+  await modal.locator('[data-ratt-id="husets-original"] [data-modal-lagg-till]').click();
+  const modalSumma = await modal.locator('[data-modal-summa]').textContent();
+  if (modalSumma === '149 kr') ok('modalens summa uppdateras direkt');
+  else misslyckat('modalens summa uppdateras direkt', `visar "${modalSumma}"`);
+
+  await page.keyboard.press('Escape');
+  if (!(await modal.evaluate((d) => d.open))) ok('Escape stänger modalen');
+  else misslyckat('Escape stänger modalen', 'dialog fortfarande öppen');
+
   await page.goto(`${BAS}/meny`);
-  await page.locator('[data-ratt-id="husets-original"] [data-lagg-till]').click();
+  // Samma rätt igen från ett menykort – antalet ska slås ihop till en rad
+  await page.locator('[data-menykort][data-ratt-id="husets-original"] [data-lagg-till]').click();
 
   // Tillval krävs innan tallriken kan läggas till
-  const kebabkort = page.locator('[data-ratt-id="kebabtallrik"]');
+  const kebabkort = page.locator('[data-menykort][data-ratt-id="kebabtallrik"]');
   await kebabkort.locator('[data-lagg-till]').click();
   if (await kebabkort.locator('[data-tillval].behover-val').count()) ok('tillval krävs före "Lägg till"');
   else misslyckat('tillval krävs före "Lägg till"', 'ingen markering på select');
@@ -56,13 +82,13 @@ try {
   await kebabkort.locator('[data-lagg-till]').click();
 
   const badge = await page.locator('[data-korg-antal]').textContent();
-  if (badge === '2') ok('korg-badgen visar 2');
-  else misslyckat('korg-badgen visar 2', `visar "${badge}"`);
+  if (badge === '3') ok('korg-badgen visar 3 (1 från modalen + 2 från menyn)');
+  else misslyckat('korg-badgen visar 3', `visar "${badge}"`);
 
   await page.goto(`${BAS}/bestall`);
   const summa = await page.locator('[data-korg-summa]').textContent();
-  if (summa === '278 kr') ok('summan i korgen är 278 kr');
-  else misslyckat('summan i korgen är 278 kr', `visar "${summa}"`);
+  if (summa === '427 kr') ok('summan i korgen är 427 kr');
+  else misslyckat('summan i korgen är 427 kr', `visar "${summa}"`);
 
   await page.locator('#namn').fill('Testina');
   await page.locator('#mobil').fill('070-123 45 67');
@@ -74,7 +100,7 @@ try {
 
   await page.waitForURL('**/bestall/tack', { timeout: 5000 });
   const bekraftelse = await page.locator('[data-bekraftelse]').textContent();
-  if (bekraftelse?.includes('#42') && bekraftelse.includes('337 kr')) ok('bekräftelsesidan visar ordernummer och summa');
+  if (bekraftelse?.includes('#42') && bekraftelse.includes('427 kr')) ok('bekräftelsesidan visar ordernummer och summa');
   else misslyckat('bekräftelsesidan visar ordernummer och summa', bekraftelse?.slice(0, 120) ?? 'tom');
   await ctx.close();
 

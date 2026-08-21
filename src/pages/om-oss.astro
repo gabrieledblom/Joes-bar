@@ -11,10 +11,10 @@ const harAdress = !site.adress.gata.includes('TODO');
   titel={`Om oss – ${site.namn} i ${site.ort}`}
   beskrivning={`${site.namn} är kvarterets restaurang och bar i ${site.ort} – mat, dryck, karaoke och livekvällar. Hitta hit, kontakta oss och se vad som händer.`}
 >
-  <section class="bg-green text-cream">
+  <section class="pa-svart bg-black text-white">
     <div class="mx-auto max-w-6xl px-4 pt-12 pb-14 sm:pt-16">
       <h1 class="font-display text-[clamp(2.6rem,7vw,4.5rem)] leading-[0.95]">Kvarterets<br />vardagsrum</h1>
-      <p class="mt-5 max-w-2xl text-lg leading-relaxed text-cream/90">
+      <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/75">
         {site.namn} är stället i {site.ort} där du käkar en riktig middag, tar något i baren
         och blir kvar när karaoken drar i gång. Enkelt, varmt och utan krångel –
         mat och dryck som det låter.
@@ -26,11 +26,11 @@ const harAdress = !site.adress.gata.includes('TODO');
   <section class="mx-auto max-w-6xl px-4 py-14 sm:py-20" aria-labelledby="karaoke-rubrik">
     <div class="grid items-center gap-10 lg:grid-cols-2">
       <div data-reveal>
-        <h2 id="karaoke-rubrik" class="font-display text-3xl text-green sm:text-4xl">Karaoke & livekvällar</h2>
+        <h2 id="karaoke-rubrik" class="font-display text-3xl text-black sm:text-4xl">Karaoke & livekvällar</h2>
         <p class="mt-4 max-w-xl leading-relaxed">
           På helgerna blir det karaoke och dans – fredagar och lördagar har vi öppet
           ända till 01:00. Håll utkik på vår
-          <a class="font-semibold text-green underline underline-offset-4 hover:text-amber-text" href={site.facebook} rel="noopener">Facebook-sida</a>
+          <a class="font-semibold text-black underline underline-offset-4 hover:text-grey-text" href={site.facebook} rel="noopener">Facebook-sida</a>
           för kvällens tema och kommande livekvällar.
         </p>
         <p class="mt-4 max-w-xl leading-relaxed">
@@ -44,37 +44,37 @@ const harAdress = !site.adress.gata.includes('TODO');
     </div>
   </section>
 
-  <section class="bg-green text-cream" aria-labelledby="kontakt-rubrik">
-    <Checkerboard class="h-[14px]" />
+  <section class="pa-svart bg-black text-white" aria-labelledby="kontakt-rubrik">
+    <Checkerboard />
     <div class="mx-auto max-w-6xl px-4 py-14 sm:py-20">
       <h2 id="kontakt-rubrik" class="font-display text-3xl sm:text-4xl">Kontakta oss</h2>
       <dl class="mt-8 grid gap-8 sm:grid-cols-3">
         <div>
-          <dt class="text-sm font-semibold tracking-[0.2em] uppercase text-cream/90">Telefon</dt>
+          <dt class="text-sm font-semibold tracking-[0.2em] uppercase text-white/75">Telefon</dt>
           <dd class="mt-2 text-lg">
             {harTelefon ? (
-              <a class="underline underline-offset-4 hover:text-amber" href={`tel:${site.telefonE164}`}>{site.telefon}</a>
+              <a class="underline underline-offset-4 hover:text-white/70" href={`tel:${site.telefonE164}`}>{site.telefon}</a>
             ) : (
               'Publiceras inom kort'
             )}
           </dd>
         </div>
         <div>
-          <dt class="text-sm font-semibold tracking-[0.2em] uppercase text-cream/90">E-post</dt>
+          <dt class="text-sm font-semibold tracking-[0.2em] uppercase text-white/75">E-post</dt>
           <dd class="mt-2 text-lg">
             {site.epost ? (
-              <a class="underline underline-offset-4 hover:text-amber" href={`mailto:${site.epost}`}>{site.epost}</a>
+              <a class="underline underline-offset-4 hover:text-white/70" href={`mailto:${site.epost}`}>{site.epost}</a>
             ) : (
               'Publiceras inom kort'
             )}
           </dd>
         </div>
         <div>
-          <dt class="text-sm font-semibold tracking-[0.2em] uppercase text-cream/90">Sociala medier</dt>
+          <dt class="text-sm font-semibold tracking-[0.2em] uppercase text-white/75">Sociala medier</dt>
           <dd class="mt-2 text-lg">
-            <a class="underline underline-offset-4 hover:text-amber" href={site.facebook} rel="noopener">Facebook</a>
+            <a class="underline underline-offset-4 hover:text-white/70" href={site.facebook} rel="noopener">Facebook</a>
             {site.instagram && (
-              <> · <a class="underline underline-offset-4 hover:text-amber" href={site.instagram} rel="noopener">Instagram</a></>
+              <> · <a class="underline underline-offset-4 hover:text-white/70" href={site.instagram} rel="noopener">Instagram</a></>
             )}
           </dd>
         </div>
@@ -85,7 +85,7 @@ const harAdress = !site.adress.gata.includes('TODO');
   <section id="hitta-hit" class="mx-auto max-w-6xl scroll-mt-24 px-4 py-14 sm:py-20" aria-labelledby="hitta-rubrik">
     <div class="grid items-start gap-10 lg:grid-cols-2">
       <div data-reveal>
-        <h2 id="hitta-rubrik" class="font-display text-3xl text-green sm:text-4xl">Hitta hit</h2>
+        <h2 id="hitta-rubrik" class="font-display text-3xl text-black sm:text-4xl">Hitta hit</h2>
         <address class="mt-4 text-lg not-italic leading-relaxed">
           {harAdress ? (
             <>{site.adress.gata}<br />{site.adress.postnummer} {site.adress.postort}</>
@@ -93,7 +93,7 @@ const harAdress = !site.adress.gata.includes('TODO');
             <>Mitt i {site.ort}, söder om Södertälje.<br />Gatuadress publiceras inom kort.</>
           )}
         </address>
-        <p class="mt-4 max-w-md text-ink/80">
+        <p class="mt-4 max-w-md text-grey-text">
           Tar du tåget? {site.ort} station ligger på promenadavstånd. Bil parkerar du
           enkelt i närheten.
         </p>

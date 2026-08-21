@@ -45,12 +45,35 @@ fallback. Nycklar läggs i Vercel – aldrig i repot.
 
 - `npm test` – 47 tester: öppettider (inkl. natten till lördag), serverside-
   prisomräkning, rate limit, honeypot, SMS-fellägen, GDPR-rensning
-- `npm run e2e` – korg → utcheckning → bekräftelse, låst läge utanför
-  öppettid, axe (WCAG 2.2 AA) utan fel på alla sidor
+- `npm run e2e` – beställningsmodalen (öppna, kräva tillval, summa, Esc),
+  korg → utcheckning → bekräftelse, låst läge utanför öppettid, axe
+  (WCAG 2.2 AA) utan fel på alla sidor
+- `npm run verify` – kör check, test, build och e2e i rätt ordning.
+  Använd den före push: e2e ensam kör mot en redan byggd `dist/`.
 - Lighthouse mobil: Performance / Accessibility / Best Practices 100 på
   alla sidor. SEO visar 66 så länge indexeringen är avstängd – enda
   fallerande audit är `is-crawlable`, alltså noindex-spärren nedan. Den
   går till 100 i samma stund flaggan slås på.
+
+## Design och rörelse
+
+Monokromt system i vitt, svart och grått – tokens i `src/config/theme.ts`.
+Schackrutmönstret från den tryckta menyn är signaturelementet; ytan måste
+vara minst `--checker-storlek` hög, annars syns bara en rad och mönstret
+läser som streck.
+
+Rörelsen ligger samlad i `src/styles/global.css`: hero-entré, staggered
+scroll-reveal via `--fordrojning`, löpande textremsa (`Marquee.astro`,
+rullar bara när den syns), invert-hover på menykort och svep på knappar.
+Allt tystnar under `prefers-reduced-motion`.
+
+## Beställningsmodalen
+
+`OrderModal.astro` renderas på alla sidor utom `/bestall*` och öppnas av
+varje länk med `data-oppna-order`. Länkarna pekar på `/bestall`, så utan
+JavaScript – eller vid ctrl/cmd-klick – fungerar de som vanliga länkar.
+Bygger på `<dialog showModal()>`, vilket ger fokusfälla, Esc och
+bakgrundsinertisering från webbläsaren.
 
 ## Sökmotorindexering
 

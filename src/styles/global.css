@@ -7,13 +7,11 @@
  * --brand-* på :root i Layout.astro. Här mappas de in i Tailwind.
  */
 @theme inline {
-  --color-green: var(--brand-green);
-  --color-green-deep: var(--brand-green-deep);
-  --color-cream: var(--brand-cream);
-  --color-ink: var(--brand-ink);
-  --color-amber: var(--brand-amber);
-  --color-amber-text: var(--brand-amber-text);
-  --color-sage: var(--brand-sage);
+  --color-white: var(--brand-white);
+  --color-black: var(--brand-black);
+  --color-grey-light: var(--brand-grey-light);
+  --color-grey-line: var(--brand-grey-line);
+  --color-grey-text: var(--brand-grey-text);
   --font-display: var(--brand-font-display);
   --font-body: var(--brand-font-body);
   --radius-kort: var(--brand-radius-kort);
@@ -26,25 +24,29 @@
     scroll-padding-top: 5.5rem;
   }
   body {
-    background: var(--brand-cream);
-    color: var(--brand-ink);
+    background: var(--brand-white);
+    color: var(--brand-black);
     font-family: var(--brand-font-body);
     -webkit-font-smoothing: antialiased;
   }
   ::selection {
-    background: var(--brand-amber);
-    color: var(--brand-ink);
+    background: var(--brand-black);
+    color: var(--brand-white);
   }
   :focus-visible {
-    outline: 3px solid var(--brand-amber);
-    outline-offset: 2px;
-    box-shadow: 0 0 0 6px color-mix(in srgb, var(--brand-ink) 35%, transparent);
-    border-radius: 4px;
+    outline: 3px solid var(--brand-black);
+    outline-offset: 3px;
+    border-radius: 3px;
+  }
+  /* På svart bakgrund behöver fokusringen vändas för att synas */
+  .pa-svart :focus-visible,
+  dialog::backdrop {
+    outline-color: var(--brand-white);
   }
   h1, h2, h3 {
     font-family: var(--brand-font-display);
     text-transform: uppercase;
-    letter-spacing: 0.02em;
+    letter-spacing: 0.01em;
     text-wrap: balance;
   }
   @media (prefers-reduced-motion: reduce) {
@@ -53,39 +55,83 @@
 }
 
 @layer components {
-  /* Schackrutmönstret från den tryckta menyn – CSS-genererat, ingen bild. */
+  /* Schackrutmönstret – CSS-genererat, ingen bild. Svart/vitt som originalet. */
   .checker {
     background-image: repeating-conic-gradient(
-      var(--checker-a, var(--brand-green)) 0% 25%,
-      var(--checker-b, var(--brand-cream)) 0% 50%
+      var(--checker-a, var(--brand-black)) 0% 25%,
+      var(--checker-b, var(--brand-white)) 0% 50%
     );
-    background-size: 22px 22px;
+    /*
+     * En "bricka" = 2x2 rutor. Höjden på ytan måste vara minst en hel
+     * bricka, annars syns bara en rad och mönstret läser som streck.
+     */
+    background-size: var(--checker-storlek, 20px) var(--checker-storlek, 20px);
   }
 
+  /*
+   * Primärknapp: svart yta, vit text. Vid hover sveper en vit yta in
+   * från vänster och texten vänder till svart – monokrom inversion i
+   * stället för en färgändring.
+   */
   .btn-primary {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: var(--brand-amber);
-    color: var(--brand-ink);
+    background: var(--brand-black);
+    color: var(--brand-white);
+    border: 2px solid var(--brand-black);
     font-weight: 700;
     border-radius: var(--brand-radius-knapp);
     padding: 0.7rem 1.4rem;
     line-height: 1.2;
-    transition: background-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+    transition: color 260ms ease, transform 160ms ease;
   }
-  .btn-primary:hover {
-    background: color-mix(in srgb, var(--brand-amber) 88%, white);
-    box-shadow: 0 4px 14px color-mix(in srgb, var(--brand-ink) 22%, transparent);
-    transform: translateY(-1px);
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--brand-white);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .btn-primary:hover::before,
+  .btn-primary:focus-visible::before {
+    transform: scaleX(1);
+  }
+  .btn-primary:hover,
+  .btn-primary:focus-visible {
+    color: var(--brand-black);
   }
   .btn-primary:active {
-    transform: translateY(0) scale(0.98);
-    box-shadow: none;
+    transform: scale(0.97);
+  }
+  /* Samma knapp på svart bakgrund: vänds till vit yta med svart text */
+  .pa-svart .btn-primary {
+    background: var(--brand-white);
+    color: var(--brand-black);
+    border-color: var(--brand-white);
+  }
+  .pa-svart .btn-primary::before {
+    background: var(--brand-black);
+  }
+  .pa-svart .btn-primary:hover,
+  .pa-svart .btn-primary:focus-visible {
+    color: var(--brand-white);
+  }
+  .btn-primary.tillagd::before {
+    transform: scaleX(1);
   }
   .btn-primary.tillagd {
-    background: var(--brand-cream);
+    color: var(--brand-black);
+  }
+  .pa-svart .btn-primary.tillagd {
+    color: var(--brand-white);
   }
 
   .btn-sekundar {
@@ -98,7 +144,15 @@
     border-radius: var(--brand-radius-knapp);
     padding: 0.6rem 1.3rem;
     line-height: 1.2;
-    transition: background-color 150ms ease, color 150ms ease;
+    transition: background-color 200ms ease, color 200ms ease;
+  }
+  .btn-sekundar:hover {
+    background: var(--brand-black);
+    color: var(--brand-white);
+  }
+  .pa-svart .btn-sekundar:hover {
+    background: var(--brand-white);
+    color: var(--brand-black);
   }
 
   .pris {
@@ -109,60 +163,181 @@
 
   .falt {
     width: 100%;
-    background: white;
-    color: var(--brand-ink);
-    border: 2px solid var(--brand-sage);
+    background: var(--brand-white);
+    color: var(--brand-black);
+    border: 2px solid var(--brand-grey-line);
     border-radius: var(--brand-radius-knapp);
     padding: 0.65rem 0.85rem;
-    transition: border-color 150ms ease;
+    transition: border-color 180ms ease;
+  }
+  .falt:hover {
+    border-color: var(--brand-grey-text);
   }
   .falt:focus-visible {
-    border-color: var(--brand-green);
-    box-shadow: none;
-    outline-color: var(--brand-amber);
+    border-color: var(--brand-black);
   }
   .falt.har-fel,
   .behover-val {
-    border-color: #b3261e;
+    border-color: var(--brand-black);
+    box-shadow: 0 0 0 3px var(--brand-grey-line);
   }
   .faltfel {
-    color: #8c1d16;
+    color: var(--brand-black);
     font-size: 0.875rem;
-    font-weight: 600;
+    font-weight: 700;
   }
-
-  @media (prefers-reduced-motion: reduce) {
-    .btn-primary, .btn-primary:hover, .btn-primary:active { transform: none; transition: none; }
+  .faltfel::before {
+    content: '⚠ ';
   }
 }
 
-/* Diskret fade-in vid scroll. Utan JS (html utan .js-klass) syns allt direkt. */
+/* ---------------------------------------------------------- Rörelse -- */
+
+/* Entré vid sidladdning: hero-raderna stiger in i tur och ordning */
+@keyframes stig-in {
+  from { opacity: 0; transform: translateY(28px); }
+  to   { opacity: 1; transform: none; }
+}
+html.js [data-entre] {
+  opacity: 0;
+  animation: stig-in 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation-delay: var(--fordrojning, 0ms);
+}
+
+/* Scroll-reveal med stagger via --fordrojning */
 html.js [data-reveal] {
   opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 500ms ease, transform 500ms ease;
+  transform: translateY(20px);
+  transition:
+    opacity 620ms cubic-bezier(0.16, 1, 0.3, 1) var(--fordrojning, 0ms),
+    transform 620ms cubic-bezier(0.16, 1, 0.3, 1) var(--fordrojning, 0ms);
 }
 html.js [data-reveal].syns {
   opacity: 1;
   transform: none;
 }
-@media (prefers-reduced-motion: reduce) {
-  html.js [data-reveal] {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
+
+/* Löpande textremsa – rullar dubbletten sömlöst */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+.marquee-spar {
+  display: flex;
+  width: max-content;
+  animation: marquee var(--marquee-tid, 42s) linear infinite;
+  /*
+   * Står stilla tills remsan syns i vyn. Det sparar batteri när den är
+   * utanför skärmen och låter sidan "sätta sig" visuellt vid inladdning
+   * i stället för att dra ner Speed Index med en evig rörelse.
+   */
+  animation-play-state: paused;
+}
+.marquee.rullar .marquee-spar {
+  animation-play-state: running;
+}
+.marquee:hover .marquee-spar {
+  animation-play-state: paused;
 }
 
-/* Puls på korg-badgen när något läggs till */
+/* Pulserande punkt i "Öppet nu"-skylten */
+@keyframes puls {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.35; transform: scale(0.8); }
+}
+.punkt-puls {
+  animation: puls 2s ease-in-out infinite;
+}
+
+/* Korgbadge när något läggs till */
 @keyframes korg-puls {
-  0% { transform: scale(1); }
-  40% { transform: scale(1.45); }
+  0%   { transform: scale(1); }
+  40%  { transform: scale(1.5); }
   100% { transform: scale(1); }
 }
 .korg-puls {
-  animation: korg-puls 350ms ease;
+  animation: korg-puls 380ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Modalens in- och uttoning */
+@keyframes modal-in {
+  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes backdrop-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+dialog[open] {
+  animation: modal-in 320ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+dialog[open]::backdrop {
+  animation: backdrop-in 320ms ease;
+}
+
+/*
+ * Stäng av allt ovanstående för den som bett om mindre rörelse.
+ * Innehållet ska då synas direkt, inte vara osynligt.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-entre],
+  html.js [data-reveal] {
+    opacity: 1;
+    transform: none;
+    animation: none;
+    transition: none;
+  }
+  .marquee-spar,
+  .punkt-puls,
+  .korg-puls,
+  dialog[open],
+  dialog[open]::backdrop {
+    animation: none;
+  }
+  .btn-primary,
+  .btn-primary::before,
+  .btn-sekundar {
+    transition: none;
+  }
+  .btn-primary:active {
+    transform: none;
+  }
+}
+
+/* ------------------------------------------------------- Menykort -- */
+/*
+ * Kortet vänder från vitt till svart vid hover. Beskrivningstexten och
+ * knappen måste följa med, annars blir grå text på svart oläslig.
+ */
+.kort .text-grey-text {
+  transition: color 200ms ease;
+}
+.kort:hover .text-grey-text {
+  color: color-mix(in srgb, var(--brand-white) 75%, transparent);
+}
+.kort:hover .btn-primary {
+  background: var(--brand-white);
+  color: var(--brand-black);
+  border-color: var(--brand-white);
+}
+.kort:hover .btn-primary::before {
+  background: var(--brand-black);
+}
+.kort:hover .btn-primary:hover,
+.kort:hover .btn-primary:focus-visible {
+  color: var(--brand-white);
+}
+.kort:hover .falt {
+  background: var(--brand-black);
+  color: var(--brand-white);
+  border-color: var(--brand-white);
+}
+.kort:hover :focus-visible {
+  outline-color: var(--brand-white);
 }
 @media (prefers-reduced-motion: reduce) {
-  .korg-puls { animation: none; }
+  .kort,
+  .kort .text-grey-text {
+    transition: none;
+  }
 }

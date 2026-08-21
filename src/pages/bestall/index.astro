@@ -8,10 +8,10 @@ import { harTelefon, site } from '../../config/site';
   beskrivning={`Beställ mat för avhämtning hos ${site.namn} i ${site.ort}. Välj tid, få bekräftelse via SMS och betala när du hämtar.`}
   dolBestallCta
 >
-  <section class="bg-green text-cream">
+  <section class="pa-svart bg-black text-white">
     <div class="mx-auto max-w-3xl px-4 pt-12 pb-10 sm:pt-16">
       <h1 class="font-display text-[clamp(2.6rem,7vw,4rem)] leading-[0.95]">Beställ mat</h1>
-      <p class="mt-4 text-lg text-cream/90">
+      <p class="mt-4 text-lg text-white/75">
         Avhämtning hos oss i {site.ort}. <strong>Du betalar när du hämtar</strong> – ingen betalning online.
       </p>
     </div>
@@ -30,8 +30,8 @@ import { harTelefon, site } from '../../config/site';
       }
     </script>
     <noscript>
-      <div class="rounded-[var(--brand-radius-kort)] border-2 border-sage/60 bg-white p-6">
-        <h2 class="font-display text-2xl text-green">Onlinebeställning kräver JavaScript</h2>
+      <div class="rounded-[var(--brand-radius-kort)] border-2 border-grey-line bg-white p-6">
+        <h2 class="font-display text-2xl text-black">Onlinebeställning kräver JavaScript</h2>
         <p class="mt-2">
           {harTelefon
             ? `Ring oss på ${site.telefon} så tar vi din beställning per telefon.`
@@ -42,33 +42,33 @@ import { harTelefon, site } from '../../config/site';
 
     <!-- Varukorgen -->
     <section aria-labelledby="korg-rubrik" data-js-behov>
-      <h2 id="korg-rubrik" class="font-display text-2xl text-green sm:text-3xl">Din varukorg</h2>
+      <h2 id="korg-rubrik" class="font-display text-2xl text-black sm:text-3xl">Din varukorg</h2>
 
-      <div data-korg-tom class="mt-5 rounded-[var(--brand-radius-kort)] border-2 border-dashed border-sage/60 p-8 text-center">
+      <div data-korg-tom class="mt-5 rounded-[var(--brand-radius-kort)] border-2 border-dashed border-grey-line p-8 text-center">
         <p class="text-lg font-semibold">Korgen är tom.</p>
-        <p class="mt-1 text-ink/70">Lägg till något gott från menyn först.</p>
+        <p class="mt-1 text-grey-text">Lägg till något gott från menyn först.</p>
         <a href="/meny" class="btn-primary mt-5">Till menyn</a>
       </div>
 
       <div data-korg-innehall class="mt-5">
-        <ul data-korg-rader class="min-h-40 divide-y divide-sage/40 rounded-[var(--brand-radius-kort)] border-2 border-sage/50 bg-white"></ul>
+        <ul data-korg-rader class="min-h-40 divide-y divide-grey-line rounded-[var(--brand-radius-kort)] border-2 border-grey-line bg-white"></ul>
         <p class="mt-4 flex items-baseline justify-between text-xl">
           <span class="font-semibold">Summa</span>
           <span class="pris" data-korg-summa>–</span>
         </p>
-        <p class="mt-1 text-sm text-ink/70">Betalas på plats vid avhämtning.</p>
+        <p class="mt-1 text-sm text-grey-text">Betalas på plats vid avhämtning.</p>
       </div>
     </section>
 
     <!-- Utcheckning -->
     <section aria-labelledby="utcheckning-rubrik" data-utcheckning class="mt-12">
-      <h2 id="utcheckning-rubrik" class="font-display text-2xl text-green sm:text-3xl">Dina uppgifter</h2>
+      <h2 id="utcheckning-rubrik" class="font-display text-2xl text-black sm:text-3xl">Dina uppgifter</h2>
 
       <div class="relative mt-5">
         <div
           data-last-meddelande
           hidden
-          class="absolute inset-0 z-10 rounded-[var(--brand-radius-kort)] bg-green/95 p-6 text-lg font-semibold text-cream"
+          class="pa-svart absolute inset-0 z-10 rounded-[var(--brand-radius-kort)] bg-black/95 p-6 text-lg font-semibold text-white"
           role="status"
         ></div>
 
@@ -86,7 +86,7 @@ import { harTelefon, site } from '../../config/site';
               placeholder="07X-XXX XX XX" maxlength="17" required
               aria-describedby="mobil-hjalp"
             />
-            <p id="mobil-hjalp" class="mt-1 text-sm text-ink/70">Orderbekräftelsen skickas hit via SMS.</p>
+            <p id="mobil-hjalp" class="mt-1 text-sm text-grey-text">Orderbekräftelsen skickas hit via SMS.</p>
             <p data-fel-for="mobil" class="faltfel mt-1" hidden></p>
           </div>
           <div>
@@ -96,7 +96,7 @@ import { harTelefon, site } from '../../config/site';
           </div>
           <div>
             <label for="kommentar" class="mb-1.5 block font-semibold">
-              Kommentar <span class="font-normal text-ink/70">(valfritt – t.ex. allergier)</span>
+              Kommentar <span class="font-normal text-grey-text">(valfritt – t.ex. allergier)</span>
             </label>
             <textarea id="kommentar" name="kommentar" class="falt" rows="3" maxlength="300"></textarea>
           </div>
@@ -118,7 +118,7 @@ import { harTelefon, site } from '../../config/site';
           <button type="submit" data-skicka class="btn-primary w-full !py-3.5 text-lg">
             Skicka beställning
           </button>
-          <p class="text-center text-sm text-ink/70">
+          <p class="text-center text-sm text-grey-text">
             Genom att beställa godkänner du att vi hanterar dina uppgifter enligt vår
             <a class="underline underline-offset-4" href="/integritetspolicy">integritetspolicy</a>.
           </p>
@@ -192,7 +192,7 @@ import { harTelefon, site } from '../../config/site';
         info.append(namn);
         if (rad.tillval) {
           const t = document.createElement('p');
-          t.className = 'text-sm text-ink/70';
+          t.className = 'text-sm text-grey-text';
           t.textContent = rad.tillval;
           info.append(t);
         }
@@ -201,7 +201,7 @@ import { harTelefon, site } from '../../config/site';
         stegare.className = 'flex items-center gap-1';
         const minus = document.createElement('button');
         minus.type = 'button';
-        minus.className = 'h-9 w-9 rounded-md border-2 border-sage/60 font-bold hover:bg-cream';
+        minus.className = 'h-9 w-9 rounded-md border-2 border-grey-line font-bold hover:bg-white';
         minus.textContent = '−';
         minus.setAttribute('aria-label', `Minska antal ${ratt.namn}`);
         minus.addEventListener('click', () => { andraAntal(index, -1); renderaKorg(); });
@@ -210,7 +210,7 @@ import { harTelefon, site } from '../../config/site';
         antal.textContent = String(rad.antal);
         const plus = document.createElement('button');
         plus.type = 'button';
-        plus.className = 'h-9 w-9 rounded-md border-2 border-sage/60 font-bold hover:bg-cream';
+        plus.className = 'h-9 w-9 rounded-md border-2 border-grey-line font-bold hover:bg-white';
         plus.textContent = '+';
         plus.setAttribute('aria-label', `Öka antal ${ratt.namn}`);
         plus.addEventListener('click', () => { andraAntal(index, 1); renderaKorg(); });

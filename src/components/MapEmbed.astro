@@ -15,17 +15,17 @@ const googleMaps = `https://www.google.com/maps/search/?api=1&query=${encodeURIC
     type="button"
     data-karta-knapp
     data-src={osmSrc}
-    class="group relative flex aspect-[16/9] w-full items-center justify-center bg-green text-cream transition-colors hover:bg-green-deep"
+    class="group relative flex aspect-[16/9] w-full items-center justify-center bg-black text-white transition-colors hover:bg-black"
   >
-    <span class="checker absolute inset-x-0 bottom-0 h-[14px]" style="--checker-b: var(--brand-green-deep)" aria-hidden="true"></span>
+    <span class="checker absolute inset-x-0 bottom-0 h-5" style="--checker-b: var(--brand-grey-text)" aria-hidden="true"></span>
     <span class="flex flex-col items-center gap-2">
       <span class="font-display text-2xl tracking-wide">Visa kartan</span>
-      <span class="text-sm text-cream/90">Laddar karta från OpenStreetMap när du klickar</span>
+      <span class="text-sm text-white/75">Laddar karta från OpenStreetMap när du klickar</span>
     </span>
   </button>
 </div>
 <p class="mt-3">
-  <a class="font-semibold underline underline-offset-4 text-green hover:text-amber-text" href={googleMaps} rel="noopener">
+  <a class="font-semibold underline underline-offset-4 text-black hover:text-grey-text" href={googleMaps} rel="noopener">
     Öppna i Google Maps för vägbeskrivning →
   </a>
 </p>

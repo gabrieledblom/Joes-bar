@@ -1,31 +1,29 @@
 /**
- * Designtokens – härledda från den tryckta menyn (djupgrön, cream,
- * tung versalgrotesk, schackrutmönster). Matas in i Tailwind via
+ * Designtokens – monokromt system i vitt, svart och grått.
+ *
+ * Schackrutmönstret från den tryckta menyn är kvar som signaturelement;
+ * i svart och vitt blir det snarast starkare. Matas in i Tailwind via
  * CSS-variabler i Layout.astro + @theme i global.css.
  */
 export const theme = {
   farger: {
-    /** Djupgrön – huvudfärg, mörka sektioner, stora rubriker */
-    green: '#1B6B3C',
-    /** Mörkare grön för hover/tryckta lägen */
-    greenDeep: '#12522C',
-    /** Cream – ljus bakgrund, aldrig ren vit */
-    cream: '#F6F1E3',
-    /** Nästan-svart – all brödtext */
-    ink: '#161A14',
-    /** Bärnstensgul – CTA-ytor, med ink-text ovanpå */
-    amber: '#E8A82B',
-    /** Mörk ockra – accentTEXT på cream (klarar 4.5:1) */
-    amberText: '#7A5600',
-    /** Dämpad grön – ramar och avdelare */
-    sage: '#7C9A82',
+    /** Rent vitt – huvudbakgrund */
+    white: '#FFFFFF',
+    /** Svart – text, mörka sektioner, CTA-ytor */
+    black: '#0B0B0B',
+    /** Ljusgrått – alternerande sektionsbakgrund */
+    greyLight: '#F2F2F2',
+    /** Mellangrått – ramar och avdelare */
+    greyLine: '#D8D8D8',
+    /** Mörkgrått – dämpad text (6,4:1 mot vitt) */
+    greyText: '#5F5F5F',
   },
   typsnitt: {
     display: "'Anton', 'Arial Narrow', Impact, sans-serif",
     body: "'Archivo Variable', 'Helvetica Neue', Arial, sans-serif",
   },
   radie: {
-    kort: '1.25rem',
-    knapp: '0.65rem',
+    kort: '1rem',
+    knapp: '0.5rem',
   },
 } as const;

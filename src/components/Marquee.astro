@@ -1,0 +1,48 @@
+---
+/**
+ * Löpande textremsa med rätter och priser – ger sajten puls utan att
+ * ta uppmärksamhet från innehållet. Spåret dupliceras så rullningen
+ * blir sömlös, och kopian döljs för skärmläsare.
+ *
+ * Pausar vid hover och står helt stilla vid prefers-reduced-motion.
+ */
+import { meny } from '../config/menu';
+
+interface Props {
+  /** Sekunder för ett varv – högre = långsammare */
+  tid?: number;
+}
+const { tid = 46 } = Astro.props;
+
+const poster = meny
+  .filter((r) => r.tillganglig && r.kategori !== 'dryck')
+  .filter((_, i) => i % 2 === 0)
+  .map((r) => `${r.namn} ${r.pris}:-`);
+---
+<div class="marquee overflow-hidden border-y-2 border-black bg-white py-3" aria-label="Ett urval ur menyn">
+  <div class="marquee-spar" style={`--marquee-tid: ${tid}s`}>
+    {[0, 1].map((kopia) => (
+      <ul class="flex shrink-0 items-center" aria-hidden={kopia === 1 ? 'true' : undefined}>
+        {poster.map((post) => (
+          <li class="flex items-center gap-6 px-6">
+            <span class="font-display text-lg tracking-wide whitespace-nowrap">{post}</span>
+            <span class="checker h-2.5 w-2.5 shrink-0" style="--checker-storlek: 10px" aria-hidden="true"></span>
+          </li>
+        ))}
+      </ul>
+    ))}
+  </div>
+</div>
+
+<script>
+  // Rulla bara när remsan faktiskt syns.
+  for (const remsa of document.querySelectorAll<HTMLElement>('.marquee')) {
+    if (!('IntersectionObserver' in window)) {
+      remsa.classList.add('rullar');
+      continue;
+    }
+    new IntersectionObserver((poster) => {
+      for (const post of poster) post.target.classList.toggle('rullar', post.isIntersecting);
+    }).observe(remsa);
+  }
+</script>

@@ -12,11 +12,11 @@ interface Props {
 const { ratio = '4/3', class: klass = '' } = Astro.props;
 ---
 <div
-  class:list={['relative flex items-center justify-center overflow-hidden rounded-[var(--brand-radius-kort)] bg-green text-cream', klass]}
+  class:list={['relative flex items-center justify-center overflow-hidden rounded-[var(--brand-radius-kort)] bg-black text-white', klass]}
   style={`aspect-ratio: ${ratio}`}
   aria-hidden="true"
 >
-  <div class="checker absolute inset-x-0 bottom-0 h-[14px]" style="--checker-b: var(--brand-green-deep)"></div>
+  <div class="checker absolute inset-x-0 bottom-0 h-5" style="--checker-b: var(--brand-grey-text)"></div>
   <svg class="w-24 opacity-40 select-none" viewBox="0 0 120 76" aria-hidden="true">
     <text x="60" y="30" text-anchor="middle" fill="currentColor" style="font-family: var(--brand-font-display); font-size: 30px; letter-spacing: 0.02em">JOE'S</text>
     <text x="60" y="64" text-anchor="middle" fill="currentColor" style="font-family: var(--brand-font-display); font-size: 30px; letter-spacing: 0.18em">BAR</text>
