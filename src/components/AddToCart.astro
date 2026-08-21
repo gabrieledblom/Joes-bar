@@ -1,8 +1,5 @@
 ---
-/**
- * Delegerad "Lägg till"-hantering för alla menykort på sidan.
- * Inkluderas en gång per sida som visar MenuCard.
- */
+/** Delegerad "lägg till"-hantering för menyraderna på en sida. */
 ---
 <script>
   import { laggTill } from '../lib/cart';
@@ -10,32 +7,25 @@
   document.addEventListener('click', (e) => {
     const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-lagg-till]');
     if (!btn) return;
-    const kort = btn.closest<HTMLElement>('[data-menykort]');
-    const id = kort?.dataset.rattId;
-    if (!kort || !id) return;
+    const rad = btn.closest<HTMLElement>('[data-menyrad]');
+    const id = rad?.dataset.rattId;
+    if (!rad || !id) return;
 
-    const select = kort.querySelector<HTMLSelectElement>('[data-tillval]');
-    let tillval: string | undefined;
-    if (select) {
-      if (!select.value) {
-        select.classList.add('behover-val');
-        select.focus();
-        select.addEventListener('change', () => select.classList.remove('behover-val'), { once: true });
-        return;
-      }
-      tillval = select.value;
+    const select = rad.querySelector<HTMLSelectElement>('[data-tillval]');
+    if (select && !select.value) {
+      select.classList.add('behover-val');
+      select.focus();
+      select.addEventListener('change', () => select.classList.remove('behover-val'), { once: true });
+      return;
     }
 
-    laggTill(id, tillval);
+    laggTill(id, select?.value || undefined);
 
-    const originaltext = btn.textContent;
     btn.classList.add('tillagd');
-    btn.textContent = 'Tillagd ✓';
-    btn.disabled = true;
+    btn.textContent = '✓';
     setTimeout(() => {
       btn.classList.remove('tillagd');
-      btn.textContent = originaltext;
-      btn.disabled = false;
-    }, 900);
+      btn.textContent = '+';
+    }, 800);
   });
 </script>

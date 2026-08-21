@@ -1,5 +1,4 @@
 ---
-import Checkerboard from '../components/Checkerboard.astro';
 import Layout from '../components/Layout.astro';
 import MapEmbed from '../components/MapEmbed.astro';
 import Placeholder from '../components/Placeholder.astro';
@@ -9,93 +8,92 @@ const harAdress = !site.adress.gata.includes('TODO');
 ---
 <Layout
   titel={`Om oss – ${site.namn} i ${site.ort}`}
-  beskrivning={`${site.namn} är kvarterets restaurang och bar i ${site.ort} – mat, dryck, karaoke och livekvällar. Hitta hit, kontakta oss och se vad som händer.`}
+  beskrivning={`${site.namn} är kvarterets restaurang och bar i ${site.ort} – mat, dryck, karaoke och livekvällar. Hitta hit och kontakta oss.`}
 >
-  <section class="pa-svart bg-black text-white">
-    <div class="mx-auto max-w-6xl px-4 pt-12 pb-14 sm:pt-16">
-      <h1 class="font-display text-[clamp(2.6rem,7vw,4.5rem)] leading-[0.95]">Kvarterets<br />vardagsrum</h1>
-      <p class="mt-5 max-w-2xl text-lg leading-relaxed text-white/75">
-        {site.namn} är stället i {site.ort} där du käkar en riktig middag, tar något i baren
-        och blir kvar när karaoken drar i gång. Enkelt, varmt och utan krångel –
-        mat och dryck som det låter.
+  <section class="ram pt-20 pb-20 sm:pt-28">
+    <p data-entre class="etikett">Om oss</p>
+    <h1 class="mt-6 max-w-2xl text-[clamp(2.25rem,6vw,3.5rem)]">
+      Kvarterets vardagsrum
+    </h1>
+    <p data-entre style="--fordrojning: 100ms" class="mt-8 max-w-xl text-lg leading-relaxed text-muted">
+      {site.namn} är stället i {site.ort} där du käkar en riktig middag, tar något
+      i baren och blir kvar när karaoken drar i gång. Enkelt, varmt och utan
+      krångel – mat och dryck som det låter.
+    </p>
+  </section>
+
+  <hr class="linje" />
+
+  <section class="ram grid gap-12 py-20 lg:grid-cols-2 lg:gap-24" aria-labelledby="karaoke-rubrik">
+    <div data-reveal>
+      <p class="etikett">Kvällarna</p>
+      <h2 id="karaoke-rubrik" class="mt-5 text-2xl sm:text-3xl">Karaoke och livemusik</h2>
+      <p class="mt-6 max-w-md leading-relaxed text-muted">
+        På helgerna blir det karaoke och dans – fredagar och lördagar har vi
+        öppet till 01:00. Håll utkik på vår
+        <a class="lank lank-in text-black" href={site.facebook} rel="noopener">Facebook-sida</a>
+        för kvällens tema och kommande livekvällar.
+      </p>
+      <p class="mt-4 max-w-md leading-relaxed text-muted">
+        Kom hungrig: köket serverar hela kvällen, och sugna sällskap kan
+        beställa in snacks till bordet.
       </p>
     </div>
-  </section>
-  <Checkerboard />
-
-  <section class="mx-auto max-w-6xl px-4 py-14 sm:py-20" aria-labelledby="karaoke-rubrik">
-    <div class="grid items-center gap-10 lg:grid-cols-2">
-      <div data-reveal>
-        <h2 id="karaoke-rubrik" class="font-display text-3xl text-black sm:text-4xl">Karaoke & livekvällar</h2>
-        <p class="mt-4 max-w-xl leading-relaxed">
-          På helgerna blir det karaoke och dans – fredagar och lördagar har vi öppet
-          ända till 01:00. Håll utkik på vår
-          <a class="font-semibold text-black underline underline-offset-4 hover:text-grey-text" href={site.facebook} rel="noopener">Facebook-sida</a>
-          för kvällens tema och kommande livekvällar.
-        </p>
-        <p class="mt-4 max-w-xl leading-relaxed">
-          Kom hungrig: köket serverar hela kvällen, och sugna sällskap kan beställa
-          in snacksbrickor till bordet.
-        </p>
-      </div>
-      <div data-reveal>
-        <Placeholder ratio="4/3" />
-      </div>
+    <div data-reveal>
+      <Placeholder ratio="4/3" />
     </div>
   </section>
 
-  <section class="pa-svart bg-black text-white" aria-labelledby="kontakt-rubrik">
-    <Checkerboard />
-    <div class="mx-auto max-w-6xl px-4 py-14 sm:py-20">
-      <h2 id="kontakt-rubrik" class="font-display text-3xl sm:text-4xl">Kontakta oss</h2>
-      <dl class="mt-8 grid gap-8 sm:grid-cols-3">
-        <div>
-          <dt class="text-sm font-semibold tracking-[0.2em] uppercase text-white/75">Telefon</dt>
-          <dd class="mt-2 text-lg">
-            {harTelefon ? (
-              <a class="underline underline-offset-4 hover:text-white/70" href={`tel:${site.telefonE164}`}>{site.telefon}</a>
-            ) : (
-              'Publiceras inom kort'
-            )}
-          </dd>
-        </div>
-        <div>
-          <dt class="text-sm font-semibold tracking-[0.2em] uppercase text-white/75">E-post</dt>
-          <dd class="mt-2 text-lg">
-            {site.epost ? (
-              <a class="underline underline-offset-4 hover:text-white/70" href={`mailto:${site.epost}`}>{site.epost}</a>
-            ) : (
-              'Publiceras inom kort'
-            )}
-          </dd>
-        </div>
-        <div>
-          <dt class="text-sm font-semibold tracking-[0.2em] uppercase text-white/75">Sociala medier</dt>
-          <dd class="mt-2 text-lg">
-            <a class="underline underline-offset-4 hover:text-white/70" href={site.facebook} rel="noopener">Facebook</a>
-            {site.instagram && (
-              <> · <a class="underline underline-offset-4 hover:text-white/70" href={site.instagram} rel="noopener">Instagram</a></>
-            )}
-          </dd>
-        </div>
-      </dl>
-    </div>
+  <hr class="linje" />
+
+  <section class="ram py-20" aria-labelledby="kontakt-rubrik">
+    <p class="etikett">Kontakt</p>
+    <h2 id="kontakt-rubrik" class="sr-only">Kontaktuppgifter</h2>
+    <dl class="mt-6 grid gap-8 sm:grid-cols-3">
+      <div data-reveal>
+        <dt class="text-sm text-muted">Telefon</dt>
+        <dd class="mt-1.5 text-lg">
+          {harTelefon
+            ? <a class="lank lank-in" href={`tel:${site.telefonE164}`}>{site.telefon}</a>
+            : <span class="text-muted">Publiceras inom kort</span>}
+        </dd>
+      </div>
+      <div data-reveal style="--fordrojning: 70ms">
+        <dt class="text-sm text-muted">E-post</dt>
+        <dd class="mt-1.5 text-lg">
+          {site.epost
+            ? <a class="lank lank-in" href={`mailto:${site.epost}`}>{site.epost}</a>
+            : <span class="text-muted">Publiceras inom kort</span>}
+        </dd>
+      </div>
+      <div data-reveal style="--fordrojning: 140ms">
+        <dt class="text-sm text-muted">Sociala medier</dt>
+        <dd class="mt-1.5 text-lg">
+          <a class="lank lank-in" href={site.facebook} rel="noopener">Facebook</a>
+          {site.instagram && <> · <a class="lank lank-in" href={site.instagram} rel="noopener">Instagram</a></>}
+        </dd>
+      </div>
+    </dl>
   </section>
 
-  <section id="hitta-hit" class="mx-auto max-w-6xl scroll-mt-24 px-4 py-14 sm:py-20" aria-labelledby="hitta-rubrik">
-    <div class="grid items-start gap-10 lg:grid-cols-2">
+  <hr class="linje" />
+
+  <section id="hitta-hit" class="ram scroll-mt-24 py-20" aria-labelledby="hitta-rubrik">
+    <div class="grid gap-12 lg:grid-cols-2 lg:gap-24">
       <div data-reveal>
-        <h2 id="hitta-rubrik" class="font-display text-3xl text-black sm:text-4xl">Hitta hit</h2>
-        <address class="mt-4 text-lg not-italic leading-relaxed">
+        <p class="etikett">Hitta hit</p>
+        <h2 id="hitta-rubrik" class="mt-5 text-2xl sm:text-3xl">Här ligger vi</h2>
+        <address class="mt-6 text-lg not-italic leading-relaxed">
           {harAdress ? (
             <>{site.adress.gata}<br />{site.adress.postnummer} {site.adress.postort}</>
           ) : (
-            <>Mitt i {site.ort}, söder om Södertälje.<br />Gatuadress publiceras inom kort.</>
+            <>Mitt i {site.ort}, söder om Södertälje.<br />
+            <span class="text-muted">Gatuadress publiceras inom kort.</span></>
           )}
         </address>
-        <p class="mt-4 max-w-md text-grey-text">
-          Tar du tåget? {site.ort} station ligger på promenadavstånd. Bil parkerar du
-          enkelt i närheten.
+        <p class="mt-6 max-w-sm text-sm text-muted">
+          Tar du tåget ligger {site.ort} station på promenadavstånd. Med bil
+          parkerar du enkelt i närheten.
         </p>
       </div>
       <div data-reveal>

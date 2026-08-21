@@ -1,162 +1,212 @@
 @import 'tailwindcss';
-@import '@fontsource/anton';
-@import '@fontsource-variable/archivo';
+@import '@fontsource-variable/schibsted-grotesk';
 
 /*
- * Tokens definieras i src/config/theme.ts och injiceras som
- * --brand-* på :root i Layout.astro. Här mappas de in i Tailwind.
+ * Tokens definieras i src/config/theme.ts och injiceras som --brand-*
+ * på :root i Layout.astro. Här mappas de in i Tailwind.
  */
 @theme inline {
   --color-white: var(--brand-white);
   --color-black: var(--brand-black);
-  --color-grey-light: var(--brand-grey-light);
-  --color-grey-line: var(--brand-grey-line);
-  --color-grey-text: var(--brand-grey-text);
-  --font-display: var(--brand-font-display);
-  --font-body: var(--brand-font-body);
-  --radius-kort: var(--brand-radius-kort);
-  --radius-knapp: var(--brand-radius-knapp);
+  --color-surface: var(--brand-surface);
+  --color-line: var(--brand-line);
+  --color-muted: var(--brand-muted);
+  --font-sans: var(--brand-sans);
+  --radius-liten: var(--brand-radie-liten);
+  --radius-stor: var(--brand-radie-stor);
 }
 
 @layer base {
   html {
     scroll-behavior: smooth;
-    scroll-padding-top: 5.5rem;
+    scroll-padding-top: 6rem;
   }
   body {
     background: var(--brand-white);
     color: var(--brand-black);
-    font-family: var(--brand-font-body);
+    font-family: var(--brand-sans);
+    font-size: 1rem;
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
   ::selection {
     background: var(--brand-black);
     color: var(--brand-white);
   }
   :focus-visible {
-    outline: 3px solid var(--brand-black);
+    outline: 2px solid var(--brand-black);
     outline-offset: 3px;
-    border-radius: 3px;
+    border-radius: 2px;
   }
-  /* På svart bakgrund behöver fokusringen vändas för att synas */
-  .pa-svart :focus-visible,
-  dialog::backdrop {
-    outline-color: var(--brand-white);
-  }
-  h1, h2, h3 {
-    font-family: var(--brand-font-display);
-    text-transform: uppercase;
-    letter-spacing: 0.01em;
+
+  /*
+   * Stora grader behöver dras ihop för att inte falla isär; små grader
+   * behöver luft. Versaler används bara i etiketter, aldrig i rubriker –
+   * gemener är tystare och lättare att läsa.
+   */
+  h1, h2, h3, h4 {
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
     text-wrap: balance;
   }
+  h1 { letter-spacing: -0.035em; }
+
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
   }
 }
 
 @layer components {
-  /* Schackrutmönstret – CSS-genererat, ingen bild. Svart/vitt som originalet. */
-  .checker {
-    background-image: repeating-conic-gradient(
-      var(--checker-a, var(--brand-black)) 0% 25%,
-      var(--checker-b, var(--brand-white)) 0% 50%
-    );
-    /*
-     * En "bricka" = 2x2 rutor. Höjden på ytan måste vara minst en hel
-     * bricka, annars syns bara en rad och mönstret läser som streck.
-     */
-    background-size: var(--checker-storlek, 20px) var(--checker-storlek, 20px);
+  /* Sidbredd och sidmarginal – en enda källa för hela sajten */
+  .ram {
+    width: 100%;
+    max-width: 68rem;
+    margin-inline: auto;
+    padding-inline: 1.5rem;
+  }
+  @media (min-width: 640px) {
+    .ram { padding-inline: 2.5rem; }
+  }
+
+  /* Versal etikett över en sektion. Sajtens enda versaltext. */
+  .etikett {
+    font-size: 0.6875rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--brand-muted);
+  }
+
+  /* Hårfin linje – all avgränsning på sajten görs med den här */
+  .linje {
+    border: 0;
+    border-top: 1px solid var(--brand-line);
+    margin: 0;
   }
 
   /*
-   * Primärknapp: svart yta, vit text. Vid hover sveper en vit yta in
-   * från vänster och texten vänder till svart – monokrom inversion i
-   * stället för en färgändring.
+   * Knapp: svart yta, vit text, nästan raka hörn. Vid hover lättar den
+   * en aning i stället för att byta färg – lugnare än en inversion.
    */
-  .btn-primary {
-    position: relative;
-    isolation: isolate;
-    overflow: hidden;
+  .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
     background: var(--brand-black);
     color: var(--brand-white);
-    border: 2px solid var(--brand-black);
-    font-weight: 700;
-    border-radius: var(--brand-radius-knapp);
-    padding: 0.7rem 1.4rem;
+    border: 1px solid var(--brand-black);
+    border-radius: var(--brand-radie-stor);
+    padding: 0.8rem 1.6rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
     line-height: 1.2;
-    transition: color 260ms ease, transform 160ms ease;
+    transition: opacity 200ms ease, transform 200ms ease;
   }
-  .btn-primary::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: var(--brand-white);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
-  }
-  .btn-primary:hover::before,
-  .btn-primary:focus-visible::before {
-    transform: scaleX(1);
-  }
-  .btn-primary:hover,
-  .btn-primary:focus-visible {
+  .btn:hover { opacity: 0.82; }
+  .btn:active { transform: scale(0.985); }
+
+  .btn-linje {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: transparent;
     color: var(--brand-black);
+    border: 1px solid var(--brand-line);
+    border-radius: var(--brand-radie-stor);
+    padding: 0.8rem 1.6rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.2;
+    transition: border-color 200ms ease, background-color 200ms ease;
   }
-  .btn-primary:active {
-    transform: scale(0.97);
+  .btn-linje:hover {
+    border-color: var(--brand-black);
+    background: var(--brand-surface);
   }
-  /* Samma knapp på svart bakgrund: vänds till vit yta med svart text */
-  .pa-svart .btn-primary {
-    background: var(--brand-white);
+
+  /* Liten "+"-knapp vid varje rätt i menylistan */
+  .btn-plus {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    flex-shrink: 0;
+    border: 1px solid var(--brand-line);
+    border-radius: 999px;
+    font-size: 1rem;
+    line-height: 1;
     color: var(--brand-black);
-    border-color: var(--brand-white);
+    transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease;
   }
-  .pa-svart .btn-primary::before {
+  .btn-plus:hover {
+    border-color: var(--brand-black);
     background: var(--brand-black);
-  }
-  .pa-svart .btn-primary:hover,
-  .pa-svart .btn-primary:focus-visible {
     color: var(--brand-white);
   }
-  .btn-primary.tillagd::before {
-    transform: scaleX(1);
-  }
-  .btn-primary.tillagd {
-    color: var(--brand-black);
-  }
-  .pa-svart .btn-primary.tillagd {
+  .btn-plus.tillagd {
+    border-color: var(--brand-black);
+    background: var(--brand-black);
     color: var(--brand-white);
   }
 
-  .btn-sekundar {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    border: 2px solid currentColor;
-    font-weight: 600;
-    border-radius: var(--brand-radius-knapp);
-    padding: 0.6rem 1.3rem;
-    line-height: 1.2;
-    transition: background-color 200ms ease, color 200ms ease;
+  /*
+   * Länk med linje som växer fram under texten i stället för en
+   * understrykning som bara tänds.
+   */
+  .lank {
+    position: relative;
+    color: inherit;
+    text-decoration: none;
+    padding-bottom: 1px;
   }
-  .btn-sekundar:hover {
-    background: var(--brand-black);
-    color: var(--brand-white);
+  .lank::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(var(--lank-skala, 1));
+    transform-origin: left;
+    transition: transform 260ms cubic-bezier(0.16, 1, 0.3, 1);
   }
-  .pa-svart .btn-sekundar:hover {
-    background: var(--brand-white);
-    color: var(--brand-black);
+  .lank:hover::after,
+  .lank:focus-visible::after {
+    transform: scaleX(0);
+    transform-origin: right;
+  }
+  /* Variant som börjar utan linje och drar in den vid hover */
+  .lank-in { --lank-skala: 0; }
+  .lank-in:hover::after,
+  .lank-in:focus-visible::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /*
+   * Vågrätt skrollbar rad (kategoriflikar). Uttoningen i kanten gör att
+   * en avklippt flik läser som "det finns mer", inte som ett fel.
+   */
+  .skrollrad {
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 2.5rem), transparent 100%);
+    mask-image: linear-gradient(to right, #000 calc(100% - 2.5rem), transparent 100%);
+  }
+  .skrollrad::-webkit-scrollbar { display: none; }
+  /* Uttoningen ska inte kapa fokusringen på sista fliken */
+  .skrollrad:focus-within {
+    -webkit-mask-image: none;
+    mask-image: none;
   }
 
   .pris {
-    font-weight: 700;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
   }
@@ -165,120 +215,65 @@
     width: 100%;
     background: var(--brand-white);
     color: var(--brand-black);
-    border: 2px solid var(--brand-grey-line);
-    border-radius: var(--brand-radius-knapp);
-    padding: 0.65rem 0.85rem;
+    border: 1px solid var(--brand-line);
+    border-radius: var(--brand-radie-stor);
+    padding: 0.7rem 0.9rem;
+    font-size: 0.9375rem;
     transition: border-color 180ms ease;
   }
-  .falt:hover {
-    border-color: var(--brand-grey-text);
-  }
-  .falt:focus-visible {
-    border-color: var(--brand-black);
-  }
+  .falt:hover { border-color: var(--brand-muted); }
+  .falt:focus-visible { border-color: var(--brand-black); }
   .falt.har-fel,
   .behover-val {
     border-color: var(--brand-black);
-    box-shadow: 0 0 0 3px var(--brand-grey-line);
+    box-shadow: 0 0 0 3px var(--brand-line);
   }
   .faltfel {
+    font-size: 0.8125rem;
+    font-weight: 500;
     color: var(--brand-black);
-    font-size: 0.875rem;
-    font-weight: 700;
-  }
-  .faltfel::before {
-    content: '⚠ ';
   }
 }
 
 /* ---------------------------------------------------------- Rörelse -- */
+/*
+ * Återhållsam: korta sträckor, mjuk kurva, inget som studsar. Rörelsen
+ * ska kännas som att innehållet sätter sig, inte som en effekt.
+ */
 
-/* Entré vid sidladdning: hero-raderna stiger in i tur och ordning */
 @keyframes stig-in {
-  from { opacity: 0; transform: translateY(28px); }
+  from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: none; }
 }
 html.js [data-entre] {
   opacity: 0;
-  animation: stig-in 700ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: stig-in 620ms cubic-bezier(0.16, 1, 0.3, 1) forwards;
   animation-delay: var(--fordrojning, 0ms);
 }
 
-/* Scroll-reveal med stagger via --fordrojning */
 html.js [data-reveal] {
   opacity: 0;
-  transform: translateY(20px);
+  transform: translateY(12px);
   transition:
-    opacity 620ms cubic-bezier(0.16, 1, 0.3, 1) var(--fordrojning, 0ms),
-    transform 620ms cubic-bezier(0.16, 1, 0.3, 1) var(--fordrojning, 0ms);
+    opacity 560ms cubic-bezier(0.16, 1, 0.3, 1) var(--fordrojning, 0ms),
+    transform 560ms cubic-bezier(0.16, 1, 0.3, 1) var(--fordrojning, 0ms);
 }
 html.js [data-reveal].syns {
   opacity: 1;
   transform: none;
 }
 
-/* Löpande textremsa – rullar dubbletten sömlöst */
-@keyframes marquee {
-  from { transform: translateX(0); }
-  to   { transform: translateX(-50%); }
-}
-.marquee-spar {
-  display: flex;
-  width: max-content;
-  animation: marquee var(--marquee-tid, 42s) linear infinite;
-  /*
-   * Står stilla tills remsan syns i vyn. Det sparar batteri när den är
-   * utanför skärmen och låter sidan "sätta sig" visuellt vid inladdning
-   * i stället för att dra ner Speed Index med en evig rörelse.
-   */
-  animation-play-state: paused;
-}
-.marquee.rullar .marquee-spar {
-  animation-play-state: running;
-}
-.marquee:hover .marquee-spar {
-  animation-play-state: paused;
-}
-
-/* Pulserande punkt i "Öppet nu"-skylten */
-@keyframes puls {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50%      { opacity: 0.35; transform: scale(0.8); }
-}
-.punkt-puls {
-  animation: puls 2s ease-in-out infinite;
-}
-
-/* Korgbadge när något läggs till */
-@keyframes korg-puls {
-  0%   { transform: scale(1); }
-  40%  { transform: scale(1.5); }
-  100% { transform: scale(1); }
-}
-.korg-puls {
-  animation: korg-puls 380ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Modalens in- och uttoning */
 @keyframes modal-in {
-  from { opacity: 0; transform: translateY(24px) scale(0.97); }
+  from { opacity: 0; transform: translateY(12px); }
   to   { opacity: 1; transform: none; }
 }
 @keyframes backdrop-in {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
-dialog[open] {
-  animation: modal-in 320ms cubic-bezier(0.16, 1, 0.3, 1);
-}
-dialog[open]::backdrop {
-  animation: backdrop-in 320ms ease;
-}
+dialog[open] { animation: modal-in 300ms cubic-bezier(0.16, 1, 0.3, 1); }
+dialog[open]::backdrop { animation: backdrop-in 300ms ease; }
 
-/*
- * Stäng av allt ovanstående för den som bett om mindre rörelse.
- * Innehållet ska då synas direkt, inte vara osynligt.
- */
 @media (prefers-reduced-motion: reduce) {
   html.js [data-entre],
   html.js [data-reveal] {
@@ -287,57 +282,8 @@ dialog[open]::backdrop {
     animation: none;
     transition: none;
   }
-  .marquee-spar,
-  .punkt-puls,
-  .korg-puls,
   dialog[open],
-  dialog[open]::backdrop {
-    animation: none;
-  }
-  .btn-primary,
-  .btn-primary::before,
-  .btn-sekundar {
-    transition: none;
-  }
-  .btn-primary:active {
-    transform: none;
-  }
-}
-
-/* ------------------------------------------------------- Menykort -- */
-/*
- * Kortet vänder från vitt till svart vid hover. Beskrivningstexten och
- * knappen måste följa med, annars blir grå text på svart oläslig.
- */
-.kort .text-grey-text {
-  transition: color 200ms ease;
-}
-.kort:hover .text-grey-text {
-  color: color-mix(in srgb, var(--brand-white) 75%, transparent);
-}
-.kort:hover .btn-primary {
-  background: var(--brand-white);
-  color: var(--brand-black);
-  border-color: var(--brand-white);
-}
-.kort:hover .btn-primary::before {
-  background: var(--brand-black);
-}
-.kort:hover .btn-primary:hover,
-.kort:hover .btn-primary:focus-visible {
-  color: var(--brand-white);
-}
-.kort:hover .falt {
-  background: var(--brand-black);
-  color: var(--brand-white);
-  border-color: var(--brand-white);
-}
-.kort:hover :focus-visible {
-  outline-color: var(--brand-white);
-}
-@media (prefers-reduced-motion: reduce) {
-  .kort,
-  .kort .text-grey-text {
-    transition: none;
-  }
+  dialog[open]::backdrop { animation: none; }
+  .btn, .btn-linje, .btn-plus, .lank::after, .falt { transition: none; }
+  .btn:active { transform: none; }
 }

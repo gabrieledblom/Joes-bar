@@ -6,63 +6,66 @@ import { harTelefon, site } from '../config/site';
   titel={`Integritetspolicy – ${site.namn}`}
   beskrivning={`Så hanterar ${site.namn} i ${site.ort} dina personuppgifter när du beställer mat: vad som samlas in, varför och hur länge.`}
 >
-  <article class="mx-auto max-w-prose px-4 py-12 sm:py-16">
-    <h1 class="font-display text-4xl text-black">Integritetspolicy</h1>
-    <p class="mt-2 text-sm text-grey-text">Senast uppdaterad 21 augusti 2026</p>
+  <article class="ram max-w-2xl pt-20 pb-16 sm:pt-28">
+    <p class="etikett">Integritetspolicy</p>
+    <h1 class="mt-6 text-[clamp(2rem,5vw,3rem)]">Så hanterar vi dina uppgifter</h1>
+    <p class="mt-4 text-sm text-muted">Senast uppdaterad 21 augusti 2026</p>
 
-    <div class="mt-8 space-y-8 leading-relaxed">
+    <div class="mt-14 space-y-12">
       <section>
-        <h2 class="font-display text-2xl text-black">Vad vi samlar in</h2>
-        <p class="mt-3">
-          När du beställer mat för avhämtning behandlar vi de uppgifter du själv lämnar:
-          ditt namn, ditt mobilnummer, beställningens innehåll, önskad avhämtningstid
-          och eventuell kommentar (till exempel allergier). Vi samlar inte in något mer,
+        <h2 class="text-xl font-medium">Vad vi samlar in</h2>
+        <p class="mt-3 leading-relaxed text-muted">
+          När du beställer mat för avhämtning behandlar vi de uppgifter du själv
+          lämnar: ditt namn, ditt mobilnummer, beställningens innehåll, önskad
+          avhämtningstid och eventuell kommentar. Vi samlar inte in något mer,
           och sajten använder inga spårningskakor.
         </p>
       </section>
 
       <section>
-        <h2 class="font-display text-2xl text-black">Varför</h2>
-        <p class="mt-3">
-          Uppgifterna behövs för att kunna ta emot, bekräfta och lämna ut din beställning:
-          namnet ropas upp vid disken, och mobilnumret används för att skicka
-          orderbekräftelsen via SMS. Rättslig grund är att fullgöra avtalet med dig
-          (artikel 6.1 b GDPR).
+        <h2 class="text-xl font-medium">Varför</h2>
+        <p class="mt-3 leading-relaxed text-muted">
+          Uppgifterna behövs för att ta emot, bekräfta och lämna ut din
+          beställning: namnet ropas upp vid disken och mobilnumret används för
+          orderbekräftelsen via SMS. Rättslig grund är att fullgöra avtalet med
+          dig (artikel 6.1 b GDPR).
         </p>
       </section>
 
       <section>
-        <h2 class="font-display text-2xl text-black">Hur länge</h2>
-        <p class="mt-3">
-          Beställningar loggas som säkerhetsnät om ett SMS inte skulle komma fram.
-          Mobilnummer rensas ur loggen efter 30 dagar; kvar blir bara ordernummer,
-          rätter och belopp för enkel bokföringskontroll. Vi säljer aldrig uppgifter
-          vidare och använder dem inte för marknadsföring.
+        <h2 class="text-xl font-medium">Hur länge</h2>
+        <p class="mt-3 leading-relaxed text-muted">
+          Beställningar loggas som säkerhetsnät om ett SMS inte kommer fram.
+          Loggposten med namn, mobilnummer och kommentar försvinner automatiskt
+          efter 30 dagar; kvar blir ordernummer, rätter och belopp för
+          bokföringskontroll. Vi säljer aldrig uppgifter vidare och använder dem
+          inte för marknadsföring.
         </p>
       </section>
 
       <section>
-        <h2 class="font-display text-2xl text-black">Vilka som hjälper oss</h2>
-        <p class="mt-3">
-          SMS:en skickas via <strong>46elks AB</strong> (svensk leverantör), sajten
-          driftas på <strong>Vercel</strong> och orderloggen lagras hos
-          <strong>Upstash</strong>. Alla tre behandlar uppgifter för vår räkning
-          som personuppgiftsbiträden och får inte använda dem till något annat.
+        <h2 class="text-xl font-medium">Vilka som hjälper oss</h2>
+        <p class="mt-3 leading-relaxed text-muted">
+          SMS:en skickas via <strong class="font-medium text-black">46elks AB</strong> (svensk
+          leverantör), sajten driftas på <strong class="font-medium text-black">Vercel</strong> och
+          orderloggen lagras hos <strong class="font-medium text-black">Upstash</strong>. Alla tre
+          behandlar uppgifter för vår räkning som personuppgiftsbiträden och får
+          inte använda dem till något annat.
         </p>
       </section>
 
       <section>
-        <h2 class="font-display text-2xl text-black">Dina rättigheter</h2>
-        <p class="mt-3">
-          Du har rätt att få veta vilka uppgifter vi har om dig, få dem rättade eller
-          raderade. Hör av dig till oss{harTelefon && <> på <a class="font-semibold text-black underline underline-offset-4" href={`tel:${site.telefonE164}`}>{site.telefon}</a></>}{site.epost && <> eller <a class="font-semibold text-black underline underline-offset-4" href={`mailto:${site.epost}`}>{site.epost}</a></>} så
+        <h2 class="text-xl font-medium">Dina rättigheter</h2>
+        <p class="mt-3 leading-relaxed text-muted">
+          Du har rätt att få veta vilka uppgifter vi har om dig, få dem rättade
+          eller raderade. Hör av dig till oss{harTelefon && <> på <a class="lank lank-in text-black" href={`tel:${site.telefonE164}`}>{site.telefon}</a></>}{site.epost && <> eller <a class="lank lank-in text-black" href={`mailto:${site.epost}`}>{site.epost}</a></>} så
           hjälper vi dig. Du kan också klaga hos Integritetsskyddsmyndigheten (IMY).
         </p>
       </section>
 
       <section>
-        <h2 class="font-display text-2xl text-black">Personuppgiftsansvarig</h2>
-        <p class="mt-3">
+        <h2 class="text-xl font-medium">Personuppgiftsansvarig</h2>
+        <p class="mt-3 leading-relaxed text-muted">
           {site.namn}, {site.adress.postort}{site.orgnr && <>, org.nr {site.orgnr}</>}.
         </p>
       </section>

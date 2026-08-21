@@ -51,21 +51,30 @@ fallback. Nycklar läggs i Vercel – aldrig i repot.
 - `npm run verify` – kör check, test, build och e2e i rätt ordning.
   Använd den före push: e2e ensam kör mot en redan byggd `dist/`.
 - Lighthouse mobil: Performance / Accessibility / Best Practices 100 på
-  alla sidor. SEO visar 66 så länge indexeringen är avstängd – enda
+  alla sidor, CLS 0. SEO visar 66 så länge indexeringen är avstängd – enda
   fallerande audit är `is-crawlable`, alltså noindex-spärren nedan. Den
   går till 100 i samma stund flaggan slås på.
 
 ## Design och rörelse
 
-Monokromt system i vitt, svart och grått – tokens i `src/config/theme.ts`.
-Schackrutmönstret från den tryckta menyn är signaturelementet; ytan måste
-vara minst `--checker-storlek` hög, annars syns bara en rad och mönstret
-läser som streck.
+Nordisk minimalism i vitt, svart och grått – tokens i `src/config/theme.ts`.
+Systemet vilar på tre saker: gott om luft, hårfina linjer i stället för
+ramar och rutor, och en enda typsnittsfamilj (Schibsted Grotesk) där
+vikten bär hierarkin. Inga skuggor, inga fyllda ytor som inte behövs.
+Menyn sätts som en lugn lista med ledarlinje fram till priset, inte som kort.
 
-Rörelsen ligger samlad i `src/styles/global.css`: hero-entré, staggered
-scroll-reveal via `--fordrojning`, löpande textremsa (`Marquee.astro`,
-rullar bara när den syns), invert-hover på menykort och svep på knappar.
-Allt tystnar under `prefers-reduced-motion`.
+Två fallgropar som är lätta att återinföra:
+
+- **`muted` är kalibrerad mot `surface`, inte mot vitt.** Ett ljusare grått
+  klarar 4,5:1 mot vitt men faller på den grå ytan.
+- **Animera aldrig in en stor rubrik från `opacity: 0`.** På en vit sida
+  står skärmen tom tills animationen är klar; det sänkte Speed Index från
+  1,1 s till 4,2 s. Rubrikerna målas direkt, stödtexterna får röra sig.
+
+Rörelsen ligger samlad i `src/styles/global.css`: kort entré på
+stödelement, staggered scroll-reveal via `--fordrojning`, linjer som växer
+fram under länkar och en dämpad modalanimation. Allt tystnar under
+`prefers-reduced-motion`.
 
 ## Beställningsmodalen
 

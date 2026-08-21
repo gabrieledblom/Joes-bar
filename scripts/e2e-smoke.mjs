@@ -71,10 +71,10 @@ try {
 
   await page.goto(`${BAS}/meny`);
   // Samma rätt igen från ett menykort – antalet ska slås ihop till en rad
-  await page.locator('[data-menykort][data-ratt-id="husets-original"] [data-lagg-till]').click();
+  await page.locator('[data-menyrad][data-ratt-id="husets-original"] [data-lagg-till]').click();
 
   // Tillval krävs innan tallriken kan läggas till
-  const kebabkort = page.locator('[data-menykort][data-ratt-id="kebabtallrik"]');
+  const kebabkort = page.locator('[data-menyrad][data-ratt-id="kebabtallrik"]');
   await kebabkort.locator('[data-lagg-till]').click();
   if (await kebabkort.locator('[data-tillval].behover-val').count()) ok('tillval krävs före "Lägg till"');
   else misslyckat('tillval krävs före "Lägg till"', 'ingen markering på select');

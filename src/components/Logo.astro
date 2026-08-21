@@ -1,24 +1,23 @@
 ---
 /**
- * Tillfällig återskapning av ordmärket i ren typografi/markup.
- * TODO: ersätt med riktig SVG eller ≥1000 px transparent PNG från ägaren.
+ * Ordmärket satt i ren typografi. Spärrad versal i medelvikt – lugnare
+ * än en tung display-logotyp och passar den nordiska hållningen.
+ * TODO: ersätt med riktig SVG från ägaren när den finns.
  */
 interface Props {
-  /** 'rad' = en rad (header), 'staplad' = tre rader som tryckta logotypen */
   variant?: 'rad' | 'staplad';
   class?: string;
 }
 const { variant = 'rad', class: klass = '' } = Astro.props;
 ---
 {variant === 'rad' ? (
-  <span class:list={['inline-flex items-baseline gap-2', klass]}>
-    <span class="font-display text-2xl leading-none tracking-wide">JOE'S BAR</span>
-    <span class="hidden text-[0.6rem] font-semibold tracking-[0.35em] uppercase min-[400px]:inline">Mat & Dryck</span>
+  <span class:list={['inline-flex items-baseline gap-2.5', klass]}>
+    <span class="text-[0.95rem] font-semibold tracking-[0.18em] uppercase">Joe's Bar</span>
+    <span class="hidden text-[0.6rem] tracking-[0.2em] uppercase text-muted min-[420px]:inline">Järna</span>
   </span>
 ) : (
-  <span class:list={['inline-flex flex-col leading-[0.92]', klass]}>
-    <span class="font-display tracking-wide" style="font-size:2.6em">JOE'S</span>
-    <span class="font-display tracking-[0.18em]" style="font-size:2.6em">BAR</span>
-    <span class="mt-[0.5em] text-[0.72em] font-semibold tracking-[0.42em] uppercase">Mat & Dryck</span>
+  <span class:list={['inline-flex flex-col gap-1.5', klass]}>
+    <span class="text-lg font-semibold tracking-[0.18em] uppercase">Joe's Bar</span>
+    <span class="text-[0.65rem] tracking-[0.2em] uppercase text-muted">Mat &amp; dryck · Järna</span>
   </span>
 )}

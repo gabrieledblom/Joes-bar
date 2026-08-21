@@ -1,38 +1,23 @@
 ---
-import Checkerboard from '../../components/Checkerboard.astro';
 import Layout from '../../components/Layout.astro';
 import { harTelefon, site } from '../../config/site';
 ---
 <Layout
   titel={`Beställ mat – ${site.namn} i ${site.ort}`}
   beskrivning={`Beställ mat för avhämtning hos ${site.namn} i ${site.ort}. Välj tid, få bekräftelse via SMS och betala när du hämtar.`}
-  dolBestallCta
+  utanModal
 >
-  <section class="pa-svart bg-black text-white">
-    <div class="mx-auto max-w-3xl px-4 pt-12 pb-10 sm:pt-16">
-      <h1 class="font-display text-[clamp(2.6rem,7vw,4rem)] leading-[0.95]">Beställ mat</h1>
-      <p class="mt-4 text-lg text-white/75">
-        Avhämtning hos oss i {site.ort}. <strong>Du betalar när du hämtar</strong> – ingen betalning online.
-      </p>
-    </div>
-  </section>
-  <Checkerboard />
+  <div class="ram max-w-2xl pt-20 pb-16 sm:pt-28">
+    <p class="etikett">Kassa</p>
+    <h1 class="mt-6 text-[clamp(2rem,5vw,3rem)]">Beställ mat</h1>
+    <p class="mt-5 text-muted">
+      Avhämtning i {site.ort}. <span class="text-black">Du betalar när du hämtar</span> – ingen betalning online.
+    </p>
 
-  <div class="mx-auto max-w-3xl px-4 py-10 sm:py-14">
-    <script is:inline>
-      // Körs synkront under parsning: avgör tom/fylld korg FÖRE första
-      // målningen så att sektionerna inte hoppar in efteråt (CLS).
-      try {
-        var jbKorg = JSON.parse(sessionStorage.getItem('jb-korg') || '[]');
-        document.documentElement.dataset.korg = Array.isArray(jbKorg) && jbKorg.length ? 'fylld' : 'tom';
-      } catch (e) {
-        document.documentElement.dataset.korg = 'tom';
-      }
-    </script>
     <noscript>
-      <div class="rounded-[var(--brand-radius-kort)] border-2 border-grey-line bg-white p-6">
-        <h2 class="font-display text-2xl text-black">Onlinebeställning kräver JavaScript</h2>
-        <p class="mt-2">
+      <div class="mt-10 border border-line p-6">
+        <h2 class="font-medium">Onlinebeställning kräver JavaScript</h2>
+        <p class="mt-2 text-sm text-muted">
           {harTelefon
             ? `Ring oss på ${site.telefon} så tar vi din beställning per telefon.`
             : 'Ring oss så tar vi din beställning per telefon – numret hittar du på vår Facebook-sida.'}
@@ -41,88 +26,85 @@ import { harTelefon, site } from '../../config/site';
     </noscript>
 
     <!-- Varukorgen -->
-    <section aria-labelledby="korg-rubrik" data-js-behov>
-      <h2 id="korg-rubrik" class="font-display text-2xl text-black sm:text-3xl">Din varukorg</h2>
+    <section aria-labelledby="korg-rubrik" data-js-behov class="mt-14">
+      <h2 id="korg-rubrik" class="etikett">Din beställning</h2>
 
-      <div data-korg-tom class="mt-5 rounded-[var(--brand-radius-kort)] border-2 border-dashed border-grey-line p-8 text-center">
-        <p class="text-lg font-semibold">Korgen är tom.</p>
-        <p class="mt-1 text-grey-text">Lägg till något gott från menyn först.</p>
-        <a href="/meny" class="btn-primary mt-5">Till menyn</a>
+      <div data-korg-tom class="mt-6 border border-line px-6 py-12 text-center">
+        <p class="font-medium">Korgen är tom</p>
+        <p class="mt-1.5 text-sm text-muted">Lägg till något gott från menyn först.</p>
+        <a href="/meny" class="btn mt-6">Till menyn</a>
       </div>
 
-      <div data-korg-innehall class="mt-5">
-        <ul data-korg-rader class="min-h-40 divide-y divide-grey-line rounded-[var(--brand-radius-kort)] border-2 border-grey-line bg-white"></ul>
-        <p class="mt-4 flex items-baseline justify-between text-xl">
-          <span class="font-semibold">Summa</span>
-          <span class="pris" data-korg-summa>–</span>
-        </p>
-        <p class="mt-1 text-sm text-grey-text">Betalas på plats vid avhämtning.</p>
+      <div data-korg-innehall class="mt-6">
+        <ul data-korg-rader class="min-h-32"></ul>
+        <div class="flex items-baseline justify-between gap-6 border-t border-black pt-4">
+          <span class="font-medium">Summa</span>
+          <span class="pris text-xl font-medium" data-korg-summa>–</span>
+        </div>
+        <p class="mt-2 text-sm text-muted">Betalas på plats vid avhämtning.</p>
       </div>
     </section>
 
     <!-- Utcheckning -->
-    <section aria-labelledby="utcheckning-rubrik" data-utcheckning class="mt-12">
-      <h2 id="utcheckning-rubrik" class="font-display text-2xl text-black sm:text-3xl">Dina uppgifter</h2>
+    <section aria-labelledby="utcheckning-rubrik" data-utcheckning class="mt-16">
+      <h2 id="utcheckning-rubrik" class="etikett">Dina uppgifter</h2>
 
-      <div class="relative mt-5">
+      <div class="relative mt-6">
         <div
           data-last-meddelande
           hidden
-          class="pa-svart absolute inset-0 z-10 rounded-[var(--brand-radius-kort)] bg-black/95 p-6 text-lg font-semibold text-white"
+          class="absolute inset-0 z-10 flex items-center rounded-[var(--brand-radie-stor)] border border-line bg-white/95 p-6 backdrop-blur-sm"
           role="status"
         ></div>
 
-        <form data-order-form novalidate class="space-y-5">
-        <fieldset data-falt class="space-y-5 disabled:opacity-60">
-          <div>
-            <label for="namn" class="mb-1.5 block font-semibold">Namn</label>
-            <input id="namn" name="namn" type="text" class="falt" autocomplete="name" maxlength="60" required />
-            <p data-fel-for="namn" class="faltfel mt-1" hidden></p>
-          </div>
-          <div>
-            <label for="mobil" class="mb-1.5 block font-semibold">Mobilnummer</label>
-            <input
-              id="mobil" name="mobil" type="tel" class="falt" autocomplete="tel"
-              placeholder="07X-XXX XX XX" maxlength="17" required
-              aria-describedby="mobil-hjalp"
-            />
-            <p id="mobil-hjalp" class="mt-1 text-sm text-grey-text">Orderbekräftelsen skickas hit via SMS.</p>
-            <p data-fel-for="mobil" class="faltfel mt-1" hidden></p>
-          </div>
-          <div>
-            <label for="tid" class="mb-1.5 block font-semibold">Avhämtningstid</label>
-            <select id="tid" name="tid" class="falt" required></select>
-            <p data-fel-for="tid" class="faltfel mt-1" hidden></p>
-          </div>
-          <div>
-            <label for="kommentar" class="mb-1.5 block font-semibold">
-              Kommentar <span class="font-normal text-grey-text">(valfritt – t.ex. allergier)</span>
-            </label>
-            <textarea id="kommentar" name="kommentar" class="falt" rows="3" maxlength="300"></textarea>
-          </div>
+        <form data-order-form novalidate>
+          <fieldset data-falt class="space-y-6 disabled:opacity-50">
+            <div>
+              <label for="namn" class="mb-2 block text-sm font-medium">Namn</label>
+              <input id="namn" name="namn" type="text" class="falt" autocomplete="name" maxlength="60" required />
+              <p data-fel-for="namn" class="faltfel mt-1.5" hidden></p>
+            </div>
+            <div>
+              <label for="mobil" class="mb-2 block text-sm font-medium">Mobilnummer</label>
+              <input
+                id="mobil" name="mobil" type="tel" class="falt" autocomplete="tel"
+                placeholder="07X-XXX XX XX" maxlength="17" required aria-describedby="mobil-hjalp"
+              />
+              <p id="mobil-hjalp" class="mt-1.5 text-sm text-muted">Orderbekräftelsen skickas hit via SMS.</p>
+              <p data-fel-for="mobil" class="faltfel mt-1.5" hidden></p>
+            </div>
+            <div>
+              <label for="tid" class="mb-2 block text-sm font-medium">Avhämtningstid</label>
+              <select id="tid" name="tid" class="falt" required></select>
+              <p data-fel-for="tid" class="faltfel mt-1.5" hidden></p>
+            </div>
+            <div>
+              <label for="kommentar" class="mb-2 block text-sm font-medium">
+                Kommentar <span class="font-normal text-muted">(valfritt – t.ex. allergier)</span>
+              </label>
+              <textarea id="kommentar" name="kommentar" class="falt" rows="3" maxlength="300"></textarea>
+            </div>
 
-          <!-- Honeypot: människor ser eller fyller aldrig i det här fältet -->
-          <div class="absolute -left-[9999px] top-auto" aria-hidden="true">
-            <label for="webbplats">Lämna det här fältet tomt</label>
-            <input id="webbplats" name="webbplats" type="text" tabindex="-1" autocomplete="off" />
-          </div>
+            <!-- Honeypot: människor ser eller fyller aldrig i det här fältet -->
+            <div class="absolute -left-[9999px] top-auto" aria-hidden="true">
+              <label for="webbplats">Lämna det här fältet tomt</label>
+              <input id="webbplats" name="webbplats" type="text" tabindex="-1" autocomplete="off" />
+            </div>
 
-          <div
-            data-form-fel
-            role="alert"
-            aria-live="assertive"
-            hidden
-            class="rounded-md border-2 border-[#b3261e] bg-white p-4 font-semibold text-[#8c1d16]"
-          ></div>
+            <div
+              data-form-fel
+              role="alert"
+              aria-live="assertive"
+              hidden
+              class="border border-black p-4 text-sm font-medium"
+            ></div>
 
-          <button type="submit" data-skicka class="btn-primary w-full !py-3.5 text-lg">
-            Skicka beställning
-          </button>
-          <p class="text-center text-sm text-grey-text">
-            Genom att beställa godkänner du att vi hanterar dina uppgifter enligt vår
-            <a class="underline underline-offset-4" href="/integritetspolicy">integritetspolicy</a>.
-          </p>
-        </fieldset>
+            <button type="submit" data-skicka class="btn w-full !py-3.5">Skicka beställning</button>
+            <p class="text-center text-sm text-muted">
+              Genom att beställa godkänner du vår
+              <a class="lank lank-in text-black" href="/integritetspolicy">integritetspolicy</a>.
+            </p>
+          </fieldset>
         </form>
       </div>
     </section>
@@ -138,6 +120,17 @@ import { harTelefon, site } from '../../config/site';
       display: none;
     }
   </style>
+
+  <script is:inline>
+    // Körs synkront under parsning: avgör tom/fylld korg FÖRE första
+    // målningen så att sektionerna inte hoppar in efteråt (CLS).
+    try {
+      var jbKorg = JSON.parse(sessionStorage.getItem('jb-korg') || '[]');
+      document.documentElement.dataset.korg = Array.isArray(jbKorg) && jbKorg.length ? 'fylld' : 'tom';
+    } catch (e) {
+      document.documentElement.dataset.korg = 'tom';
+    }
+  </script>
 
   <script>
     import { rattMedId } from '../../config/menu';
@@ -156,7 +149,6 @@ import { harTelefon, site } from '../../config/site';
     const tidSelect = $<HTMLSelectElement>('#tid');
     const formFel = $('[data-form-fel]');
     const skickaKnapp = $<HTMLButtonElement>('[data-skicka]');
-
 
     function visaFaltfel(namn: string, text: string | null) {
       const el = document.querySelector<HTMLElement>(`[data-fel-for="${namn}"]`);
@@ -182,48 +174,54 @@ import { harTelefon, site } from '../../config/site';
         summa += ratt.pris * rad.antal;
 
         const li = document.createElement('li');
-        li.className = 'flex items-center gap-3 p-4';
+        li.className = 'flex items-center gap-4 border-t border-line py-4 first:border-t-0';
 
         const info = document.createElement('div');
         info.className = 'grow';
         const namn = document.createElement('p');
-        namn.className = 'font-semibold';
+        namn.className = 'font-medium';
         namn.textContent = ratt.namn;
         info.append(namn);
         if (rad.tillval) {
           const t = document.createElement('p');
-          t.className = 'text-sm text-grey-text';
+          t.className = 'mt-0.5 text-sm text-muted';
           t.textContent = rad.tillval;
           info.append(t);
         }
 
         const stegare = document.createElement('div');
-        stegare.className = 'flex items-center gap-1';
+        stegare.className = 'flex items-center gap-2';
         const minus = document.createElement('button');
         minus.type = 'button';
-        minus.className = 'h-9 w-9 rounded-md border-2 border-grey-line font-bold hover:bg-white';
+        minus.className = 'btn-plus';
         minus.textContent = '−';
         minus.setAttribute('aria-label', `Minska antal ${ratt.namn}`);
         minus.addEventListener('click', () => { andraAntal(index, -1); renderaKorg(); });
         const antal = document.createElement('span');
-        antal.className = 'w-8 text-center font-bold tabular-nums';
+        antal.className = 'w-6 text-center tabular-nums';
         antal.textContent = String(rad.antal);
         const plus = document.createElement('button');
         plus.type = 'button';
-        plus.className = 'h-9 w-9 rounded-md border-2 border-grey-line font-bold hover:bg-white';
+        plus.className = 'btn-plus';
         plus.textContent = '+';
         plus.setAttribute('aria-label', `Öka antal ${ratt.namn}`);
         plus.addEventListener('click', () => { andraAntal(index, 1); renderaKorg(); });
         stegare.append(minus, antal, plus);
 
         const pris = document.createElement('p');
-        pris.className = 'pris w-20 text-right';
-        pris.textContent = `${ratt.pris * rad.antal}:-`;
+        pris.className = 'pris w-16 text-right';
+        pris.textContent = `${ratt.pris * rad.antal}`;
 
         li.append(info, stegare, pris);
         raderEl.append(li);
       });
       summaEl.textContent = `${summa} kr`;
+    }
+
+    function lasFormular(text: string) {
+      lastMeddelande.hidden = false;
+      lastMeddelande.textContent = text;
+      falt.disabled = true;
     }
 
     function fyllTider() {
@@ -262,19 +260,12 @@ import { harTelefon, site } from '../../config/site';
       if (tidigareVal && slottar.some((s) => s.value === tidigareVal)) tidSelect.value = tidigareVal;
     }
 
-    function lasFormular(text: string) {
-      lastMeddelande.hidden = false;
-      lastMeddelande.textContent = text;
-      falt.disabled = true;
-    }
-
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       formFel.hidden = true;
 
       const namn = $<HTMLInputElement>('#namn').value.trim();
-      const mobilRatt = $<HTMLInputElement>('#mobil').value;
-      const mobil = normaliseraMobil(mobilRatt);
+      const mobil = normaliseraMobil($<HTMLInputElement>('#mobil').value);
       const tid = tidSelect.value;
       const kommentar = $<HTMLTextAreaElement>('#kommentar').value.trim();
       const honeypot = $<HTMLInputElement>('#webbplats').value;

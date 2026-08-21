@@ -1,10 +1,8 @@
 ---
 import AddToCart from '../components/AddToCart.astro';
-import Checkerboard from '../components/Checkerboard.astro';
 import Layout from '../components/Layout.astro';
 import MapEmbed from '../components/MapEmbed.astro';
-import Marquee from '../components/Marquee.astro';
-import MenuCard from '../components/MenuCard.astro';
+import MenuItem from '../components/MenuItem.astro';
 import { meny } from '../config/menu';
 import { ordering } from '../config/ordering';
 import { harTelefon, site } from '../config/site';
@@ -21,88 +19,70 @@ const harAdress = !site.adress.gata.includes('TODO');
   jsonLd={restaurangJsonLd()}
 >
   <!-- Hero -->
-  <section class="pa-svart relative overflow-hidden bg-black text-white">
-    <div class="mx-auto max-w-6xl px-4 pt-14 pb-16 sm:pt-20 sm:pb-24">
-      <p data-entre class="text-sm font-semibold tracking-[0.35em] uppercase text-white/75">
-        {site.namn} · {site.tagline}
-      </p>
-      <h1 class="mt-4 max-w-3xl font-display text-[clamp(2.8rem,9vw,5.5rem)] leading-[0.95]">
-        <span data-entre class="block" style="--fordrojning: 90ms">Mat & dryck</span>
-        <span data-entre class="block" style="--fordrojning: 180ms">i {site.ort}</span>
-      </h1>
-      <p data-entre style="--fordrojning: 280ms" class="mt-6 max-w-xl text-lg leading-relaxed text-white/75">
-        Kvarterets restaurang och bar – husmanskost, burgare, kebab och sallader.
-        Beställ för avhämtning online, klart på cirka {ordering.forberedelseMin} minuter. Du betalar när du hämtar.
-      </p>
-      <div data-entre style="--fordrojning: 380ms" class="mt-8 flex flex-wrap gap-4">
-        <a href="/bestall" data-oppna-order class="btn-primary !px-7 !py-3.5 text-lg">Beställ mat</a>
-        <a href="/meny" class="btn-sekundar text-white">Se menyn</a>
-      </div>
-    </div>
-  </section>
-  <Marquee />
-
-  <!-- Populära rätter -->
-  <section class="mx-auto max-w-6xl px-4 py-14 sm:py-20" aria-labelledby="popular-rubrik">
-    <div class="flex flex-wrap items-end justify-between gap-4" data-reveal>
-      <h2 id="popular-rubrik" class="font-display text-3xl text-black sm:text-4xl">Favoriter från köket</h2>
-      <a href="/meny" class="font-semibold text-black underline underline-offset-4 hover:text-grey-text">Hela menyn →</a>
-    </div>
-    <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-      {populara.map((ratt, i) => <MenuCard ratt={ratt} fordrojning={i * 90} />)}
+  <section class="ram pt-20 pb-24 sm:pt-32 sm:pb-32">
+    <p data-entre class="etikett">{site.tagline} · {site.ort}</p>
+    <!--
+      Rubriken animeras med flit inte in: på en vit sida betyder opacity 0
+      att skärmen står tom tills animationen är klar, vilket både känns
+      trögt och sänker Speed Index rejält. Stödtexterna får röra sig.
+    -->
+    <h1 class="mt-6 max-w-3xl text-[clamp(2.5rem,7vw,4.5rem)]">
+      <span class="block">Kvarterets restaurang</span>
+      <span class="block text-muted">och bar i {site.ort}</span>
+    </h1>
+    <p data-entre style="--fordrojning: 120ms" class="mt-8 max-w-md text-lg leading-relaxed text-muted">
+      Husmanskost, burgare, kebab och sallader. Beställ för avhämtning –
+      klart på cirka {ordering.forberedelseMin} minuter, du betalar när du hämtar.
+    </p>
+    <div data-entre style="--fordrojning: 200ms" class="mt-10 flex flex-wrap items-center gap-3">
+      <a href="/bestall" data-oppna-order class="btn">Beställ mat</a>
+      <a href="/meny" class="btn-linje">Se hela menyn</a>
     </div>
   </section>
 
-  <!-- Öppettider -->
-  <section class="pa-svart bg-black text-white" aria-labelledby="oppettider-rubrik">
-    <Checkerboard />
-    <div class="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:py-20 lg:grid-cols-2">
-      <div data-reveal>
-        <h2 id="oppettider-rubrik" class="font-display text-3xl sm:text-4xl">Öppettider</h2>
-        <p class="mt-4 max-w-md text-white/75">
-          Sista beställning för avhämtning tas emot {ordering.stoppForeStangningMin} minuter före stängning.
-        </p>
-        <p class="mt-3 max-w-md text-white/75">
-          Fredag och lördag har vi öppet till 01:00 – perfekt efter karaoken.
-        </p>
-      </div>
-      <dl class="max-w-md">
-        {rader.map((r, i) => (
-          <div
-            class="flex justify-between gap-6 border-b border-white/25 py-2.5 text-lg"
-            data-reveal
-            style={`--fordrojning: ${i * 55}ms`}
-          >
+  <!-- Ett urval -->
+  <section class="ram pb-24 sm:pb-32" aria-labelledby="urval-rubrik">
+    <div class="flex flex-wrap items-baseline justify-between gap-4 border-b border-line pb-5" data-reveal>
+      <h2 id="urval-rubrik" class="text-2xl sm:text-3xl">Ett urval</h2>
+      <a href="/meny" class="lank lank-in text-sm">Hela menyn</a>
+    </div>
+    <ul class="mt-2">
+      {populara.map((ratt, i) => <MenuItem ratt={ratt} fordrojning={i * 70} />)}
+    </ul>
+  </section>
+
+  <!-- Öppettider + hitta hit -->
+  <section class="ram grid gap-16 pb-24 sm:pb-32 lg:grid-cols-2 lg:gap-24">
+    <div data-reveal>
+      <p class="etikett">Öppettider</p>
+      <dl class="mt-6">
+        {rader.map((r) => (
+          <div class="flex items-baseline justify-between gap-6 border-t border-line py-3 first:border-t-0">
             <dt class="capitalize">{r.dag}</dt>
-            <dd class="pris">{r.tider}</dd>
+            <dd class="pris text-muted">{r.tider}</dd>
           </div>
         ))}
       </dl>
+      <p class="mt-6 max-w-sm text-sm text-muted">
+        Sista beställningen för avhämtning tas emot {ordering.stoppForeStangningMin} minuter
+        före stängning. Fredag och lördag har vi öppet till 01:00.
+      </p>
     </div>
-  </section>
 
-  <!-- Hitta hit -->
-  <section class="mx-auto max-w-6xl px-4 py-14 sm:py-20" aria-labelledby="hitta-rubrik">
-    <div class="grid items-start gap-10 lg:grid-cols-2">
-      <div data-reveal>
-        <h2 id="hitta-rubrik" class="font-display text-3xl text-black sm:text-4xl">Här ligger vi</h2>
-        <address class="mt-4 text-lg not-italic leading-relaxed">
-          {harAdress ? (
-            <>{site.adress.gata}<br />{site.adress.postnummer} {site.adress.postort}</>
-          ) : (
-            <>Mitt i {site.ort}, söder om Södertälje.<br />Gatuadress publiceras inom kort.</>
-          )}
-        </address>
-        {harTelefon && (
-          <p class="mt-3 text-lg">
-            <a class="font-semibold text-black underline underline-offset-4 hover:text-grey-text" href={`tel:${site.telefonE164}`}>{site.telefon}</a>
-          </p>
+    <div data-reveal>
+      <p class="etikett">Hitta hit</p>
+      <address class="mt-6 text-lg not-italic leading-relaxed">
+        {harAdress ? (
+          <>{site.adress.gata}<br />{site.adress.postnummer} {site.adress.postort}</>
+        ) : (
+          <>Mitt i {site.ort}, söder om Södertälje.<br />
+          <span class="text-muted">Gatuadress publiceras inom kort.</span></>
         )}
-        <p class="mt-6 max-w-md text-grey-text">
-          Frågor om menyn, allergier eller större sällskap? Hör av dig så hjälper vi till.
-        </p>
-      </div>
-      <div data-reveal>
+      </address>
+      {harTelefon && (
+        <p class="mt-3"><a class="lank lank-in" href={`tel:${site.telefonE164}`}>{site.telefon}</a></p>
+      )}
+      <div class="mt-8">
         <MapEmbed />
       </div>
     </div>

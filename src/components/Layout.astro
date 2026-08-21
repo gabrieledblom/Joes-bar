@@ -1,7 +1,6 @@
 ---
 import '../styles/global.css';
-import antonUrl from '@fontsource/anton/files/anton-latin-400-normal.woff2?url';
-import archivoUrl from '@fontsource-variable/archivo/files/archivo-latin-wght-normal.woff2?url';
+import fontUrl from '@fontsource-variable/schibsted-grotesk/files/schibsted-grotesk-latin-wght-normal.woff2?url';
 import { theme } from '../config/theme';
 import { site } from '../config/site';
 import Header from './Header.astro';
@@ -12,15 +11,14 @@ import StickyOrderCTA from './StickyOrderCTA.astro';
 interface Props {
   titel: string;
   beskrivning: string;
-  /** Dölj sticky "Beställ mat"-knappen (på själva beställningssidan) */
-  dolBestallCta?: boolean;
-  /** Extra JSON-LD att bädda in (sätts av startsidan) */
+  /** Stäng av modalen (på själva beställningssidan) */
+  utanModal?: boolean;
   jsonLd?: object;
 }
 
-const { titel, beskrivning, dolBestallCta = false, jsonLd } = Astro.props;
+const { titel, beskrivning, utanModal = false, jsonLd } = Astro.props;
 const f = theme.farger;
-const brandCss = `:root{--brand-white:${f.white};--brand-black:${f.black};--brand-grey-light:${f.greyLight};--brand-grey-line:${f.greyLine};--brand-grey-text:${f.greyText};--brand-font-display:${theme.typsnitt.display};--brand-font-body:${theme.typsnitt.body};--brand-radius-kort:${theme.radie.kort};--brand-radius-knapp:${theme.radie.knapp}}`;
+const brandCss = `:root{--brand-white:${f.white};--brand-black:${f.black};--brand-surface:${f.surface};--brand-line:${f.line};--brand-muted:${f.muted};--brand-sans:${theme.typsnitt.sans};--brand-radie-liten:${theme.radie.liten};--brand-radie-stor:${theme.radie.stor}}`;
 const kanonisk = new URL(Astro.url.pathname, site.url).href;
 ---
 <!doctype html>
@@ -37,32 +35,30 @@ const kanonisk = new URL(Astro.url.pathname, site.url).href;
     ) : (
       <meta name="robots" content="noindex, nofollow" />
     )}
-    <link rel="preload" as="font" type="font/woff2" href={antonUrl} crossorigin />
-    <link rel="preload" as="font" type="font/woff2" href={archivoUrl} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={fontUrl} crossorigin />
     <meta property="og:title" content={titel} />
     <meta property="og:description" content={beskrivning} />
     <meta property="og:type" content="website" />
     <meta property="og:url" content={kanonisk} />
     <meta property="og:locale" content="sv_SE" />
-    <meta name="theme-color" content={f.black} />
+    <meta name="theme-color" content={f.white} />
     <Fragment set:html={`<style>${brandCss}</style>`} />
     <script is:inline>document.documentElement.classList.add('js');</script>
     {jsonLd && <Fragment set:html={`<script type="application/ld+json">${JSON.stringify(jsonLd)}</script>`} />}
   </head>
-  <body class:list={['min-h-svh flex flex-col', !dolBestallCta && 'pb-20 sm:pb-0']}>
+  <body class:list={['flex min-h-svh flex-col', !utanModal && 'pb-[4.75rem] sm:pb-0']}>
     <a
       href="#innehall"
-      class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:bg-black focus:text-white focus:px-4 focus:py-2 focus:rounded-md focus:font-bold"
+      class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded focus:bg-black focus:px-4 focus:py-2 focus:text-white"
     >Hoppa till innehållet</a>
     <Header />
     <main id="innehall" class="grow">
       <slot />
     </main>
     <Footer />
-    {!dolBestallCta && <StickyOrderCTA />}
-    {!dolBestallCta && <OrderModal />}
+    {!utanModal && <StickyOrderCTA />}
+    {!utanModal && <OrderModal />}
     <script>
-      // Diskret fade-in vid scroll – respekterar prefers-reduced-motion via CSS.
       const element = document.querySelectorAll('[data-reveal]');
       if ('IntersectionObserver' in window) {
         const io = new IntersectionObserver(
@@ -74,7 +70,7 @@ const kanonisk = new URL(Astro.url.pathname, site.url).href;
               }
             }
           },
-          { rootMargin: '0px 0px -8% 0px' },
+          { rootMargin: '0px 0px -10% 0px' },
         );
         element.forEach((el) => io.observe(el));
       } else {

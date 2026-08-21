@@ -1,29 +1,34 @@
 /**
- * Designtokens – monokromt system i vitt, svart och grått.
+ * Designtokens – nordisk minimalism i vitt, svart och grått.
  *
- * Schackrutmönstret från den tryckta menyn är kvar som signaturelement;
- * i svart och vitt blir det snarast starkare. Matas in i Tailwind via
- * CSS-variabler i Layout.astro + @theme i global.css.
+ * Systemet vilar på tre saker: gott om luft, hårfina linjer i stället för
+ * ramar och rutor, och en enda typsnittsfamilj där vikten bär hierarkin.
+ * Inga skuggor, inga fyllda ytor som inte behövs.
  */
 export const theme = {
   farger: {
-    /** Rent vitt – huvudbakgrund */
+    /** Sidans botten */
     white: '#FFFFFF',
-    /** Svart – text, mörka sektioner, CTA-ytor */
-    black: '#0B0B0B',
-    /** Ljusgrått – alternerande sektionsbakgrund */
-    greyLight: '#F2F2F2',
-    /** Mellangrått – ramar och avdelare */
-    greyLine: '#D8D8D8',
-    /** Mörkgrått – dämpad text (6,4:1 mot vitt) */
-    greyText: '#5F5F5F',
+    /** Text och knappar. Nästan svart – rent svart blir hårt mot vitt. */
+    black: '#111111',
+    /** Vilande ytor, t.ex. sektioner som ska skiljas ut mycket svagt */
+    surface: '#FAFAFA',
+    /** Hårfin linje – all avgränsning på sajten görs med den här */
+    line: '#E6E6E6',
+    /**
+     * Dämpad text: beskrivningar, bildtexter.
+     * Vald mot `surface`, inte mot vitt – 4,8:1 där och 5,0:1 mot vitt.
+     * Ett ljusare grått klarar vitt men faller på den grå ytan.
+     */
+    muted: '#6F6F6F',
   },
+  /** En familj, tre vikter. Schibsted Grotesk är ritad i Skandinavien. */
   typsnitt: {
-    display: "'Anton', 'Arial Narrow', Impact, sans-serif",
-    body: "'Archivo Variable', 'Helvetica Neue', Arial, sans-serif",
+    sans: "'Schibsted Grotesk Variable', 'Helvetica Neue', Arial, sans-serif",
   },
   radie: {
-    kort: '1rem',
-    knapp: '0.5rem',
+    /** Nästan raka hörn – runda hörn gör designen mjukare än den ska vara */
+    liten: '2px',
+    stor: '4px',
   },
 } as const;
