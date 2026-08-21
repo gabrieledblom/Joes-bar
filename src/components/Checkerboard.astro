@@ -1,0 +1,8 @@
+---
+/** Schackrutmönstret som strukturell avdelare mellan sektioner. */
+interface Props {
+  class?: string;
+}
+const { class: klass = 'h-[22px]' } = Astro.props;
+---
+<div class:list={['checker w-full', klass]} aria-hidden="true"></div>

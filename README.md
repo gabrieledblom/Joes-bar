@@ -1,45 +1,76 @@
-# Joe's Bar
+# Joe's Bar – Järna
+
+Webbplats med SMS-beställning för Joe's Bar, restaurang & bar i Järna.
+Byggd med Astro + Tailwind CSS, driftad på Netlify, SMS via 46elks.
+
+**Icke-teknisk?** Läs [HANDOVER.md](./HANDOVER.md) – där står hur du ändrar
+priser, öppettider och stänger beställningar, plus alla uppgifter som
+fortfarande behöver fyllas i (TODO-listan).
+
+## Kommandon
+
+```bash
+npm install       # installera beroenden
+npm run dev       # utvecklingsserver
+npm test          # enhetstester (Vitest)
+npm run check     # typkontroll (astro check)
+npm run build     # produktionsbygge till dist/
+npm run e2e       # röktest av orderflödet + axe-tillgänglighetsskanning
+```
+
+## Struktur
+
+```
+src/config/    all kundspecifik data – meny, öppettider, tema, beställnings-
+               inställningar, kontaktuppgifter. Komponenterna läser härifrån;
+               inga priser/tider/telefonnummer är hårdkodade någon annanstans.
+src/lib/       öppettidslogik (inkl. stängning efter midnatt), prisberäkning,
+               telefonnormalisering, varukorg – delas av klient, server och tester.
+src/pages/     /, /meny, /bestall, /bestall/tack, /om-oss, /integritetspolicy
+netlify/functions/order.mts
+               beställningsendpointen: validerar allt på servern, räknar om
+               priser från menyn, rate-limitar, loggar till Netlify Blobs och
+               skickar två SMS via 46elks (mock-läge utan API-nycklar).
+```
+
+## Miljövariabler
+
+Se `.env.example`. Utan 46elks-nycklar körs SMS i mock-läge (loggas i stället
+för att skickas); i produktion utan nycklar stängs beställningen av med ett
+tydligt fel. Nycklar läggs i Netlify – aldrig i repot.
+
+## Kvalitetskrav som CI-checklista
+
+- `npm test` – 47 tester: öppettider (inkl. natten till lördag), serverside-
+  prisomräkning, rate limit, honeypot, SMS-fellägen, GDPR-rensning
+- `npm run e2e` – korg → utcheckning → bekräftelse, låst läge utanför
+  öppettid, axe (WCAG 2.2 AA) utan fel på alla sidor
+- Lighthouse mobil: 100/100/100/100 på alla sidor vid senaste mätning
+
+---
 
 ## Agent skills
 
-This project leans on a set of design and frontend [Agent Skills](https://code.claude.com/docs/en/skills).
-They are **not vendored** into this repo — `scripts/install-skills.sh` fetches them
-from their upstream sources on demand:
+Det här repot innehåller också `scripts/install-skills.sh` som installerar
+de design-/frontend-skills som användes när sajten byggdes. Skillsen hämtas
+från sina upstream-repon vid körning – inget vendras här:
 
 ```bash
-./scripts/install-skills.sh
+./scripts/install-skills.sh                    # globalt (~/.claude/skills)
+SKILLS_SCOPE=-p ./scripts/install-skills.sh    # till ./.claude/skills
 ```
 
-That installs into `~/.claude/skills` (global, available to every project). To
-install into this repo instead — `./.claude/skills`, checked against
-`.gitignore` — use:
-
-```bash
-SKILLS_SCOPE=-p ./scripts/install-skills.sh
-```
-
-Re-running the script is safe; it overwrites each skill with the current
-upstream version.
-
-> Skills run with full agent permissions. Review a skill's `SKILL.md` before
-> relying on it.
-
-### What gets installed
-
-| Source | Skills | Covers |
+| Källa | Skills | Täcker |
 | --- | --- | --- |
-| [`emilkowalski/skill`](https://github.com/emilkowalski/skill) | 9 | Animation and motion craft, UI polish, prototyping |
-| [`Leonxlnx/taste-skill`](https://github.com/Leonxlnx/taste-skill) | 10 | Visual direction, brand kits, image-led frontend |
-| [`pbakaus/impeccable`](https://github.com/pbakaus/impeccable) | 1 | Broad frontend design and critique pass |
-| [`nextlevelbuilder/ui-ux-pro-max-skill`](https://github.com/nextlevelbuilder/ui-ux-pro-max-skill) | 7 | Design tokens, palettes, style libraries, slides |
-| [`anthropics/skills`](https://github.com/anthropics/skills) | 9 | Frontend design, brand guidelines, docs, artifacts |
-| [`vercel-labs/agent-skills`](https://github.com/vercel-labs/agent-skills) | 9 | React/Next.js practices, deploys, guideline reviews |
-| [`remotion-dev/skills`](https://github.com/remotion-dev/skills) | 12 | Programmatic video with Remotion |
-| [`bencium/bencium-marketplace`](https://github.com/bencium/bencium-marketplace) | 7 | UX design perspectives, design audits, AEO |
-| [`AccessLint/skills`](https://github.com/AccessLint/skills) | 5 | Accessibility scan, inspect, audit, fix, diff |
+| `emilkowalski/skill` | 9 | Animation, UI-polish, prototyper |
+| `Leonxlnx/taste-skill` | 10 | Visuell riktning, brand kits |
+| `pbakaus/impeccable` | 1 | Bred frontend-design/kritik |
+| `nextlevelbuilder/ui-ux-pro-max-skill` | 7 | Tokens, paletter, stilbibliotek |
+| `anthropics/skills` | 9 | Frontend-design, docs, artifacts |
+| `vercel-labs/agent-skills` | 9 | React/Next-praxis, deploys, granskningar |
+| `remotion-dev/skills` | 12 | Programmatisk video |
+| `bencium/bencium-marketplace` | 7 | UX-perspektiv, design-audits, AEO |
+| `AccessLint/skills` | 5 | Tillgänglighet: scan/inspect/audit/fix/diff |
 
-69 skills total. The exact list per source lives in `scripts/install-skills.sh`.
-
-### Requirements
-
-Node.js 18+ (`npx`). Nothing else.
+> Skills körs med agentens fulla behörigheter – läs igenom en skills
+> `SKILL.md` innan du litar på den.

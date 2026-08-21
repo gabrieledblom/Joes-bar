@@ -1,0 +1,67 @@
+---
+import Logo from './Logo.astro';
+---
+<header class="sticky top-0 z-40 bg-green text-cream shadow-[0_2px_0_0_var(--brand-green-deep)]">
+  <div class="mx-auto flex max-w-6xl items-center gap-3 px-4 py-3 sm:gap-5">
+    <a href="/" class="shrink-0 rounded-sm" aria-label="Joe's Bar – till startsidan">
+      <Logo variant="rad" />
+    </a>
+    <span
+      data-open-badge
+      hidden
+      role="status"
+      class="hidden items-center gap-1.5 rounded-full border border-sage/60 px-3 py-1 text-xs font-semibold md:inline-flex"
+    ></span>
+    <nav aria-label="Huvudmeny" class="ml-auto flex items-center gap-1 sm:gap-3">
+      <a href="/meny" class="rounded-md px-2 py-2 font-semibold hover:underline underline-offset-4 sm:px-3">Meny</a>
+      <a href="/om-oss" class="rounded-md px-2 py-2 font-semibold hover:underline underline-offset-4 sm:px-3">Om&nbsp;oss</a>
+      <a href="/bestall" class="btn-primary relative !px-3 sm:!px-5">
+        Beställ mat
+        <span
+          data-korg-antal
+          hidden
+          class="absolute -top-2 -right-2 inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-green-deep px-1.5 text-xs font-bold text-cream ring-2 ring-cream"
+          aria-label="antal i varukorgen"
+        ></span>
+      </a>
+    </nav>
+  </div>
+</header>
+<script>
+  import { aktivtFonster, dagNamn, formatMinuter, nastaOppning, nuIStockholm } from '../lib/hours';
+  import { antalIKorg } from '../lib/cart';
+
+  const badge = document.querySelector<HTMLElement>('[data-open-badge]');
+  function uppdateraStatus() {
+    if (!badge) return;
+    const nu = nuIStockholm();
+    const f = aktivtFonster(nu);
+    if (f) {
+      badge.textContent = `● Öppet nu – stänger ${formatMinuter(f.stanger)}`;
+      badge.classList.add('text-amber');
+    } else {
+      const n = nastaOppning(nu);
+      badge.textContent = `Stängt – öppnar ${n.idag ? 'idag' : dagNamn[n.dag]} ${n.tid}`;
+      badge.classList.remove('text-amber');
+    }
+    badge.hidden = false;
+  }
+  uppdateraStatus();
+  setInterval(uppdateraStatus, 60_000);
+
+  const antalEl = document.querySelector<HTMLElement>('[data-korg-antal]');
+  function visaAntal(antal: number, pulsera = false) {
+    if (!antalEl) return;
+    antalEl.hidden = antal === 0;
+    antalEl.textContent = String(antal);
+    if (pulsera && antal > 0) {
+      antalEl.classList.remove('korg-puls');
+      void antalEl.offsetWidth;
+      antalEl.classList.add('korg-puls');
+    }
+  }
+  visaAntal(antalIKorg());
+  window.addEventListener('korg:andrad', (e) => {
+    visaAntal((e as CustomEvent<{ antal: number }>).detail.antal, true);
+  });
+</script>

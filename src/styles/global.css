@@ -1,0 +1,168 @@
+@import 'tailwindcss';
+@import '@fontsource/anton';
+@import '@fontsource-variable/archivo';
+
+/*
+ * Tokens definieras i src/config/theme.ts och injiceras som
+ * --brand-* på :root i Layout.astro. Här mappas de in i Tailwind.
+ */
+@theme inline {
+  --color-green: var(--brand-green);
+  --color-green-deep: var(--brand-green-deep);
+  --color-cream: var(--brand-cream);
+  --color-ink: var(--brand-ink);
+  --color-amber: var(--brand-amber);
+  --color-amber-text: var(--brand-amber-text);
+  --color-sage: var(--brand-sage);
+  --font-display: var(--brand-font-display);
+  --font-body: var(--brand-font-body);
+  --radius-kort: var(--brand-radius-kort);
+  --radius-knapp: var(--brand-radius-knapp);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+  }
+  body {
+    background: var(--brand-cream);
+    color: var(--brand-ink);
+    font-family: var(--brand-font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection {
+    background: var(--brand-amber);
+    color: var(--brand-ink);
+  }
+  :focus-visible {
+    outline: 3px solid var(--brand-amber);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--brand-ink) 35%, transparent);
+    border-radius: 4px;
+  }
+  h1, h2, h3 {
+    font-family: var(--brand-font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    text-wrap: balance;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+}
+
+@layer components {
+  /* Schackrutmönstret från den tryckta menyn – CSS-genererat, ingen bild. */
+  .checker {
+    background-image: repeating-conic-gradient(
+      var(--checker-a, var(--brand-green)) 0% 25%,
+      var(--checker-b, var(--brand-cream)) 0% 50%
+    );
+    background-size: 22px 22px;
+  }
+
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background: var(--brand-amber);
+    color: var(--brand-ink);
+    font-weight: 700;
+    border-radius: var(--brand-radius-knapp);
+    padding: 0.7rem 1.4rem;
+    line-height: 1.2;
+    transition: background-color 150ms ease, transform 150ms ease, box-shadow 150ms ease;
+  }
+  .btn-primary:hover {
+    background: color-mix(in srgb, var(--brand-amber) 88%, white);
+    box-shadow: 0 4px 14px color-mix(in srgb, var(--brand-ink) 22%, transparent);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: none;
+  }
+  .btn-primary.tillagd {
+    background: var(--brand-cream);
+  }
+
+  .btn-sekundar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 2px solid currentColor;
+    font-weight: 600;
+    border-radius: var(--brand-radius-knapp);
+    padding: 0.6rem 1.3rem;
+    line-height: 1.2;
+    transition: background-color 150ms ease, color 150ms ease;
+  }
+
+  .pris {
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  .falt {
+    width: 100%;
+    background: white;
+    color: var(--brand-ink);
+    border: 2px solid var(--brand-sage);
+    border-radius: var(--brand-radius-knapp);
+    padding: 0.65rem 0.85rem;
+    transition: border-color 150ms ease;
+  }
+  .falt:focus-visible {
+    border-color: var(--brand-green);
+    box-shadow: none;
+    outline-color: var(--brand-amber);
+  }
+  .falt.har-fel,
+  .behover-val {
+    border-color: #b3261e;
+  }
+  .faltfel {
+    color: #8c1d16;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn-primary, .btn-primary:hover, .btn-primary:active { transform: none; transition: none; }
+  }
+}
+
+/* Diskret fade-in vid scroll. Utan JS (html utan .js-klass) syns allt direkt. */
+html.js [data-reveal] {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity 500ms ease, transform 500ms ease;
+}
+html.js [data-reveal].syns {
+  opacity: 1;
+  transform: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  html.js [data-reveal] {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Puls på korg-badgen när något läggs till */
+@keyframes korg-puls {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.45); }
+  100% { transform: scale(1); }
+}
+.korg-puls {
+  animation: korg-puls 350ms ease;
+}
+@media (prefers-reduced-motion: reduce) {
+  .korg-puls { animation: none; }
+}

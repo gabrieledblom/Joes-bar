@@ -1,0 +1,43 @@
+---
+/**
+ * Klicka-för-att-ladda-karta: ingen tredjepartsladdning förrän besökaren
+ * ber om den. TODO: justera koordinaterna när gatuadressen är bekräftad.
+ */
+import { site } from '../config/site';
+
+const lat = '59.0930'; // TODO: exakt position när adressen finns
+const lon = '17.5660';
+const osmSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${Number(lon) - 0.01}%2C${Number(lat) - 0.005}%2C${Number(lon) + 0.01}%2C${Number(lat) + 0.005}&layer=mapnik&marker=${lat}%2C${lon}`;
+const googleMaps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${site.namn} ${site.ort}`)}`;
+---
+<div data-karta class="overflow-hidden rounded-[var(--brand-radius-kort)]">
+  <button
+    type="button"
+    data-karta-knapp
+    data-src={osmSrc}
+    class="group relative flex aspect-[16/9] w-full items-center justify-center bg-green text-cream transition-colors hover:bg-green-deep"
+  >
+    <span class="checker absolute inset-x-0 bottom-0 h-[14px]" style="--checker-b: var(--brand-green-deep)" aria-hidden="true"></span>
+    <span class="flex flex-col items-center gap-2">
+      <span class="font-display text-2xl tracking-wide">Visa kartan</span>
+      <span class="text-sm text-cream/90">Laddar karta från OpenStreetMap när du klickar</span>
+    </span>
+  </button>
+</div>
+<p class="mt-3">
+  <a class="font-semibold underline underline-offset-4 text-green hover:text-amber-text" href={googleMaps} rel="noopener">
+    Öppna i Google Maps för vägbeskrivning →
+  </a>
+</p>
+<script>
+  document.addEventListener('click', (e) => {
+    const knapp = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-karta-knapp]');
+    if (!knapp) return;
+    const iframe = document.createElement('iframe');
+    iframe.src = knapp.dataset.src ?? '';
+    iframe.title = 'Karta över Järna';
+    iframe.loading = 'lazy';
+    iframe.className = 'aspect-[16/9] w-full border-0';
+    knapp.replaceWith(iframe);
+  });
+</script>

@@ -1,0 +1,41 @@
+---
+/**
+ * Delegerad "Lägg till"-hantering för alla menykort på sidan.
+ * Inkluderas en gång per sida som visar MenuCard.
+ */
+---
+<script>
+  import { laggTill } from '../lib/cart';
+
+  document.addEventListener('click', (e) => {
+    const btn = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-lagg-till]');
+    if (!btn) return;
+    const kort = btn.closest<HTMLElement>('[data-menykort]');
+    const id = kort?.dataset.rattId;
+    if (!kort || !id) return;
+
+    const select = kort.querySelector<HTMLSelectElement>('[data-tillval]');
+    let tillval: string | undefined;
+    if (select) {
+      if (!select.value) {
+        select.classList.add('behover-val');
+        select.focus();
+        select.addEventListener('change', () => select.classList.remove('behover-val'), { once: true });
+        return;
+      }
+      tillval = select.value;
+    }
+
+    laggTill(id, tillval);
+
+    const originaltext = btn.textContent;
+    btn.classList.add('tillagd');
+    btn.textContent = 'Tillagd ✓';
+    btn.disabled = true;
+    setTimeout(() => {
+      btn.classList.remove('tillagd');
+      btn.textContent = originaltext;
+      btn.disabled = false;
+    }, 900);
+  });
+</script>

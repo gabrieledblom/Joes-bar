@@ -1,0 +1,68 @@
+---
+import AddToCart from '../components/AddToCart.astro';
+import Checkerboard from '../components/Checkerboard.astro';
+import Layout from '../components/Layout.astro';
+import MenuCard from '../components/MenuCard.astro';
+import { meny, synligaKategorier } from '../config/menu';
+import { harTelefon, site } from '../config/site';
+
+const kategorier = synligaKategorier();
+const ratterI = (id: string) => meny.filter((r) => r.kategori === id && r.tillganglig);
+---
+<Layout
+  titel={`Meny – ${site.namn} i ${site.ort}`}
+  beskrivning={`Hela menyn hos ${site.namn} i ${site.ort}: snacks, husmanskost, burgare, kebab, sallader och dryck. Priser ${site.prisklass}. Beställ för avhämtning online.`}
+>
+  <section class="bg-green text-cream">
+    <div class="mx-auto max-w-6xl px-4 pt-12 pb-10 sm:pt-16">
+      <h1 class="font-display text-[clamp(2.6rem,7vw,4.5rem)] leading-[0.95]">Menyn</h1>
+      <p class="mt-4 max-w-xl text-lg text-cream/90">
+        Allt går att beställa för avhämtning – du betalar när du hämtar.
+      </p>
+      <noscript>
+        <p class="mt-4 max-w-xl rounded-md bg-green-deep p-4 text-cream">
+          Onlinebeställning kräver JavaScript.
+          {harTelefon ? ` Ring oss på ${site.telefon} så tar vi din beställning per telefon.` : ' Ring oss så tar vi din beställning per telefon.'}
+        </p>
+      </noscript>
+    </div>
+    <nav aria-label="Menykategorier" class="sticky top-[3.85rem] z-30 bg-green/95 backdrop-blur-sm">
+      <div class="mx-auto flex max-w-6xl gap-2 overflow-x-auto px-4 py-3">
+        {kategorier.map((k) => (
+          <a
+            href={`#${k.id}`}
+            class="shrink-0 rounded-full border border-sage/60 px-4 py-1.5 text-sm font-semibold whitespace-nowrap transition-colors hover:bg-cream hover:text-green"
+          >{k.namn}</a>
+        ))}
+      </div>
+    </nav>
+  </section>
+  <Checkerboard />
+
+  <div class="mx-auto max-w-6xl space-y-14 px-4 py-12 sm:py-16">
+    {kategorier.map((k) => (
+      <section id={k.id} aria-labelledby={`rubrik-${k.id}`}>
+        <div data-reveal>
+          <h2 id={`rubrik-${k.id}`} class="font-display text-3xl text-green sm:text-4xl">{k.namn}</h2>
+          {k.beskrivning && <p class="mt-2 max-w-2xl font-medium text-ink/75">{k.beskrivning}</p>}
+        </div>
+        <div class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {ratterI(k.id).map((ratt) => <MenuCard ratt={ratt} />)}
+        </div>
+      </section>
+    ))}
+  </div>
+
+  <section class="mx-auto max-w-6xl px-4 pb-16">
+    <div class="rounded-[var(--brand-radius-kort)] border-2 border-sage/50 p-6 sm:p-8" data-reveal>
+      <h2 class="font-display text-2xl text-green">Allergier eller frågor?</h2>
+      <p class="mt-2 max-w-2xl">
+        Skriv en kommentar i beställningen eller {harTelefon ? `ring oss på ` : 'ring oss '}
+        {harTelefon && <a class="font-semibold text-green underline underline-offset-4" href={`tel:${site.telefonE164}`}>{site.telefon}</a>}
+        så hjälper vi dig att välja rätt.
+      </p>
+    </div>
+  </section>
+
+  <AddToCart />
+</Layout>

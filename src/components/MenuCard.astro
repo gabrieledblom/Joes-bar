@@ -1,0 +1,37 @@
+---
+import type { MenyRatt } from '../config/menu';
+
+interface Props {
+  ratt: MenyRatt;
+}
+const { ratt } = Astro.props;
+const selectId = `tillval-${ratt.id}`;
+---
+<article
+  class="flex flex-col overflow-hidden rounded-[var(--brand-radius-kort)] bg-green text-cream shadow-[0_2px_0_0_var(--brand-green-deep)] transition-transform duration-150 hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+  data-menykort
+  data-ratt-id={ratt.id}
+>
+  <div class="checker h-[10px]" style="--checker-b: var(--brand-green-deep)" aria-hidden="true"></div>
+  <div class="flex grow flex-col gap-2.5 p-5">
+    <div class="flex items-baseline justify-between gap-3">
+      <h3 class="font-display text-xl tracking-wide">{ratt.namn}</h3>
+      <p class="pris text-lg" aria-label={`${ratt.pris} kronor`}>{ratt.pris}:-</p>
+    </div>
+    {ratt.beskrivning && <p class="text-sm leading-relaxed text-cream/90">{ratt.beskrivning}</p>}
+    <div class="mt-auto flex items-center gap-3 pt-2">
+      {ratt.tillval && (
+        <>
+          <label class="sr-only" for={selectId}>{ratt.tillval.label} för {ratt.namn}</label>
+          <select id={selectId} data-tillval class="falt !w-auto grow !py-2 text-sm" required>
+            <option value="">Välj {ratt.tillval.label.toLowerCase()}</option>
+            {ratt.tillval.alternativ.map((a) => <option value={a}>{a}</option>)}
+          </select>
+        </>
+      )}
+      <button type="button" data-lagg-till class="btn-primary ml-auto shrink-0 !px-4 !py-2 text-sm">
+        Lägg till
+      </button>
+    </div>
+  </div>
+</article>
