@@ -362,3 +362,20 @@ html.js .hero-bild {
 [data-header][data-over-hero] :focus-visible {
   outline-color: var(--brand-white);
 }
+
+/*
+ * Diskret skugga bakom hero-texten. Gradienten ensam räcker över en mörk
+ * bild, men brödtexten korsar den ljusa tallriken på bredare skärmar och
+ * tappar då kontrast. Skuggan löser det utan att mörka ned maten.
+ */
+.hero-text {
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.45),
+    0 2px 22px rgba(0, 0, 0, 0.55);
+}
+/* Fylld knapp har egen bakgrund och ska inte ärva skuggan – den gör bara
+   den svarta texten luddig. Den linjerade knappen ligger direkt mot fotot
+   och behåller den. */
+.hero-text .btn {
+  text-shadow: none;
+}
