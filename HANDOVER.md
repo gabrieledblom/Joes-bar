@@ -35,7 +35,9 @@ Sajten är fullt fungerande men väntar på följande uppgifter från dig:
 > halvfärdig sida med "gatuadress publiceras inom kort" som hamnar i
 > Googles resultat för "restaurang Järna" tar veckor att få bort igen.
 > Ändra till `true` när adress och telefonnummer är ifyllda – då börjar
-> sajten också generera sin sitemap.
+> sajten också generera sin sitemap. (Kör man ett SEO-test nu får sajten
+> lågt SEO-betyg just för att den är blockerad – det är avsiktligt och
+> rättar sig av sig självt när flaggan slås på.)
 
 **Viktigt om öppettiderna:** sajten använder de bekräftade tiderna
 (mån stängt · tis–tors 14:30–23 · fre 14:30–01 · lör 13–01 · sön 13–21).

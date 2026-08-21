@@ -47,7 +47,10 @@ fallback. Nycklar läggs i Vercel – aldrig i repot.
   prisomräkning, rate limit, honeypot, SMS-fellägen, GDPR-rensning
 - `npm run e2e` – korg → utcheckning → bekräftelse, låst läge utanför
   öppettid, axe (WCAG 2.2 AA) utan fel på alla sidor
-- Lighthouse mobil: 100/100/100/100 på alla sidor vid senaste mätning
+- Lighthouse mobil: Performance / Accessibility / Best Practices 100 på
+  alla sidor. SEO visar 66 så länge indexeringen är avstängd – enda
+  fallerande audit är `is-crawlable`, alltså noindex-spärren nedan. Den
+  går till 100 i samma stund flaggan slås på.
 
 ## Sökmotorindexering
 
