@@ -299,7 +299,7 @@ import { harTelefon, site } from '../../config/site';
       const originaltext = skickaKnapp.textContent;
       skickaKnapp.textContent = 'Skickar …';
       try {
-        const svar = await fetch('/.netlify/functions/order', {
+        const svar = await fetch('/api/order', {
           method: 'POST',
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ namn, mobil, pickupAt: tid, kommentar, webbplats: honeypot, rader }),

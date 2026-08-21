@@ -23,7 +23,7 @@ export const site = {
   orgnr: '', // TODO
 
   /** TODO: byt till riktig domän när den finns. Driver sitemap + schema.org. */
-  url: 'https://joesbar-jarna.netlify.app',
+  url: 'https://joesbar-jarna.vercel.app',
   prisklass: '100–200 kr',
   koket: ['Husmanskost', 'Hamburgare', 'Kebab', 'Sallader'],
 } as const;

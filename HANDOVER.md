@@ -1,4 +1,4 @@
-# Överlämning – joesbar-webbplatsen
+# Överlämning – Joe's Bar-webbplatsen
 
 Det här dokumentet är skrivet för dig som driver Joe's Bar, utan att du ska
 behöva kunna programmering. Alla ändringar nedan görs i enkla textfiler –
@@ -14,7 +14,7 @@ Sajten är fullt fungerande men väntar på följande uppgifter från dig:
 |---|-----|-----------------|
 | 1 | **Gatuadress** | `src/config/site.ts` → `adress` |
 | 2 | **Telefonnummer** (visning + uppringningsbart) | `src/config/site.ts` → `telefon` och `telefonE164` |
-| 3 | **Mobilnummer som tar emot order-SMS** | Netlify → Environment variables → `ORDER_SMS_TO` |
+| 3 | **Mobilnummer som tar emot order-SMS** | Vercel → Environment Variables → `ORDER_SMS_TO` |
 | 4 | **E-postadress** | `src/config/site.ts` → `epost` |
 | 5 | **Organisationsnummer** | `src/config/site.ts` → `orgnr` |
 | 6 | **Länk till Facebook-sidan** (exakt adress) | `src/config/site.ts` → `facebook` |
@@ -24,7 +24,7 @@ Sajten är fullt fungerande men väntar på följande uppgifter från dig:
 | 10 | **Logotyp som SVG** (eller PNG minst 1000 px, transparent bakgrund) | ersätter `src/components/Logo.astro` |
 | 11 | **Foton på maten och lokalen** | ersätter `Placeholder`-ytorna – inga stockfoton! |
 | 12 | **46elks-konto + API-nycklar** (för riktiga SMS) | se "Aktivera SMS" nedan |
-| 13 | **Riktig domän** (t.ex. joesbar.se) | `src/config/site.ts` → `url`, plus domäninställning i Netlify |
+| 13 | **Riktig domän** (t.ex. joesbar.se) | `src/config/site.ts` → `url`, plus domäninställning i Vercel |
 | 14 | **Exakta kartkoordinater** när adressen är bekräftad | `src/components/MapEmbed.astro` → `lat`/`lon` |
 
 **Viktigt om öppettiderna:** sajten använder de bekräftade tiderna
@@ -71,7 +71,7 @@ till lördag. Öppettiderna styr automatiskt footern, "Öppet nu"-skylten
 och vilka avhämtningstider som går att välja.
 
 > Efter varje ändring: spara filen, committa och pusha (eller be din
-> hjälpare) – Netlify bygger och publicerar automatiskt på ca 1 minut.
+> hjälpare) – Vercel bygger och publicerar automatiskt på ca 1 minut.
 
 ---
 
@@ -81,16 +81,19 @@ Sajten är byggd så att **ingen kund får en bekräftelse om ordern inte
 nått er**: går restaurangens SMS inte att skicka får kunden ett felmeddelande
 med uppmaning att ringa.
 
-Varje beställning loggas dessutom i Netlify (Blobs-lagret `orders`) med
-ordernummer, rätter, summa och tid – det är ert säkerhetsnät:
+Varje beställning loggas dessutom i Upstash Redis (kopplat via Vercel)
+med ordernummer, rätter, summa och tid – det är ert säkerhetsnät:
 
-1. Logga in på Netlify → ert projekt → **Blobs** → `orders`.
-2. Sök på dagens datum – där ligger varje order som JSON.
+1. Logga in på Vercel → ert projekt → **Storage** → Upstash-databasen →
+   **Open in Upstash** → Data Browser.
+2. Sök på `order:` + dagens datum (t.ex. `order:2026-08-21:*`) – där
+   ligger varje order som JSON.
 3. Kundens SMS är "bäst möjligt": om bara kundens SMS misslyckas finns
    ordern ändå hos er (och i loggen).
 
-Av integritetsskäl rensas namn, mobilnummer och kommentar automatiskt ur
-loggen efter 30 dagar; ordernummer, rätter och belopp blir kvar.
+Av integritetsskäl försvinner loggposten med namn, mobilnummer och
+kommentar automatiskt efter 30 dagar; en arkivpost med ordernummer,
+rätter och belopp (nycklar som börjar på `orderarkiv:`) blir kvar.
 
 ---
 
@@ -116,23 +119,27 @@ med ett tydligt meddelande – den låtsas aldrig.
 
 1. Skapa konto på [46elks.se](https://46elks.se) och sätt in pengar.
 2. Kopiera **API username** och **API password** från deras dashboard.
-3. I Netlify: **Site settings → Environment variables**, lägg in:
+3. I Vercel: **Project → Settings → Environment Variables**, lägg in:
    - `ELKS_API_USERNAME` = användarnamnet
    - `ELKS_API_PASSWORD` = lösenordet
    - `ORDER_SMS_TO` = mobilnumret som ska ta emot order (t.ex. `+46701234567`)
-4. Klicka **Deploy site** igen. Klart – SMS:en skickas nu på riktigt,
-   med avsändarnamnet **JoesBar**.
+4. Gör en ny deploy (**Deployments → Redeploy**). Klart – SMS:en skickas
+   nu på riktigt, med avsändarnamnet **JoesBar**.
 
-Nycklarna ligger bara i Netlify – aldrig i koden.
+Nycklarna ligger bara i Vercel – aldrig i koden.
 
 ---
 
 ## Publicera sajten (engångsjobb)
 
-1. Skapa konto på [netlify.com](https://netlify.com) och välj **Import from Git**.
-2. Peka på det här repot. Netlify läser `netlify.toml` och ställer in allt själv.
-3. Lägg in miljövariablerna ovan (eller vänta – mock-läget funkar under test).
-4. Koppla er domän under **Domain settings** och uppdatera `url` i
+1. Skapa konto på [vercel.com](https://vercel.com) och välj **Add New → Project**.
+2. Importera det här repot. Vercel känner igen Astro och ställer in bygget själv;
+   beställningsfunktionen i `api/` följer med automatiskt.
+3. Lägg till **Upstash for Redis** via Vercel Marketplace (Storage-fliken →
+   Create Database → Upstash). Det ger orderloggen och spärren mot
+   spam-beställningar; miljövariablerna injiceras automatiskt.
+4. Lägg in SMS-miljövariablerna ovan (eller vänta – mock-läget funkar under test).
+5. Koppla er domän under **Settings → Domains** och uppdatera `url` i
    `src/config/site.ts` till den riktiga adressen.
 
 ## För den som hjälper till tekniskt
@@ -145,8 +152,8 @@ npm run build     # bygger sajten till dist/
 npm run e2e       # röktest av hela orderflödet + tillgänglighetsskanning
 ```
 
-Arkitekturen: Astro (statisk sajt) + en enda Netlify-funktion
-(`netlify/functions/order.mts`) som validerar allt på servern – priser
+Arkitekturen: Astro (statisk sajt) + en enda Vercel-funktion
+(`api/order.ts`) som validerar allt på servern – priser
 räknas alltid om från `menu.ts`, aldrig från klienten. All kundspecifik
 data ligger i `src/config/` – inga priser, tider eller telefonnummer är
 hårdkodade i komponenterna.

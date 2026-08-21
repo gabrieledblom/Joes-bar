@@ -35,7 +35,7 @@ try {
   const page = await ctx.newPage();
   await page.clock.install({ time: new Date('2026-08-21T16:00:00Z') }); // 18:00 i Stockholm
 
-  await page.route('**/.netlify/functions/order', async (route) => {
+  await page.route('**/api/order', async (route) => {
     const body = route.request().postDataJSON();
     if (body.namn === 'Testina' && body.mobil === '+46701234567' && body.rader?.length === 2 && !body.summa) {
       await route.fulfill({ json: { ok: true, ordernummer: '42', tid: body.pickupAt.slice(11), summa: 337 } });

@@ -23,6 +23,6 @@ out/
 Thumbs.db
 *.swp
 
-# Astro / Netlify
+# Astro / Vercel
 .astro/
-.netlify/
+.vercel/

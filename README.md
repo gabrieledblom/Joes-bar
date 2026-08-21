@@ -1,7 +1,7 @@
 # Joe's Bar – Järna
 
 Webbplats med SMS-beställning för Joe's Bar, restaurang & bar i Järna.
-Byggd med Astro + Tailwind CSS, driftad på Netlify, SMS via 46elks.
+Byggd med Astro + Tailwind CSS, driftad på Vercel, SMS via 46elks.
 
 **Icke-teknisk?** Läs [HANDOVER.md](./HANDOVER.md) – där står hur du ändrar
 priser, öppettider och stänger beställningar, plus alla uppgifter som
@@ -27,17 +27,19 @@ src/config/    all kundspecifik data – meny, öppettider, tema, beställnings-
 src/lib/       öppettidslogik (inkl. stängning efter midnatt), prisberäkning,
                telefonnormalisering, varukorg – delas av klient, server och tester.
 src/pages/     /, /meny, /bestall, /bestall/tack, /om-oss, /integritetspolicy
-netlify/functions/order.mts
-               beställningsendpointen: validerar allt på servern, räknar om
-               priser från menyn, rate-limitar, loggar till Netlify Blobs och
-               skickar två SMS via 46elks (mock-läge utan API-nycklar).
+api/order.ts   beställningsendpointen (Vercel Function): validerar allt på
+               servern, räknar om priser från menyn, rate-limitar, loggar till
+               Upstash Redis (via src/lib/store.ts) och skickar två SMS via
+               46elks (mock-läge utan API-nycklar).
 ```
 
 ## Miljövariabler
 
 Se `.env.example`. Utan 46elks-nycklar körs SMS i mock-läge (loggas i stället
 för att skickas); i produktion utan nycklar stängs beställningen av med ett
-tydligt fel. Nycklar läggs i Netlify – aldrig i repot.
+tydligt fel. Orderloggen kräver "Upstash for Redis" via Vercel Marketplace
+(miljövariablerna injiceras automatiskt); utan den används ett in-memory-
+fallback. Nycklar läggs i Vercel – aldrig i repot.
 
 ## Kvalitetskrav som CI-checklista
 
