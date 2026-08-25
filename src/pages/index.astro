@@ -1,7 +1,7 @@
 ---
 import AddToCart from '../components/AddToCart.astro';
-import Layout from '../components/Layout.astro';
 import Hero from '../components/Hero.astro';
+import Layout from '../components/Layout.astro';
 import MapEmbed from '../components/MapEmbed.astro';
 import MenuItem from '../components/MenuItem.astro';
 import { meny } from '../config/menu';
@@ -22,36 +22,61 @@ const harAdress = !site.adress.gata.includes('TODO');
   <Hero />
 
   <!-- Ett urval -->
-  <section class="ram pt-24 pb-24 sm:pt-32 sm:pb-32" aria-labelledby="urval-rubrik">
-    <div class="flex flex-wrap items-baseline justify-between gap-4 border-b border-line pb-5" data-reveal>
-      <h2 id="urval-rubrik" class="text-2xl sm:text-3xl">Ett urval</h2>
-      <a href="/meny" class="lank lank-in text-sm">Hela menyn</a>
+  <section class="ram pt-20 pb-20 sm:pt-28 sm:pb-28" aria-labelledby="urval-rubrik">
+    <div class="flex flex-wrap items-end justify-between gap-4" data-reveal>
+      <div class="regel">
+        <p class="etikett">Från köket</p>
+        <h2 id="urval-rubrik" class="mt-3 text-3xl sm:text-4xl">Några favoriter</h2>
+      </div>
+      <a href="/meny" class="lank lank-in pb-1 text-sm">Hela menyn</a>
     </div>
-    <ul class="mt-2">
+    <ul class="mt-10 border-t border-line">
       {populara.map((ratt, i) => <MenuItem ratt={ratt} fordrojning={i * 70} />)}
     </ul>
   </section>
 
-  <!-- Öppettider + hitta hit -->
-  <section class="ram grid gap-16 pb-24 sm:pb-32 lg:grid-cols-2 lg:gap-24">
-    <div data-reveal>
-      <p class="etikett">Öppettider</p>
-      <dl class="mt-6">
-        {rader.map((r) => (
-          <div class="flex items-baseline justify-between gap-6 border-t border-line py-3 first:border-t-0">
+  <!--
+    Mörkt band. Utan det faller sidan rakt ned i platt ljust efter heron
+    och tappar all stämning – det här ger rytm och binder ihop de två.
+  -->
+  <section class="mork" aria-labelledby="oppet-rubrik">
+    <div class="ram grid gap-14 py-20 sm:py-28 lg:grid-cols-[1fr_1.1fr] lg:gap-24">
+      <div data-reveal>
+        <div class="regel">
+          <p class="etikett">Öppettider</p>
+          <h2 id="oppet-rubrik" class="mt-3 text-3xl sm:text-4xl">Vi har öppet</h2>
+        </div>
+        <p class="mt-6 max-w-sm leading-relaxed text-muted">
+          Sista beställningen för avhämtning tas emot {ordering.stoppForeStangningMin} minuter
+          före stängning. Fredag och lördag håller vi öppet till 01:00 – perfekt efter karaoken.
+        </p>
+        <a href="/bestall" data-oppna-order class="btn mt-8">Beställ mat</a>
+      </div>
+
+      <dl data-reveal>
+        {rader.map((r, i) => (
+          <div
+            class="flex items-baseline justify-between gap-6 border-t border-line py-3.5 text-lg first:border-t-0"
+            data-reveal
+            style={`--fordrojning: ${i * 45}ms`}
+          >
             <dt class="capitalize">{r.dag}</dt>
-            <dd class="pris text-muted">{r.tider}</dd>
+            <dd class="pris" set:html={r.tider === 'Stängt'
+              ? '<span class="text-muted">Stängt</span>'
+              : `<span class="accent">${r.tider}</span>`} />
           </div>
         ))}
       </dl>
-      <p class="mt-6 max-w-sm text-sm text-muted">
-        Sista beställningen för avhämtning tas emot {ordering.stoppForeStangningMin} minuter
-        före stängning. Fredag och lördag har vi öppet till 01:00.
-      </p>
     </div>
+  </section>
 
+  <!-- Hitta hit -->
+  <section class="ram grid gap-14 py-20 sm:py-28 lg:grid-cols-2 lg:gap-24" aria-labelledby="hitta-rubrik">
     <div data-reveal>
-      <p class="etikett">Hitta hit</p>
+      <div class="regel">
+        <p class="etikett">Hitta hit</p>
+        <h2 id="hitta-rubrik" class="mt-3 text-3xl sm:text-4xl">Här ligger vi</h2>
+      </div>
       <address class="mt-6 text-lg not-italic leading-relaxed">
         {harAdress ? (
           <>{site.adress.gata}<br />{site.adress.postnummer} {site.adress.postort}</>
@@ -61,11 +86,15 @@ const harAdress = !site.adress.gata.includes('TODO');
         )}
       </address>
       {harTelefon && (
-        <p class="mt-3"><a class="lank lank-in" href={`tel:${site.telefonE164}`}>{site.telefon}</a></p>
+        <p class="mt-3 text-lg"><a class="lank lank-in" href={`tel:${site.telefonE164}`}>{site.telefon}</a></p>
       )}
-      <div class="mt-8">
-        <MapEmbed />
-      </div>
+      <p class="mt-6 max-w-sm text-sm text-muted">
+        Tar du tåget ligger {site.ort} station på promenadavstånd. Med bil
+        parkerar du enkelt i närheten.
+      </p>
+    </div>
+    <div data-reveal>
+      <MapEmbed />
     </div>
   </section>
 

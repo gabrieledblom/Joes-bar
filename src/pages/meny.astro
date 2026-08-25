@@ -28,12 +28,12 @@ const ratterI = (id: string) => meny.filter((r) => r.kategori === id && r.tillga
     </noscript>
   </section>
 
-  <nav aria-label="Menykategorier" class="sticky top-16 z-30 border-y border-line bg-white/85 backdrop-blur-md">
+  <nav aria-label="Menykategorier" class="sticky top-16 z-30 border-y border-line bg-bone/92 backdrop-blur-md">
     <div class="ram skrollrad -mx-1 flex gap-1 px-1 py-3">
       {kategorier.map((k) => (
         <a
           href={`#${k.id}`}
-          class="shrink-0 rounded-full px-3.5 py-1.5 text-sm whitespace-nowrap text-muted transition-colors hover:bg-surface hover:text-black"
+          class="shrink-0 rounded-full px-3.5 py-1.5 text-sm whitespace-nowrap text-muted transition-colors hover:bg-surface hover:text-ink"
         >{k.namn}</a>
       ))}
     </div>
@@ -42,11 +42,11 @@ const ratterI = (id: string) => meny.filter((r) => r.kategori === id && r.tillga
   <div class="ram">
     {kategorier.map((k) => (
       <section id={k.id} class="scroll-mt-32 pt-16" aria-labelledby={`rubrik-${k.id}`}>
-        <div class="border-b border-line pb-5" data-reveal>
-          <h2 id={`rubrik-${k.id}`} class="text-2xl sm:text-3xl">{k.namn}</h2>
-          {k.beskrivning && <p class="mt-2 max-w-xl text-sm text-muted">{k.beskrivning}</p>}
+        <div class="regel" data-reveal>
+          <h2 id={`rubrik-${k.id}`} class="text-3xl sm:text-4xl">{k.namn}</h2>
+          {k.beskrivning && <p class="mt-3 max-w-xl text-sm text-muted">{k.beskrivning}</p>}
         </div>
-        <ul class="mt-2">
+        <ul class="mt-8 border-t border-line">
           {ratterI(k.id).map((ratt, i) => <MenuItem ratt={ratt} fordrojning={Math.min(i, 5) * 55} />)}
         </ul>
       </section>
@@ -54,7 +54,7 @@ const ratterI = (id: string) => meny.filter((r) => r.kategori === id && r.tillga
 
     <p class="mt-20 max-w-xl text-sm text-muted">
       Allergier eller frågor? Skriv en kommentar i beställningen
-      {harTelefon && <> eller ring <a class="lank lank-in text-black" href={`tel:${site.telefonE164}`}>{site.telefon}</a></>} –
+      {harTelefon && <> eller ring <a class="lank lank-in text-ink" href={`tel:${site.telefonE164}`}>{site.telefon}</a></>} –
       vi hjälper dig att välja rätt.
     </p>
   </div>

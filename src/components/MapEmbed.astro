@@ -10,15 +10,18 @@ const lon = '17.5660';
 const osmSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${Number(lon) - 0.01}%2C${Number(lat) - 0.005}%2C${Number(lon) + 0.01}%2C${Number(lat) + 0.005}&layer=mapnik&marker=${lat}%2C${lon}`;
 const googleMaps = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${site.namn} ${site.ort}`)}`;
 ---
-<div class="overflow-hidden rounded-[var(--brand-radie-stor)] border border-line">
+<div class="overflow-hidden rounded-[var(--brand-radie-stor)]">
   <button
     type="button"
     data-karta-knapp
     data-src={osmSrc}
-    class="flex aspect-[4/3] w-full flex-col items-center justify-center gap-2 bg-surface transition-colors hover:bg-white"
+    class="mork group flex aspect-[4/3] w-full flex-col items-center justify-center gap-3 transition-opacity hover:opacity-90"
   >
-    <span class="text-sm font-medium">Visa kartan</span>
-    <span class="text-xs text-muted">Laddas från OpenStreetMap när du klickar</span>
+    <span class="text-[0.6rem] tracking-[0.2em] uppercase text-muted">{site.ort}</span>
+    <span class="accent text-lg font-medium">Visa kartan</span>
+    <span class="max-w-[16rem] text-xs text-muted">
+      Laddas från OpenStreetMap först när du klickar
+    </span>
   </button>
 </div>
 <p class="mt-4 text-sm">

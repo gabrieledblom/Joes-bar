@@ -1,33 +1,42 @@
 /**
- * Designtokens – nordisk minimalism i vitt, svart och grått.
+ * Designtokens.
  *
- * Systemet vilar på tre saker: gott om luft, hårfina linjer i stället för
- * ramar och rutor, och en enda typsnittsfamilj där vikten bär hierarkin.
- * Inga skuggor, inga fyllda ytor som inte behövs.
+ * Fortfarande ett lugnt, enkelt system – men neutralerna är varma i
+ * stället för kliniska. Rent #FFFFFF och kallgrått fick sajten att kännas
+ * som ett ordbehandlingsdokument bredvid ett foto av en varm bar. Allt
+ * här är dragen mot samma varma håll som fotot: benvitt papper, en
+ * nästan-svart som lutar åt brunt, och en mässingston hämtad ur
+ * barlamporna i bilden.
+ *
+ * Kontrast är kontrollerad för varje kombination som faktiskt används;
+ * siffrorna nedan är uträknade, inte gissade.
  */
 export const theme = {
   farger: {
-    /** Sidans botten */
-    white: '#FFFFFF',
-    /** Text och knappar. Nästan svart – rent svart blir hårt mot vitt. */
-    black: '#111111',
-    /** Vilande ytor, t.ex. sektioner som ska skiljas ut mycket svagt */
-    surface: '#FAFAFA',
-    /** Hårfin linje – all avgränsning på sajten görs med den här */
-    line: '#E6E6E6',
+    /** Sidans botten – benvitt papper, inte rent vitt */
+    bone: '#F7F4EF',
+    /** Text och mörka ytor. Nästan svart med en dragning åt brunt. */
+    ink: '#14110E',
+    /** Vilande yta, en nyans varmare än bottnen */
+    surface: '#EFEAE1',
+    /** Hårfin linje – all avgränsning på ljus botten görs med den här */
+    line: '#DFD8CC',
+    /** Dämpad text på ljus botten (5,4:1 mot benvitt, 4,9:1 mot ytan) */
+    muted: '#6B635A',
+    /** Dämpad text på mörk botten (7,5:1 mot ink) */
+    mutedDark: '#ADA294',
     /**
-     * Dämpad text: beskrivningar, bildtexter.
-     * Vald mot `surface`, inte mot vitt – 4,8:1 där och 5,0:1 mot vitt.
-     * Ett ljusare grått klarar vitt men faller på den grå ytan.
+     * Accent, hämtad ur fotots barlampor. Två toner behövs:
+     * den ljusa lyser på mörk botten, den mörka är läsbar på ljus.
      */
-    muted: '#6F6F6F',
+    brass: '#D9A441',
+    brassText: '#835C1D',
   },
-  /** En familj, tre vikter. Schibsted Grotesk är ritad i Skandinavien. */
+  /** En familj, vikten bär hierarkin. Schibsted Grotesk är ritad i Skandinavien. */
   typsnitt: {
     sans: "'Schibsted Grotesk Variable', 'Helvetica Neue', Arial, sans-serif",
   },
   radie: {
-    /** Nästan raka hörn – runda hörn gör designen mjukare än den ska vara */
     liten: '2px',
     stor: '4px',
   },

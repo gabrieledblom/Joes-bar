@@ -24,7 +24,7 @@ const heroBild = Object.values(traffar)[0]?.default;
   -mt-16 pt-16 drar upp sektionen under den klibbiga headern (h-16) så att
   bilden syns bakom den, medan innehållet ändå centreras rätt.
 -->
-<section class="hero relative isolate -mt-16 flex min-h-[min(86svh,44rem)] items-center justify-center overflow-hidden bg-black pt-16">
+<section class="hero relative isolate -mt-16 flex min-h-[min(86svh,44rem)] items-center justify-center overflow-hidden bg-ink pt-16">
   {heroBild && (
     <>
       <Image
@@ -47,10 +47,10 @@ const heroBild = Object.values(traffar)[0]?.default;
     </>
   )}
 
-  <div class="hero-text ram flex flex-col items-center py-24 text-center text-white">
+  <div class="hero-text ram flex flex-col items-center py-24 text-center text-bone">
     <Logo variant="staplad" class="text-[clamp(2.75rem,8vw,5rem)]" />
 
-    <p data-entre style="--fordrojning: 120ms" class="mt-10 max-w-md text-lg leading-relaxed text-white/85">
+    <p data-entre style="--fordrojning: 120ms" class="mt-10 max-w-md text-lg leading-relaxed text-bone/85">
       Kvarterets restaurang och bar i {site.ort}. Husmanskost, burgare, kebab
       och sallader – avhämtning på cirka {ordering.forberedelseMin} minuter.
     </p>

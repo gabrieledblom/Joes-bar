@@ -57,17 +57,32 @@ fallback. Nycklar läggs i Vercel – aldrig i repot.
 
 ## Design och rörelse
 
-Nordisk minimalism i vitt, svart och grått – tokens i `src/config/theme.ts`.
-Systemet vilar på tre saker: gott om luft, hårfina linjer i stället för
-ramar och rutor, och en enda typsnittsfamilj (Schibsted Grotesk) där
-vikten bär hierarkin. Inga skuggor, inga fyllda ytor som inte behövs.
-Menyn sätts som en lugn lista med ledarlinje fram till priset, inte som kort.
+Lugnt och enkelt, men varmt – tokens i `src/config/theme.ts`. Gott om luft,
+hårfina linjer i stället för ramar, och en enda typsnittsfamilj (Schibsted
+Grotesk) där vikten bär hierarkin. Menyn sätts som en lista med ledarlinje
+fram till priset, inte som kort.
 
-Två fallgropar som är lätta att återinföra:
+**Neutralerna är varma, inte kliniska.** Rent `#FFFFFF` och kallgrått fick
+sajten att se ut som ett ordbehandlingsdokument bredvid ett foto av en varm
+bar. Bottnen är benvitt `#F7F4EF`, texten en nästan-svart som lutar åt brunt.
 
-- **`muted` är kalibrerad mot `surface`, inte mot vitt.** Ett ljusare grått
-  klarar 4,5:1 mot vitt men faller på den grå ytan.
-- **Animera aldrig in en stor rubrik från `opacity: 0`.** På en vit sida
+**Sidan alternerar ljust och mörkt.** Hero (mörk) → urval (ljus) →
+öppettider (mörk) → hitta hit (ljus) → footer (mörk). Utan den rytmen föll
+sidan rakt ned i platt ljust efter heron och tappade all stämning. `.mork`
+vänder allt inuti en sektion i ett svep i stället för att varje textklass
+ska dubbleras per sektion.
+
+**En accent, hämtad ur fotot.** Mässing från barlamporna i hero-bilden,
+använd på priser och sektionsreglar. Två toner behövs: `brass` lyser på
+mörk botten, `brassText` är den mörkare som klarar 4,5:1 på ljus.
+
+Tre fallgropar som är lätta att återinföra:
+
+- **`muted` är kalibrerad mot `surface`, inte mot bottnen.** En ljusare ton
+  klarar bottnen men faller på den något mörkare ytan.
+- **Mässing på ljus botten måste vara den mörka tonen.** `#D9A441` ger bara
+  3,3:1 mot benvitt – för lite för pristext.
+- **Animera aldrig in en stor rubrik från `opacity: 0`.** På en ljus sida
   står skärmen tom tills animationen är klar; det sänkte Speed Index från
   1,1 s till 4,2 s. Rubrikerna målas direkt, stödtexterna får röra sig.
 

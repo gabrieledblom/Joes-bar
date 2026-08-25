@@ -6,11 +6,14 @@
  * på :root i Layout.astro. Här mappas de in i Tailwind.
  */
 @theme inline {
-  --color-white: var(--brand-white);
-  --color-black: var(--brand-black);
+  --color-bone: var(--brand-bone);
+  --color-ink: var(--brand-ink);
   --color-surface: var(--brand-surface);
   --color-line: var(--brand-line);
   --color-muted: var(--brand-muted);
+  --color-muted-dark: var(--brand-muted-dark);
+  --color-brass: var(--brand-brass);
+  --color-brass-text: var(--brand-brass-text);
   --font-sans: var(--brand-sans);
   --radius-liten: var(--brand-radie-liten);
   --radius-stor: var(--brand-radie-stor);
@@ -22,8 +25,8 @@
     scroll-padding-top: 6rem;
   }
   body {
-    background: var(--brand-white);
-    color: var(--brand-black);
+    background: var(--brand-bone);
+    color: var(--brand-ink);
     font-family: var(--brand-sans);
     font-size: 1rem;
     line-height: 1.6;
@@ -31,11 +34,11 @@
     text-rendering: optimizeLegibility;
   }
   ::selection {
-    background: var(--brand-black);
-    color: var(--brand-white);
+    background: var(--brand-ink);
+    color: var(--brand-bone);
   }
   :focus-visible {
-    outline: 2px solid var(--brand-black);
+    outline: 2px solid var(--brand-ink);
     outline-offset: 3px;
     border-radius: 2px;
   }
@@ -95,9 +98,9 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    background: var(--brand-black);
-    color: var(--brand-white);
-    border: 1px solid var(--brand-black);
+    background: var(--brand-ink);
+    color: var(--brand-bone);
+    border: 1px solid var(--brand-ink);
     border-radius: var(--brand-radie-stor);
     padding: 0.8rem 1.6rem;
     font-size: 0.9375rem;
@@ -114,7 +117,7 @@
     justify-content: center;
     gap: 0.5rem;
     background: transparent;
-    color: var(--brand-black);
+    color: var(--brand-ink);
     border: 1px solid var(--brand-line);
     border-radius: var(--brand-radie-stor);
     padding: 0.8rem 1.6rem;
@@ -124,7 +127,7 @@
     transition: border-color 200ms ease, background-color 200ms ease;
   }
   .btn-linje:hover {
-    border-color: var(--brand-black);
+    border-color: var(--brand-ink);
     background: var(--brand-surface);
   }
 
@@ -140,18 +143,18 @@
     border-radius: 999px;
     font-size: 1rem;
     line-height: 1;
-    color: var(--brand-black);
+    color: var(--brand-ink);
     transition: border-color 180ms ease, background-color 180ms ease, color 180ms ease;
   }
   .btn-plus:hover {
-    border-color: var(--brand-black);
-    background: var(--brand-black);
-    color: var(--brand-white);
+    border-color: var(--brand-ink);
+    background: var(--brand-ink);
+    color: var(--brand-bone);
   }
   .btn-plus.tillagd {
-    border-color: var(--brand-black);
-    background: var(--brand-black);
-    color: var(--brand-white);
+    border-color: var(--brand-ink);
+    background: var(--brand-ink);
+    color: var(--brand-bone);
   }
 
   /*
@@ -213,8 +216,8 @@
 
   .falt {
     width: 100%;
-    background: var(--brand-white);
-    color: var(--brand-black);
+    background: var(--brand-bone);
+    color: var(--brand-ink);
     border: 1px solid var(--brand-line);
     border-radius: var(--brand-radie-stor);
     padding: 0.7rem 0.9rem;
@@ -222,16 +225,16 @@
     transition: border-color 180ms ease;
   }
   .falt:hover { border-color: var(--brand-muted); }
-  .falt:focus-visible { border-color: var(--brand-black); }
+  .falt:focus-visible { border-color: var(--brand-ink); }
   .falt.har-fel,
   .behover-val {
-    border-color: var(--brand-black);
+    border-color: var(--brand-ink);
     box-shadow: 0 0 0 3px var(--brand-line);
   }
   .faltfel {
     font-size: 0.8125rem;
     font-weight: 500;
-    color: var(--brand-black);
+    color: var(--brand-ink);
   }
 }
 
@@ -294,20 +297,20 @@ dialog[open]::backdrop { animation: backdrop-in 300ms ease; }
  * som håller kontrasten över ett foto.
  */
 .btn-ljus {
-  background: var(--brand-white);
-  color: var(--brand-black);
-  border-color: var(--brand-white);
+  background: var(--brand-bone);
+  color: var(--brand-ink);
+  border-color: var(--brand-bone);
 }
 .btn-linje-ljus {
-  color: var(--brand-white);
+  color: var(--brand-bone);
   border-color: rgba(255, 255, 255, 0.45);
 }
 .btn-linje-ljus:hover {
-  border-color: var(--brand-white);
+  border-color: var(--brand-bone);
   background: rgba(255, 255, 255, 0.1);
 }
 .hero :focus-visible {
-  outline-color: var(--brand-white);
+  outline-color: var(--brand-bone);
 }
 
 /*
@@ -322,7 +325,7 @@ dialog[open]::backdrop { animation: backdrop-in 300ms ease; }
   background:
     radial-gradient(ellipse at 22% 18%, rgba(255, 255, 255, 0.08) 0%, transparent 55%),
     radial-gradient(ellipse at 78% 82%, rgba(255, 255, 255, 0.06) 0%, transparent 55%),
-    var(--brand-black);
+    var(--brand-ink);
 }
 
 /* Långsam, knappt märkbar inzoomning som ger fotot liv */
@@ -345,22 +348,22 @@ html.js .hero-bild {
   border-color: transparent;
   background: transparent;
   backdrop-filter: none;
-  color: var(--brand-white);
+  color: var(--brand-bone);
 }
 [data-header][data-over-hero] .text-muted {
   color: rgba(255, 255, 255, 0.72);
 }
 [data-header][data-over-hero] .btn {
-  background: var(--brand-white);
-  color: var(--brand-black);
-  border-color: var(--brand-white);
+  background: var(--brand-bone);
+  color: var(--brand-ink);
+  border-color: var(--brand-bone);
 }
 [data-header][data-over-hero] .btn [data-korg-antal] {
-  background: var(--brand-black);
-  color: var(--brand-white);
+  background: var(--brand-ink);
+  color: var(--brand-bone);
 }
 [data-header][data-over-hero] :focus-visible {
-  outline-color: var(--brand-white);
+  outline-color: var(--brand-bone);
 }
 
 /*
@@ -378,4 +381,60 @@ html.js .hero-bild {
    och behåller den. */
 .hero-text .btn {
   text-shadow: none;
+}
+
+/* ------------------------------------------------- Mörka sektioner -- */
+/*
+ * Sidan alternerar ljust och mörkt så att heron får uppföljning i stället
+ * för att sidan faller ned i platt vitt direkt efteråt. Allt inuti .mork
+ * vänds i ett svep – annars måste varje textklass dubbleras per sektion.
+ */
+.mork {
+  background: var(--brand-ink);
+  color: var(--brand-bone);
+}
+.mork .text-muted,
+.mork .etikett {
+  color: var(--brand-muted-dark);
+}
+.mork .border-line,
+.mork .divide-line > * + * {
+  border-color: color-mix(in srgb, var(--brand-bone) 16%, transparent);
+}
+.mork .bg-line {
+  background: color-mix(in srgb, var(--brand-bone) 16%, transparent);
+}
+.mork .accent {
+  color: var(--brand-brass);
+}
+.mork :focus-visible {
+  outline-color: var(--brand-bone);
+}
+.mork .btn {
+  background: var(--brand-bone);
+  color: var(--brand-ink);
+  border-color: var(--brand-bone);
+}
+.mork .btn-linje {
+  color: var(--brand-bone);
+  border-color: color-mix(in srgb, var(--brand-bone) 40%, transparent);
+}
+.mork .btn-linje:hover {
+  border-color: var(--brand-bone);
+  background: color-mix(in srgb, var(--brand-bone) 10%, transparent);
+}
+
+/* Mässingsaccent på ljus botten – mörkare ton för att klara 4,5:1 */
+.accent {
+  color: var(--brand-brass-text);
+}
+
+/* Tunn mässingsregel över en sektionsrubrik */
+.regel::before {
+  content: '';
+  display: block;
+  width: 2.5rem;
+  height: 2px;
+  margin-bottom: 1.25rem;
+  background: var(--brand-brass);
 }

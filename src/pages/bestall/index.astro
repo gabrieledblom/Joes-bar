@@ -11,7 +11,7 @@ import { harTelefon, site } from '../../config/site';
     <p class="etikett">Kassa</p>
     <h1 class="mt-6 text-[clamp(2rem,5vw,3rem)]">Beställ mat</h1>
     <p class="mt-5 text-muted">
-      Avhämtning i {site.ort}. <span class="text-black">Du betalar när du hämtar</span> – ingen betalning online.
+      Avhämtning i {site.ort}. <span class="text-ink">Du betalar när du hämtar</span> – ingen betalning online.
     </p>
 
     <noscript>
@@ -37,7 +37,7 @@ import { harTelefon, site } from '../../config/site';
 
       <div data-korg-innehall class="mt-6">
         <ul data-korg-rader class="min-h-32"></ul>
-        <div class="flex items-baseline justify-between gap-6 border-t border-black pt-4">
+        <div class="flex items-baseline justify-between gap-6 border-t border-ink pt-4">
           <span class="font-medium">Summa</span>
           <span class="pris text-xl font-medium" data-korg-summa>–</span>
         </div>
@@ -53,7 +53,7 @@ import { harTelefon, site } from '../../config/site';
         <div
           data-last-meddelande
           hidden
-          class="absolute inset-0 z-10 flex items-center rounded-[var(--brand-radie-stor)] border border-line bg-white/95 p-6 backdrop-blur-sm"
+          class="absolute inset-0 z-10 flex items-center rounded-[var(--brand-radie-stor)] border border-line bg-bone/95 p-6 backdrop-blur-sm"
           role="status"
         ></div>
 
@@ -96,13 +96,13 @@ import { harTelefon, site } from '../../config/site';
               role="alert"
               aria-live="assertive"
               hidden
-              class="border border-black p-4 text-sm font-medium"
+              class="border border-ink p-4 text-sm font-medium"
             ></div>
 
             <button type="submit" data-skicka class="btn w-full !py-3.5">Skicka beställning</button>
             <p class="text-center text-sm text-muted">
               Genom att beställa godkänner du vår
-              <a class="lank lank-in text-black" href="/integritetspolicy">integritetspolicy</a>.
+              <a class="lank lank-in text-ink" href="/integritetspolicy">integritetspolicy</a>.
             </p>
           </fieldset>
         </form>
