@@ -64,6 +64,25 @@ SEK, vilket det alltid är här.
 
 ---
 
+### Varför det ligger en vercel.json här
+
+Vercel-projektet var uppsatt med framework-förinställningen **Blitz.js**,
+kvar sedan Astro-tiden då den inte spelade någon roll. Blitz-förinställningen
+skjuter in `target` i Next-konfigurationen, och Next.js 16 vägrar starta med
+den:
+
+```
+Error: The "target" property is no longer supported in next.config.js.
+```
+
+`vercel.json` sätter `"framework": "nextjs"` och överstyr projektinställningen
+från koden, så bygget inte kan gå sönder igen av en inställning i
+webbgränssnittet. Ändra gärna även förinställningen under **Project Settings →
+Build & Development Settings → Framework Preset** till Next.js, men filen
+räcker.
+
+---
+
 ## Miljövariabler
 
 | Variabel | Vad den gör | Var den kommer ifrån |
