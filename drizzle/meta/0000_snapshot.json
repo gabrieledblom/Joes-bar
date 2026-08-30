@@ -1,0 +1,214 @@
+{
+  "id": "43dbcdc4-d92e-4ed2-9781-36fd68893e8f",
+  "prevId": "00000000-0000-0000-0000-000000000000",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.orders": {
+      "name": "orders",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "ordernummer": {
+          "name": "ordernummer",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "order_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'vantar_betalning'"
+        },
+        "kund_namn": {
+          "name": "kund_namn",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "kund_telefon": {
+          "name": "kund_telefon",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kund_epost": {
+          "name": "kund_epost",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "typ": {
+          "name": "typ",
+          "type": "order_typ",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'avhamtning'"
+        },
+        "bordsnummer": {
+          "name": "bordsnummer",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "notering": {
+          "name": "notering",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "rader": {
+          "name": "rader",
+          "type": "jsonb",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "summa_oren": {
+          "name": "summa_oren",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "stripe_payment_intent_id": {
+          "name": "stripe_payment_intent_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "betald_med": {
+          "name": "betald_med",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kvitto_epost_skickat": {
+          "name": "kvitto_epost_skickat",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "kvitto_sms_skickat": {
+          "name": "kvitto_sms_skickat",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "skapad": {
+          "name": "skapad",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "betald": {
+          "name": "betald",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "uppdaterad": {
+          "name": "uppdaterad",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "orders_status_idx": {
+          "name": "orders_status_idx",
+          "columns": [
+            {
+              "expression": "status",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "orders_skapad_idx": {
+          "name": "orders_skapad_idx",
+          "columns": [
+            {
+              "expression": "skapad",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "orders_ordernummer_unique": {
+          "name": "orders_ordernummer_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "ordernummer"
+          ]
+        },
+        "orders_stripe_payment_intent_id_unique": {
+          "name": "orders_stripe_payment_intent_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "stripe_payment_intent_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.order_status": {
+      "name": "order_status",
+      "schema": "public",
+      "values": [
+        "vantar_betalning",
+        "ny",
+        "tillagas",
+        "klar",
+        "levererad",
+        "avbruten"
+      ]
+    },
+    "public.order_typ": {
+      "name": "order_typ",
+      "schema": "public",
+      "values": [
+        "avhamtning",
+        "bord"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

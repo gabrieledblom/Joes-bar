@@ -27,6 +27,10 @@ npm run dev                    # http://localhost:3000
 | `npm run build` | produktionsbygge |
 | `npm run db:push` | skapar tabellerna i databasen |
 
+Har du ingen lokal utvecklingsmiljö går tabellerna lika bra att skapa genom
+att klistra in `drizzle/0000_init.sql` i Neons SQL Editor. Filen är
+genererad ur `src/lib/db/schema.ts` och innehåller exakt samma tabell.
+
 Utan `DATABASE_URL` körs ordrarna i ett minnesläge. **Det fungerar bara
 lokalt.** På Vercel körs varje anrop i en egen instans, så ordern som
 `/api/order` skapar finns inte kvar när Stripes webhook svarar och inte
