@@ -27,9 +27,14 @@ npm run dev                    # http://localhost:3000
 | `npm run build` | produktionsbygge |
 | `npm run db:push` | skapar tabellerna i databasen |
 
-Utan `DATABASE_URL` körs ordrarna i minnet och försvinner när servern startas
-om. Utan Stripe-nycklar går det inte att betala; kassan säger till i stället
-för att låtsas. Resten av sajten fungerar.
+Utan `DATABASE_URL` körs ordrarna i ett minnesläge. **Det fungerar bara
+lokalt.** På Vercel körs varje anrop i en egen instans, så ordern som
+`/api/order` skapar finns inte kvar när Stripes webhook svarar och inte
+heller när köksskärmen frågar. `DATABASE_URL` är alltså obligatorisk i
+drift, inte valfri.
+
+Utan Stripe-nycklar går det inte att betala; kassan säger till i stället för
+att låtsas. Resten av sajten fungerar.
 
 ---
 
