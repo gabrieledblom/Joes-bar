@@ -1,150 +1,214 @@
-# Joe's Bar – Järna
+# Joe's Bar - beställning online och köksskärm
 
-Webbplats med SMS-beställning för Joe's Bar, restaurang & bar i Järna.
-Byggd med Astro + Tailwind CSS, driftad på Vercel, SMS via 46elks.
+Två sammankopplade ytor i samma Next.js-app:
 
-**Icke-teknisk?** Läs [HANDOVER.md](./HANDOVER.md) – där står hur du ändrar
-priser, öppettider och stänger beställningar, plus alla uppgifter som
-fortfarande behöver fyllas i (TODO-listan).
+- **Gästens sajt** (`/`, `/meny`, `/kassa`) - bläddra i menyn, lägg i varukorg,
+  betala med kort eller Swish.
+- **Köksskärmen** (`/kok`) - inkommande ordrar i realtid, lösenordsskyddad.
 
-## Kommandon
+Astro-sajten som låg här tidigare är ersatt. Den tog beställningar via sms
+utan betalning; den här tar betalt innan köket börjar laga.
+
+---
+
+## Snabbstart
 
 ```bash
-npm install       # installera beroenden
-npm run dev       # utvecklingsserver
-npm test          # enhetstester (Vitest)
-npm run check     # typkontroll (astro check)
-npm run build     # produktionsbygge till dist/
-npm run e2e       # röktest av orderflödet + axe-tillgänglighetsskanning
+npm install
+cp .env.example .env.local     # fyll i det du har
+npm run dev                    # http://localhost:3000
 ```
 
-## Struktur
+| Kommando | Gör |
+| --- | --- |
+| `npm run dev` | utvecklingsserver |
+| `npm test` | enhetstester (priser, validering, menydata) |
+| `npm run typecheck` | typkontroll |
+| `npm run build` | produktionsbygge |
+| `npm run db:push` | skapar tabellerna i databasen |
 
-```
-src/config/    all kundspecifik data – meny, öppettider, tema, beställnings-
-               inställningar, kontaktuppgifter. Komponenterna läser härifrån;
-               inga priser/tider/telefonnummer är hårdkodade någon annanstans.
-src/lib/       öppettidslogik (inkl. stängning efter midnatt), prisberäkning,
-               telefonnormalisering, varukorg – delas av klient, server och tester.
-src/pages/     /, /meny, /bestall, /bestall/tack, /om-oss, /integritetspolicy
-api/order.ts   beställningsendpointen (Vercel Function): validerar allt på
-               servern, räknar om priser från menyn, rate-limitar, loggar till
-               Upstash Redis (via src/lib/store.ts) och skickar två SMS via
-               46elks (mock-läge utan API-nycklar).
-```
+Utan `DATABASE_URL` körs ordrarna i minnet och försvinner när servern startas
+om. Utan Stripe-nycklar går det inte att betala; kassan säger till i stället
+för att låtsas. Resten av sajten fungerar.
+
+---
+
+## ⚠️ Driftsättning i rätt ordning
+
+`STRIPE_WEBHOOK_SECRET` går inte att skapa i förväg. Den kräver en färdig
+URL, och utan den blir **ingen betald order synlig i köket**. Pengarna dras,
+gästen väntar, skärmen är tom. Följ ordningen:
+
+1. **Skapa databasen.** Neon eller Vercel Postgres. Lägg `DATABASE_URL` i
+   Vercel och kör `npm run db:push` mot den.
+2. **Deploya** med Stripes testnycklar (`sk_test_...`). Nu finns en riktig
+   URL, t.ex. `https://joesbar.vercel.app`.
+3. **Registrera webhooken** i Stripe Dashboard → Developers → Webhooks:
+   - Endpoint: `https://DIN-URL/api/webhooks/stripe`
+   - Händelser: `payment_intent.succeeded`,
+     `payment_intent.payment_failed`, `payment_intent.canceled`
+4. **Kopiera signeringshemligheten** (`whsec_...`) som Stripe visar, lägg in
+   den som `STRIPE_WEBHOOK_SECRET` i Vercel.
+5. **Deploya om.** Miljövariabler slår igenom först vid ny deploy.
+6. **Testa hela vägen** med Stripes testkort `4242 4242 4242 4242`. Ordern
+   ska dyka upp på `/kok` inom några sekunder.
+7. Byt till skarpa nycklar och **upprepa steg 3 till 5** - testläge och
+   skarpt läge har varsin webhook och varsin hemlighet.
+
+### Slå på Swish
+
+Swish visas bara om det är påslaget i Stripe: **Dashboard → Settings →
+Payment methods → Swish**. Koden ber om alla aktiverade metoder, så kort och
+Swish dyker upp av sig själva när de är på. Swish kräver att beloppet är i
+SEK, vilket det alltid är här.
+
+---
 
 ## Miljövariabler
 
-Se `.env.example`. Utan 46elks-nycklar körs SMS i mock-läge (loggas i stället
-för att skickas); i produktion utan nycklar stängs beställningen av med ett
-tydligt fel. Orderloggen kräver "Upstash for Redis" via Vercel Marketplace
-(miljövariablerna injiceras automatiskt); utan den används ett in-memory-
-fallback. Nycklar läggs i Vercel – aldrig i repot.
+| Variabel | Vad den gör | Var den kommer ifrån |
+| --- | --- | --- |
+| `STRIPE_SECRET_KEY` | Serverns Stripe-nyckel | Stripe → Developers → API keys |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | Publik Stripe-nyckel | Samma ställe |
+| `STRIPE_WEBHOOK_SECRET` | Bevisar att betalningsbeskedet är äkta | Skapas när webhooken registreras, se ovan |
+| `DATABASE_URL` | Postgres-anslutning | Neon eller Vercel Postgres |
+| `ELKS_API_USERNAME` / `ELKS_API_PASSWORD` | 46elks Basic Auth | 46elks dashboard |
+| `ELKS_SMS_FROM` | Avsändarnamn i sms, max 11 tecken | Väljs av er |
+| `RESEND_API_KEY` | E-postkvitton | resend.com → API Keys |
+| `RESEND_FROM` | Avsändaradress | Verifierad domän hos Resend |
+| `KITCHEN_DASHBOARD_PASSWORD` | Lösenord till `/kok` | Väljs av er |
+| `NEXT_PUBLIC_SITE_URL` | Länkar i kvitton, Stripes återkomst-URL | Er domän |
 
-## Kvalitetskrav som CI-checklista
+---
 
-- `npm test` – 47 tester: öppettider (inkl. natten till lördag), serverside-
-  prisomräkning, rate limit, honeypot, SMS-fellägen, GDPR-rensning
-- `npm run e2e` – beställningsmodalen (öppna, kräva tillval, summa, Esc),
-  korg → utcheckning → bekräftelse, låst läge utanför öppettid, axe
-  (WCAG 2.2 AA) utan fel på alla sidor
-- `npm run verify` – kör check, test, build och e2e i rätt ordning.
-  Använd den före push: e2e ensam kör mot en redan byggd `dist/`.
-- Lighthouse mobil: Performance / Accessibility / Best Practices 100 på
-  alla sidor, CLS 0. SEO visar 66 så länge indexeringen är avstängd – enda
-  fallerande audit är `is-crawlable`, alltså noindex-spärren nedan. Den
-  går till 100 i samma stund flaggan slås på.
+## 📋 Menyn: ändra priser och rätter
 
-## Design och rörelse
+Allt ligger i **`src/data/menu-data.ts`**. Ingen annan fil behöver röras.
 
-Lugnt och enkelt, men varmt – tokens i `src/config/theme.ts`. Gott om luft,
-hårfina linjer i stället för ramar, och en enda typsnittsfamilj (Schibsted
-Grotesk) där vikten bär hierarkin. Menyn sätts som en lista med ledarlinje
-fram till priset, inte som kort.
+```ts
+{ id: "pizza-the-classic", namn: "The Classic", pris: 113, ... }
+```
 
-**Neutralerna är varma, inte kliniska.** Rent `#FFFFFF` och kallgrått fick
-sajten att se ut som ett ordbehandlingsdokument bredvid ett foto av en varm
-bar. Bottnen är benvitt `#F7F4EF`, texten en nästan-svart som lutar åt brunt.
+- **Ändra pris:** byt siffran efter `pris:`.
+- **Sätt pris på en rätt som saknar det:** `pris: null` → `pris: 129`.
+  Så länge priset är `null` visas "Pris kommer snart" och rätten går inte
+  att lägga i varukorgen. Ingen kan beställa något utan pris.
+- **Slut i köket:** `tillganglig: true` → `false`.
 
-**Sidan alternerar ljust och mörkt.** Hero (mörk) → urval (ljus) →
-öppettider (mörk) → hitta hit (ljus) → footer (mörk). Utan den rytmen föll
-sidan rakt ned i platt ljust efter heron och tappade all stämning. `.mork`
-vänder allt inuti en sektion i ett svep i stället för att varje textklass
-ska dubbleras per sektion.
+Priserna slår igenom överallt samtidigt: menyn, varukorgen, serverns
+kontrollräkning, kvittot och köksskärmen.
 
-**En accent, hämtad ur fotot.** Mässing från barlamporna i hero-bilden,
-använd på priser och sektionsreglar. Två toner behövs: `brass` lyser på
-mörk botten, `brassText` är den mörkare som klarar 4,5:1 på ljus.
+### Rätter som väntar på pris
 
-Tre fallgropar som är lätta att återinföra:
+Menyn är inlagd efter det tryckta underlaget. Tio rätter saknar pris där och
+har därför `pris: null`:
 
-- **`muted` är kalibrerad mot `surface`, inte mot bottnen.** En ljusare ton
-  klarar bottnen men faller på den något mörkare ytan.
-- **Mässing på ljus botten måste vara den mörka tonen.** `#D9A441` ger bara
-  3,3:1 mot benvitt – för lite för pristext.
-- **Animera aldrig in en stor rubrik från `opacity: 0`.** På en ljus sida
-  står skärmen tom tills animationen är klar; det sänkte Speed Index från
-  1,1 s till 4,2 s. Rubrikerna målas direkt, stödtexterna får röra sig.
+- **Smash Burgare** (8 st): Joe's Original, Smokey West, Bacon Blvd,
+  Crispy Bird, Black Gold, Firebird, Hot Shot, Green Light
+- **Andra alternativ** (2 st): Fish & Chips, Ribs
 
-Rörelsen ligger samlad i `src/styles/global.css`: kort entré på
-stödelement, staggered scroll-reveal via `--fordrojning`, linjer som växer
-fram under länkar och en dämpad modalanimation. Allt tystnar under
-`prefers-reduced-motion`.
+De syns på menyn men går inte att beställa. Fyll i priserna så släpps de in
+automatiskt.
 
-## Hero-bilden
+### Övriga uppgifter som saknas
 
-`Hero.astro` plockar upp `src/assets/hero.{jpg,jpeg,png,webp,avif}` via
-`import.meta.glob` och kör den genom `astro:assets`, som komprimerar,
-konverterar till webp och genererar srcset i fyra bredder. Ägaren kan
-alltså lägga in en obehandlad originalfil utan att prestandan tar skada.
+`src/data/restaurang.ts` har tomma fält som måste fyllas i innan lansering:
+gatuadress, telefonnummer, e-post och organisationsnummer. Stripes
+Swish-villkor kräver att kontaktuppgifterna syns för gästen, och `/villkor`
+visar en tydlig varning så länge de saknas.
 
-Hittas ingen fil renderas varken bilden eller den mörka gradienten, så det
-blir ingen 404 – bara den svarta bottnen. Det är avsiktligt: en `<img>` som
-alltid pekade på en fil som kanske inte fanns kostade 4 poäng i Best
-Practices och 1,2 s Speed Index.
+Sajten är dessutom märkt `noindex` tills innehållet är komplett. Ta bort
+`robots`-raden i `src/app/layout.tsx` när adress och telefon är på plats.
 
-Gradienten är satt så att vit text är läsbar även över en nästan vit bild
-(stresstestat), utan att mörka ned ett redan mörkt foto i onödan.
+---
 
-## Beställningsmodalen
+## Så hänger det ihop
 
-`OrderModal.astro` renderas på alla sidor utom `/bestall*` och öppnas av
-varje länk med `data-oppna-order`. Länkarna pekar på `/bestall`, så utan
-JavaScript – eller vid ctrl/cmd-klick – fungerar de som vanliga länkar.
-Bygger på `<dialog showModal()>`, vilket ger fokusfälla, Esc och
-bakgrundsinertisering från webbläsaren.
+```
+src/data/menu-data.ts     menyn - enda stället priser ändras
+src/data/restaurang.ts    adress, öppettider, beställningsregler
 
-## Sökmotorindexering
+src/lib/order-validering.ts  räknar om priser från menyn på servern
+src/lib/db/                  schema och orderhantering (Drizzle + Neon)
+src/lib/kvitto/              sms via 46elks, e-post via Resend
 
-`site.sokmotorindexering` i `src/config/site.ts` styr om sajten får
-indexeras. Den står på `false` tills adress och telefonnummer är ifyllda:
-sidorna får `noindex`, robots.txt svarar `Disallow: /` och ingen sitemap
-genereras. Sätt `true` när innehållet är komplett.
+src/app/api/order              skapar order + PaymentIntent
+src/app/api/webhooks/stripe    enda stället en order blir betald
+src/app/api/kok/ordrar         köksskärmen hämtar härifrån var 3:e sekund
+src/proxy.ts                   låser /kok och /api/kok
+```
+
+### Två regler koden vilar på
+
+**Priser räknas alltid om på servern.** Klienten skickar bara rätt-id och
+antal. Skulle den skicka en egen summa spelar det ingen roll; servern slår
+upp priset i menyn på nytt. Utan det kunde vem som helst betala en krona för
+en pizza.
+
+**Bara Stripes webhook gör en order betald.** Ordern skapas i läget
+`vantar_betalning` och syns inte i köket. Först när webhooken kommer, med
+verifierad signatur, flyttas den till `ny`. En avbruten betalning blir därför
+aldrig mat.
+
+### Varför polling och inte websockets
+
+Köksskärmen frågar `/api/kok/ordrar` var tredje sekund. Ett kök på en adress
+med en skärm märker inte tre sekunder när maten tar en halvtimme. Polling
+behöver ingen extra tjänst, fungerar på Vercel utan särskild konfiguration
+och reder ut sig själv efter ett tapp i wifi utan att någon laddar om sidan.
+
+---
+
+## Design
+
+Paletten och typografin kommer från den tryckta menyn: neon på nästan svart
+lila, tungt kondenserat displaysnitt (Anton) för rubriker, Geist för text.
+Tokens ligger i `src/app/globals.css`.
+
+**Färgregeln:** rosa är enda accentfärgen för interaktion; varje knapp, länk
+och fokusring är rosa. Gult, cyan och orange används bara som
+kategoriidentitet, aldrig som knapp. Neonfyllningar bär alltid nästan svart
+text, eftersom vit text på rosa ger 3,5:1 och underkänns.
+
+**Temat är låst mörkt.** Menyn är tryckt mörk och stället är en bar.
+
+**Rörelsen är avsiktligt sparsam.** Scroll-reveal görs helt i CSS med
+`animation-timeline: view()`, inte med JavaScript. Den tidigare
+Framer Motion-varianten renderade `opacity: 0` på servern, så utan
+JavaScript var halva startsidan osynlig. Innehållet är nu synligt som
+utgångsläge och animationen läggs på först där webbläsaren klarar den.
+Rubriker animeras aldrig in.
+
+---
+
+## Vad som inte är byggt
+
+Uttalat utanför uppdraget: flera restauranger, stämpelkort, bordsbokning.
+
+Värt att veta:
+
+- **Ingen spärr mot spam-beställningar.** `/api/order` kan anropas i loop och
+  skapa obetalda ordrar. De når aldrig köket, men databasen växer. Lägg till
+  rate limit innan sajten sprids.
+- **Betalflödet är inte testat mot riktiga Stripe-nycklar.** Koden är
+  granskad och byggd, men steg 6 i listan ovan måste göras med testkort
+  innan ni tar emot en första riktig beställning.
+- **Inga foton.** Startsidan är typdriven med menyns färgfält. Egna bilder på
+  maten och lokalen skulle lyfta den; lägg dem i `public/` och byt ut
+  `Neonhorisont` i heron mot `next/image` med `priority`.
 
 ---
 
 ## Agent skills
 
-Det här repot innehåller också `scripts/install-skills.sh` som installerar
-de design-/frontend-skills som användes när sajten byggdes. Skillsen hämtas
-från sina upstream-repon vid körning – inget vendras här:
+`scripts/install-skills.sh` installerar de design- och frontend-skills som
+användes när sajten byggdes. De hämtas från sina upstream-repon vid körning
+och vendras inte här.
 
 ```bash
 ./scripts/install-skills.sh                    # globalt (~/.claude/skills)
 SKILLS_SCOPE=-p ./scripts/install-skills.sh    # till ./.claude/skills
 ```
 
-| Källa | Skills | Täcker |
-| --- | --- | --- |
-| `emilkowalski/skill` | 9 | Animation, UI-polish, prototyper |
-| `Leonxlnx/taste-skill` | 10 | Visuell riktning, brand kits |
-| `pbakaus/impeccable` | 1 | Bred frontend-design/kritik |
-| `nextlevelbuilder/ui-ux-pro-max-skill` | 7 | Tokens, paletter, stilbibliotek |
-| `anthropics/skills` | 9 | Frontend-design, docs, artifacts |
-| `vercel-labs/agent-skills` | 9 | React/Next-praxis, deploys, granskningar |
-| `remotion-dev/skills` | 12 | Programmatisk video |
-| `bencium/bencium-marketplace` | 7 | UX-perspektiv, design-audits, AEO |
-| `AccessLint/skills` | 5 | Tillgänglighet: scan/inspect/audit/fix/diff |
-
-> Skills körs med agentens fulla behörigheter – läs igenom en skills
-> `SKILL.md` innan du litar på den.
+> Skills körs med agentens fulla behörigheter. Läs en skills `SKILL.md`
+> innan du litar på den.

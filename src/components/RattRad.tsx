@@ -1,0 +1,220 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { MinusIcon, PlusIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
+import {
+  garAttBestalla,
+  kategoriKraverProtein,
+  proteinval,
+  type MenuItem,
+  type Protein,
+} from "@/data/menu-data";
+import { useCart } from "@/lib/cart";
+import { formateraPris } from "@/lib/pengar";
+
+export function RattRad({ ratt }: { ratt: MenuItem }) {
+  const [oppen, setOppen] = useState(false);
+  const bestallbar = garAttBestalla(ratt);
+
+  return (
+    <li className="border-b border-jb-linje-svag last:border-b-0">
+      <button
+        type="button"
+        onClick={() => setOppen(true)}
+        disabled={!bestallbar}
+        className="group flex w-full items-baseline gap-3 py-4 text-left transition-opacity disabled:cursor-not-allowed disabled:opacity-55"
+      >
+        <span className="min-w-0 flex-1">
+          <span className="jb-display block text-lg text-jb-text group-enabled:group-hover:text-jb-rosa">
+            {ratt.namn}
+          </span>
+          <span className="mt-0.5 block text-sm text-jb-dampad">
+            {ratt.beskrivning}
+          </span>
+        </span>
+
+        <span aria-hidden className="jb-ledare hidden h-px flex-1 sm:block" />
+
+        <span className="shrink-0 text-right">
+          {ratt.pris !== null ? (
+            <span className="text-base tabular-nums text-jb-text">
+              {formateraPris(ratt.pris)}
+            </span>
+          ) : (
+            <span className="text-xs text-jb-dampad">Pris kommer snart</span>
+          )}
+        </span>
+      </button>
+
+      {oppen ? (
+        <BestallDialog ratt={ratt} stang={() => setOppen(false)} />
+      ) : null}
+    </li>
+  );
+}
+
+function BestallDialog({
+  ratt,
+  stang,
+}: {
+  ratt: MenuItem;
+  stang: () => void;
+}) {
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const { laggTill } = useCart();
+  const [antal, setAntal] = useState(1);
+  const [notering, setNotering] = useState("");
+  const [protein, setProtein] = useState<Protein | "">("");
+  const [fel, setFel] = useState("");
+
+  const kraverProtein = kategoriKraverProtein.includes(ratt.kategori);
+
+  // <dialog showModal()> ger fokusfälla, Esc och inert bakgrund från
+  // webbläsaren. Att bygga det för hand blir alltid sämre.
+  useEffect(() => {
+    dialogRef.current?.showModal();
+  }, []);
+
+  function skicka(e: React.FormEvent) {
+    e.preventDefault();
+    if (kraverProtein && !protein) {
+      setFel("Välj protein innan du lägger till.");
+      return;
+    }
+    laggTill({
+      rattId: ratt.id,
+      antal,
+      notering: notering.trim(),
+      protein: protein || undefined,
+    });
+    stang();
+  }
+
+  return (
+    <dialog
+      ref={dialogRef}
+      onClose={stang}
+      onClick={(e) => {
+        // Klick utanför panelen stänger. Target är dialogen själv bara när
+        // klicket landat på backdropen.
+        if (e.target === dialogRef.current) stang();
+      }}
+      className="m-auto w-[min(30rem,calc(100vw-2rem))] rounded-jb border border-jb-linje bg-jb-yta p-0 text-jb-text backdrop:bg-black/70 backdrop:backdrop-blur-sm"
+      aria-labelledby="bestall-rubrik"
+    >
+      <form onSubmit={skicka} className="p-5 sm:p-6">
+        <div className="flex items-start gap-4">
+          <div className="min-w-0 flex-1">
+            <h2 id="bestall-rubrik" className="jb-display text-2xl">
+              {ratt.namn}
+            </h2>
+            <p className="mt-1 text-sm text-jb-dampad">{ratt.beskrivning}</p>
+          </div>
+          <button
+            type="button"
+            onClick={stang}
+            aria-label="Stäng"
+            className="-mr-1 -mt-1 rounded-jb p-2 text-jb-dampad hover:text-jb-text"
+          >
+            <XIcon size={20} weight="bold" aria-hidden />
+          </button>
+        </div>
+
+        {kraverProtein ? (
+          <fieldset className="mt-6">
+            <legend className="text-sm font-medium text-jb-text">
+              Välj protein
+            </legend>
+            <div className="mt-2.5 flex flex-wrap gap-2">
+              {proteinval.map((val) => (
+                <label
+                  key={val}
+                  className={`cursor-pointer rounded-jb border px-3.5 py-2.5 text-sm transition-colors has-[:checked]:border-jb-rosa has-[:checked]:bg-jb-rosa has-[:checked]:text-jb-motsatt ${
+                    protein === val
+                      ? "border-jb-rosa"
+                      : "border-jb-linje text-jb-dampad hover:border-jb-dampad"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="protein"
+                    value={val}
+                    checked={protein === val}
+                    onChange={() => {
+                      setProtein(val);
+                      setFel("");
+                    }}
+                    className="sr-only"
+                  />
+                  {val}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        ) : null}
+
+        <div className="mt-6">
+          <label
+            htmlFor="notering"
+            className="block text-sm font-medium text-jb-text"
+          >
+            Notering till köket
+          </label>
+          <input
+            id="notering"
+            type="text"
+            value={notering}
+            onChange={(e) => setNotering(e.target.value)}
+            maxLength={200}
+            placeholder="Utan lök"
+            className="mt-2 w-full rounded-jb border border-jb-linje bg-jb-botten px-3.5 py-3 text-base text-jb-text placeholder:text-jb-dampad/70 focus:border-jb-rosa focus:outline-none"
+          />
+          <p className="mt-1.5 text-xs text-jb-dampad">
+            Frivilligt. Allergier tar vi säkrast per telefon.
+          </p>
+        </div>
+
+        {fel ? (
+          <p role="alert" className="mt-4 text-sm text-jb-orange">
+            {fel}
+          </p>
+        ) : null}
+
+        <div className="mt-6 flex items-center gap-3">
+          <div className="flex items-center rounded-jb border border-jb-linje">
+            <button
+              type="button"
+              onClick={() => setAntal((n) => Math.max(1, n - 1))}
+              aria-label="Minska antal"
+              className="p-3.5 text-jb-dampad hover:text-jb-text"
+            >
+              <MinusIcon size={16} weight="bold" aria-hidden />
+            </button>
+            <span
+              className="w-8 text-center tabular-nums"
+              aria-live="polite"
+              aria-label={`Antal: ${antal}`}
+            >
+              {antal}
+            </span>
+            <button
+              type="button"
+              onClick={() => setAntal((n) => Math.min(99, n + 1))}
+              aria-label="Öka antal"
+              className="p-3.5 text-jb-dampad hover:text-jb-text"
+            >
+              <PlusIcon size={16} weight="bold" aria-hidden />
+            </button>
+          </div>
+
+          <button
+            type="submit"
+            className="flex-1 rounded-jb bg-jb-rosa px-4 py-3.5 text-base font-semibold text-jb-motsatt transition-colors hover:bg-jb-rosa-mork active:scale-[0.99]"
+          >
+            Lägg till {formateraPris((ratt.pris ?? 0) * antal)}
+          </button>
+        </div>
+      </form>
+    </dialog>
+  );
+}

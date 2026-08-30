@@ -1,28 +1,32 @@
-# Skills are installed by scripts/install-skills.sh, not committed.
-.claude/skills/
-
 # Node
 node_modules/
 npm-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# Build output
-dist/
-build/
+# Next.js
 .next/
 out/
+build/
+next-env.d.ts
+tsconfig.tsbuildinfo
 
-# Env
+# Env - aldrig i repot
 .env
 .env.local
 .env.*.local
 
-# OS / editor
+# Vercel
+.vercel/
+
+# Genereras av Next.js
+AGENTS.md
+CLAUDE.md
+
+# OS och editor
 .DS_Store
 Thumbs.db
 *.swp
 
-# Astro / Vercel
-.astro/
-.vercel/
+# Skills installeras av scripts/install-skills.sh, inte committade.
+.claude/skills/
