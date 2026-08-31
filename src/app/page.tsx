@@ -2,7 +2,8 @@ import Link from "next/link";
 import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
-import { Neonhorisont } from "@/components/Neonhorisont";
+import { HeroScen } from "@/components/HeroScen";
+import { OppetSkylt } from "@/components/OppetSkylt";
 import { Avslojning } from "@/components/Avslojning";
 import { kategorier, ratterIKategori } from "@/data/menu-data";
 import { bestallning, restaurang } from "@/data/restaurang";
@@ -23,9 +24,10 @@ export default function Startsida() {
       <main>
         {/* Hero: typdriven, som menyns tryck. Rubrik, brödtext, två knappar. */}
         <section className="relative flex min-h-[calc(100dvh-4rem)] items-center overflow-hidden">
-          <Neonhorisont />
+          <HeroScen />
           <div className="relative mx-auto w-full max-w-6xl px-4 pb-16 pt-16 sm:px-6 lg:pt-24">
-            <h1 className="jb-display max-w-[16ch] text-5xl leading-[1.02] text-jb-text sm:text-6xl lg:text-7xl">
+            <OppetSkylt />
+            <h1 className="jb-display mt-4 max-w-[16ch] text-5xl leading-[1.02] text-jb-text sm:text-6xl lg:text-7xl">
               Beställ maten.
               <br />
               <span className="text-jb-rosa">Hämta när den är klar.</span>

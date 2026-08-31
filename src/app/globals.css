@@ -131,9 +131,285 @@ body {
 }
 
 /* ---------------------------------------------------------------------------
- * Rörelse. MOTION_INTENSITY 4: entré och scroll-reveal, inget mer.
- * Beställningsflödet får aldrig kännas långsamt, så inget här fördröjer en
- * knapptryckning.
+ * HERO-SCENEN
+ *
+ * Rörelsen ligger här i CSS och inte i JavaScript. Webbläsaren kan då köra
+ * allt på grafikkortet och behöver aldrig väcka huvudtråden, vilket gör att
+ * scenen inte konkurrerar med det som faktiskt betyder något: att gästen
+ * kan trycka "Beställ nu" utan fördröjning.
+ *
+ * Allt animerar bara opacity och transform. Aldrig position eller storlek,
+ * som tvingar fram en ny layoutberäkning för varje bildruta.
+ * ------------------------------------------------------------------------ */
+
+.jb-skylt-ort {
+  font-family: var(--font-display), sans-serif;
+  font-size: 19px;
+  letter-spacing: 0.16em;
+}
+
+.jb-skylt-namn {
+  font-family: var(--font-display), sans-serif;
+  font-size: 48px;
+  letter-spacing: 0.02em;
+}
+
+.jb-skylt-under {
+  font-family: var(--font-display), sans-serif;
+  font-size: 21px;
+  letter-spacing: 0.14em;
+}
+
+/* Trafikljuset växlar som ett riktigt: långt grönt, kort gult, långt rött.
+   Släckta lampor blir mörka i stället för att försvinna, annars ser lådan
+   tom ut mellan skiftena. */
+@keyframes jb-trafik-rod {
+  0%,
+  42% {
+    opacity: 1;
+  }
+  46%,
+  96% {
+    opacity: 0.14;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes jb-trafik-gul {
+  0%,
+  38% {
+    opacity: 0.14;
+  }
+  42%,
+  46% {
+    opacity: 1;
+  }
+  50%,
+  92% {
+    opacity: 0.14;
+  }
+  96%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes jb-trafik-gron {
+  0%,
+  48% {
+    opacity: 0.14;
+  }
+  52%,
+  90% {
+    opacity: 1;
+  }
+  94%,
+  100% {
+    opacity: 0.14;
+  }
+}
+
+/* Skorna över ledningen gungar kring sitt eget upphängningsband. */
+@keyframes jb-skor-gunga {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(4deg);
+  }
+}
+
+/* Lowridern puttar till bakvagnen, som hydraulik gör. Mest stillastående
+   med ett hopp då och då: en bil som studsar oavbrutet blir bara stökig. */
+@keyframes jb-bil-hopp {
+  0%,
+  72%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  76% {
+    transform: translateY(-11px) rotate(-1.6deg);
+  }
+  80% {
+    transform: translateY(0) rotate(0deg);
+  }
+  84% {
+    transform: translateY(-6px) rotate(-0.9deg);
+  }
+  88% {
+    transform: translateY(0) rotate(0deg);
+  }
+}
+
+@keyframes jb-stralar-vrid {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Neonskylten. Ett riktigt neonrör lyser jämnt och hackar till ibland,
+   så flimret ligger still i nio tiondelar av loopen. Ett rör som blinkar
+   hela tiden ser trasigt ut, inte levande. */
+@keyframes jb-neon-flimmer {
+  0%,
+  88%,
+  100% {
+    opacity: 1;
+  }
+  89% {
+    opacity: 0.45;
+  }
+  90% {
+    opacity: 1;
+  }
+  93% {
+    opacity: 0.6;
+  }
+  94% {
+    opacity: 1;
+  }
+}
+
+/* Fönstren tänds ett i taget, som när personalen går igenom lokalen. */
+@keyframes jb-fonster-tand {
+  from {
+    opacity: 0.08;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes jb-blink {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Rutnätet rullar mot betraktaren. Ett helt mönsterrutmått per varv, så
+   att loopen inte syns. */
+@keyframes jb-rutnat-rull {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(90px);
+  }
+}
+
+@keyframes jb-sway {
+  0%,
+  100% {
+    transform: rotate(-0.9deg);
+  }
+  50% {
+    transform: rotate(0.9deg);
+  }
+}
+
+@keyframes jb-lykta-puls {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.82;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .jb-neon {
+    animation: jb-neon-flimmer 7s steps(1, end) infinite;
+  }
+
+  .jb-fonster-tanda rect {
+    animation: jb-fonster-tand 0.5s ease-out backwards;
+  }
+
+  .jb-stjarnor circle {
+    animation: jb-blink 4.5s ease-in-out infinite;
+  }
+
+  .jb-rutnat {
+    animation: jb-rutnat-rull 6s linear infinite;
+  }
+
+  .jb-dorrljus {
+    animation: jb-blink 5s ease-in-out infinite;
+  }
+
+  .jb-lykta {
+    animation: jb-lykta-puls 3.5s ease-in-out infinite;
+  }
+
+  /* Palmerna vaggar kring sin egen fot, inte kring bildens mitt. */
+  .jb-palm {
+    transform-box: fill-box;
+    transform-origin: bottom center;
+  }
+
+  .jb-palm-vanster {
+    animation: jb-sway 9s ease-in-out infinite;
+  }
+
+  .jb-palm-hoger {
+    animation: jb-sway 11s ease-in-out infinite reverse;
+  }
+
+  .jb-palm-mitten {
+    animation: jb-sway 13s ease-in-out infinite;
+  }
+
+  .jb-markljus {
+    animation: jb-blink 6s ease-in-out infinite;
+  }
+
+  .jb-ljus-rod {
+    animation: jb-trafik-rod 12s steps(1, end) infinite;
+  }
+
+  .jb-ljus-gul {
+    animation: jb-trafik-gul 12s steps(1, end) infinite;
+  }
+
+  .jb-ljus-gron {
+    animation: jb-trafik-gron 12s steps(1, end) infinite;
+  }
+
+  .jb-skor {
+    transform-box: fill-box;
+    transform-origin: top center;
+    animation: jb-skor-gunga 5.5s ease-in-out infinite;
+  }
+
+  .jb-bil {
+    transform-box: fill-box;
+    transform-origin: bottom center;
+    animation: jb-bil-hopp 14s ease-in-out infinite;
+  }
+
+  /* Ett helt varv tar två minuter. Man ska aldrig se strålarna röra sig,
+     bara märka att bilden inte står stilla. */
+  .jb-stralar {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: jb-stralar-vrid 120s linear infinite;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+ * Den som bett om mindre rörelse ska få en stillbild, inte en dämpad
+ * animation. Scenen står kvar med tänd skylt och lysande fönster.
  * ------------------------------------------------------------------------ */
 @media (prefers-reduced-motion: reduce) {
   *,
