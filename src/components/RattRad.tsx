@@ -196,19 +196,19 @@ function BestallDialog({
             <legend className="text-sm font-medium text-jb-text">
               Vill du ha en side?
             </legend>
-            <div className="mt-2.5 grid grid-cols-2 gap-2">
+            <div className="mt-2.5 grid grid-cols-2 gap-3">
               {(
                 [
-                  ["bara", "Bara burgare"],
-                  ["med-sides", "Med sides"],
+                  ["bara", "Bara burgare", "🍔"],
+                  ["med-sides", "Med sides", "🍟"],
                 ] as const
-              ).map(([val, etikett]) => (
+              ).map(([val, etikett, emoji]) => (
                 <label
                   key={val}
-                  className={`cursor-pointer rounded-jb border px-3.5 py-2.5 text-center text-sm transition-colors has-[:checked]:border-jb-rosa has-[:checked]:bg-jb-rosa has-[:checked]:text-jb-motsatt ${
+                  className={`flex cursor-pointer flex-col items-center gap-1 rounded-jb border-2 px-3.5 py-4 text-center transition-all duration-150 has-[:checked]:border-jb-rosa has-[:checked]:bg-jb-rosa has-[:checked]:text-jb-motsatt has-[:checked]:shadow-[0_0_20px_-4px_var(--color-jb-rosa)] has-[:checked]:scale-[1.04] ${
                     sideval === val
-                      ? "border-jb-rosa"
-                      : "border-jb-linje text-jb-dampad hover:border-jb-dampad"
+                      ? ""
+                      : "border-jb-linje text-jb-text hover:-translate-y-0.5 hover:border-jb-rosa"
                   }`}
                 >
                   <input
@@ -223,7 +223,10 @@ function BestallDialog({
                     }}
                     className="sr-only"
                   />
-                  {etikett}
+                  <span aria-hidden className="text-2xl leading-none">
+                    {emoji}
+                  </span>
+                  <span className="text-sm font-semibold">{etikett}</span>
                 </label>
               ))}
             </div>
