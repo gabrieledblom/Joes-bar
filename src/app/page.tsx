@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRightIcon } from "@phosphor-icons/react/dist/ssr";
+import { ArrowRightIcon, PhoneIcon } from "@phosphor-icons/react/dist/ssr";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { HeroScen } from "@/components/HeroScen";
@@ -44,12 +44,16 @@ export default function Startsida() {
                 Beställ nu
                 <ArrowRightIcon size={18} weight="bold" aria-hidden />
               </Link>
-              <Link
-                href="/villkor"
-                className="rounded-jb border border-jb-linje px-6 py-3.5 text-base text-jb-text transition-colors hover:border-jb-rosa"
+              <a
+                href={`tel:${restaurang.telefonE164}`}
+                className="inline-flex items-center gap-2 rounded-jb border border-jb-linje px-6 py-3.5 text-base text-jb-text transition-colors hover:border-jb-rosa"
               >
-                Hitta hit
-              </Link>
+                <PhoneIcon size={18} weight="bold" aria-hidden />
+                Ring och beställ
+                <span className="hidden text-jb-dampad sm:inline">
+                  · {restaurang.telefon}
+                </span>
+              </a>
             </div>
           </div>
         </section>

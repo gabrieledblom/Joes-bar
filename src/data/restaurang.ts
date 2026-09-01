@@ -20,9 +20,9 @@ export const restaurang = {
     postort: "Järna",
   },
   /** Visningsformat, t.ex. "08-551 700 00" */
-  telefon: "",
+  telefon: "08-88 09 96",
   /** Uppringningsbart, t.ex. "+46855170000" */
-  telefonE164: "",
+  telefonE164: "+468880996",
   epost: "",
   orgnr: "",
 
