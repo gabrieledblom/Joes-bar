@@ -35,14 +35,32 @@ export function RattRad({ ratt }: { ratt: MenuItem }) {
 
         <span aria-hidden className="jb-ledare hidden h-px flex-1 sm:block" />
 
-        <span className="shrink-0 text-right">
-          {ratt.pris !== null ? (
-            <span className="text-base tabular-nums text-jb-text">
-              {formateraPris(ratt.pris)}
+        <span className="flex shrink-0 items-center gap-3">
+          <span className="text-right">
+            {ratt.pris !== null ? (
+              <span className="text-base tabular-nums text-jb-text">
+                {formateraPris(ratt.pris)}
+              </span>
+            ) : (
+              <span className="text-xs text-jb-dampad">Pris kommer snart</span>
+            )}
+          </span>
+
+          {/*
+            Rent visuell "lägg till"-markör. Raden är redan hela knappen,
+            så det här får inte bli en egen klickbar knapp inuti en knapp -
+            det både är ogiltig HTML och gör att skärmläsare läser upp
+            rätten två gånger. aria-hidden håller den utanför trädet; hela
+            raden har redan rättens namn som sin tillgängliga text.
+          */}
+          {bestallbar ? (
+            <span
+              aria-hidden
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-jb-rosa text-jb-motsatt transition-transform group-hover:scale-110"
+            >
+              <PlusIcon size={16} weight="bold" />
             </span>
-          ) : (
-            <span className="text-xs text-jb-dampad">Pris kommer snart</span>
-          )}
+          ) : null}
         </span>
       </button>
 

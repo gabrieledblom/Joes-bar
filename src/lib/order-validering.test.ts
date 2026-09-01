@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { z } from "zod";
 import {
   kravKontaktvag,
@@ -8,6 +8,28 @@ import {
   valideraOchRaknaOm,
 } from "./order-validering";
 import { hittaRatt } from "@/data/menu-data";
+
+// Hela den riktiga menyn är numera fullt prissatt, så testet för "rätt utan
+// pris" nedan kan inte längre peka på en riktig rätt. I stället läggs en
+// påhittad, oprissatt rätt in vid sidan av den riktiga menyn - spärren mot
+// att beställa något utan pris måste fungera igen nästa gång en ny rätt
+// läggs in innan priset är klart.
+vi.mock("@/data/menu-data", async (importOriginal) => {
+  const verklig = await importOriginal<typeof import("@/data/menu-data")>();
+  const testRattUtanPris = {
+    id: "test-utan-pris",
+    kategori: "sides" as const,
+    namn: "Test utan pris",
+    beskrivning: "Bara för test",
+    pris: null,
+    tillganglig: true,
+  };
+  return {
+    ...verklig,
+    hittaRatt: (id: string) =>
+      id === testRattUtanPris.id ? testRattUtanPris : verklig.hittaRatt(id),
+  };
+});
 
 type Inmatning = Partial<z.input<typeof kundordersSchema>>;
 
@@ -54,7 +76,7 @@ describe("rätter som inte går att beställa", () => {
   it("avvisar en rätt utan pris", () => {
     expect(() =>
       valideraOchRaknaOm(
-        order({ rader: [{ rattId: "annat-fish-and-chips", antal: 1 }] }),
+        order({ rader: [{ rattId: "test-utan-pris", antal: 1 }] }),
       ),
     ).toThrow(OrderFel);
   });

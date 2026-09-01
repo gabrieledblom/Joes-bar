@@ -4,6 +4,7 @@ import {
   kategorier,
   menyn,
   ratterIKategori,
+  type MenuItem,
 } from "./menu-data";
 
 describe("menyns data", () => {
@@ -43,7 +44,17 @@ describe("menyns data", () => {
 
 describe("garAttBestalla", () => {
   it("stoppar rätter utan pris", () => {
-    const utanPris = menyn.find((r) => r.pris === null)!;
+    // Byggd på ett påhittat exempel, inte menyn: hela menyn är just nu
+    // fullt prissatt, men den här spärren måste ändå fungera nästa gång
+    // en rätt läggs in innan priset är klart.
+    const utanPris: MenuItem = {
+      id: "test-utan-pris",
+      kategori: "sides",
+      namn: "Test",
+      beskrivning: "Test",
+      pris: null,
+      tillganglig: true,
+    };
     expect(garAttBestalla(utanPris)).toBe(false);
   });
 
