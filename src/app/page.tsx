@@ -28,9 +28,9 @@ export default function Startsida() {
           <div className="relative mx-auto w-full max-w-6xl px-4 pb-16 pt-16 sm:px-6 lg:pt-24">
             <OppetSkylt />
             <h1 className="jb-display mt-4 max-w-[16ch] text-5xl leading-[1.02] text-jb-text sm:text-6xl lg:text-7xl">
-              Sugen på nåt gott?
+              Här är du alltid välkommen.
               <br />
-              <span className="text-jb-rosa">Vi har redan tänt spisen.</span>
+              <span className="text-jb-rosa">Maten är redan på gång.</span>
             </h1>
             <p className="mt-6 max-w-[46ch] text-base text-jb-dampad sm:text-lg">
               Hela menyn från {restaurang.namn} i {restaurang.ort}. Betala med
