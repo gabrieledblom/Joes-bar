@@ -120,6 +120,34 @@ describe("side till smash-burgare", () => {
   });
 });
 
+describe("ris eller pommes till Tallrik", () => {
+  it("kräver ett val av tillbehör", () => {
+    expect(() =>
+      valideraOchRaknaOm(
+        order({
+          rader: [{ rattId: "kebab-tallrik", antal: 1, protein: "Kebab" }],
+        }),
+      ),
+    ).toThrow(/ris eller pommes/i);
+  });
+
+  it("släpper igenom med protein och tillbehör valda", () => {
+    const { rader } = valideraOchRaknaOm(
+      order({
+        rader: [
+          {
+            rattId: "kebab-tallrik",
+            antal: 1,
+            protein: "Gyros",
+            tillbehor: "Ris",
+          },
+        ],
+      }),
+    );
+    expect(rader[0].tillbehor).toBe("Ris");
+  });
+});
+
 describe("rätter som inte går att beställa", () => {
   it("avvisar en rätt utan pris", () => {
     expect(() =>

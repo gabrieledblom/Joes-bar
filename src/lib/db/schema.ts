@@ -75,6 +75,8 @@ export interface OrderRad {
   protein?: string;
   /** Namnet på en vald side, t.ex. till en smash-burgare. Priset ingår redan i styckprisOren. */
   sideNamn?: string;
+  /** Ris eller pommes, t.ex. till Tallrik. Ingen prisskillnad. */
+  tillbehor?: string;
 }
 
 export type Order = typeof orders.$inferSelect;

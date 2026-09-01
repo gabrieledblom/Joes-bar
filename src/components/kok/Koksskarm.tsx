@@ -269,6 +269,11 @@ function Orderkort({
                   Med {rad.sideNamn}
                 </span>
               ) : null}
+              {rad.tillbehor ? (
+                <span className="block text-base text-jb-cyan">
+                  {rad.tillbehor}
+                </span>
+              ) : null}
               {rad.notering ? (
                 <span className="block text-base text-jb-gul">
                   {rad.notering}

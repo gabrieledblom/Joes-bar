@@ -67,6 +67,7 @@ export function Kassa() {
             notering: r.notering,
             protein: r.protein,
             sideId: r.sideId,
+            tillbehor: r.tillbehor,
           })),
         }),
       });
@@ -111,6 +112,11 @@ export function Kassa() {
                   {sida ? (
                     <p className="mt-0.5 text-sm text-jb-dampad">
                       Med {sida.namn}
+                    </p>
+                  ) : null}
+                  {rad.tillbehor ? (
+                    <p className="mt-0.5 text-sm text-jb-dampad">
+                      {rad.tillbehor}
                     </p>
                   ) : null}
                   {rad.notering ? (

@@ -12,6 +12,7 @@ import {
   garAttBestalla,
   hittaRatt,
   type Protein,
+  type Tillbehor,
 } from "@/data/menu-data";
 
 export interface CartRad {
@@ -23,6 +24,8 @@ export interface CartRad {
   protein?: Protein;
   /** Vald side till t.ex. en smash-burgare. Priset läggs på burgarens pris. */
   sideId?: string;
+  /** Ris eller pommes till t.ex. Tallrik. Ingen prisskillnad. */
+  tillbehor?: Tillbehor;
 }
 
 interface CartState {
@@ -40,13 +43,14 @@ type CartAction =
 
 const LAGRINGSNYCKEL = "joesbar-varukorg-v1";
 
-/** Två rader slås ihop bara om rätt, notering, protein och side är identiska. */
+/** Två rader slås ihop bara om rätt, notering, protein, side och tillbehör är identiska. */
 function sammaRad(a: Omit<CartRad, "radId">, b: CartRad): boolean {
   return (
     a.rattId === b.rattId &&
     a.notering.trim() === b.notering.trim() &&
     a.protein === b.protein &&
-    a.sideId === b.sideId
+    a.sideId === b.sideId &&
+    a.tillbehor === b.tillbehor
   );
 }
 

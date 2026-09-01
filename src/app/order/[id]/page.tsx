@@ -70,10 +70,11 @@ export default async function Ordersida({
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-jb-text">{rad.namn}</span>
-                  {rad.protein || rad.sideNamn || rad.notering ? (
+                  {rad.protein || rad.sideNamn || rad.tillbehor || rad.notering ? (
                     <span className="mt-0.5 block text-sm text-jb-dampad">
                       {[
                         rad.protein,
+                        rad.tillbehor,
                         rad.sideNamn ? `Med ${rad.sideNamn}` : null,
                         rad.notering,
                       ]

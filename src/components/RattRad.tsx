@@ -9,11 +9,16 @@ import {
   kategoriKraverProtein,
   proteinval,
   ratterIKategori,
+  rattKraverTillbehor,
+  tillbehorval,
   type MenuItem,
   type Protein,
+  type Tillbehor,
 } from "@/data/menu-data";
 import { useCart } from "@/lib/cart";
 import { formateraPris } from "@/lib/pengar";
+
+const tillbehorEmoji: Record<Tillbehor, string> = { Ris: "🍚", Pommes: "🍟" };
 
 export function RattRad({ ratt }: { ratt: MenuItem }) {
   const [oppen, setOppen] = useState(false);
@@ -88,9 +93,11 @@ function BestallDialog({
   const [protein, setProtein] = useState<Protein | "">("");
   const [sideval, setSideval] = useState<"" | "bara" | "med-sides">("");
   const [sideId, setSideId] = useState("");
+  const [tillbehor, setTillbehor] = useState<Tillbehor | "">("");
   const [fel, setFel] = useState("");
 
   const kraverProtein = kategoriKraverProtein.includes(ratt.kategori);
+  const kraverTillbehor = rattKraverTillbehor.includes(ratt.id);
   const harSideval = kategoriHarSideval.includes(ratt.kategori);
   const sides = harSideval
     ? ratterIKategori("sides").filter(garAttBestalla)
@@ -110,6 +117,10 @@ function BestallDialog({
       setFel("Välj protein innan du lägger till.");
       return;
     }
+    if (kraverTillbehor && !tillbehor) {
+      setFel("Välj ris eller pommes innan du lägger till.");
+      return;
+    }
     if (harSideval && !sideval) {
       setFel("Välj 'Bara burgare' eller 'Med sides' innan du lägger till.");
       return;
@@ -124,6 +135,7 @@ function BestallDialog({
       notering: notering.trim(),
       protein: protein || undefined,
       sideId: sideval === "med-sides" ? sideId : undefined,
+      tillbehor: tillbehor || undefined,
     });
     stang();
   }
@@ -185,6 +197,42 @@ function BestallDialog({
                     className="sr-only"
                   />
                   {val}
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        ) : null}
+
+        {kraverTillbehor ? (
+          <fieldset className="mt-6">
+            <legend className="text-sm font-medium text-jb-text">
+              Ris eller pommes?
+            </legend>
+            <div className="mt-2.5 grid grid-cols-2 gap-3">
+              {tillbehorval.map((val) => (
+                <label
+                  key={val}
+                  className={`flex cursor-pointer flex-col items-center gap-1 rounded-jb border-2 px-3.5 py-4 text-center transition-all duration-150 has-[:checked]:border-jb-rosa has-[:checked]:bg-jb-rosa has-[:checked]:text-jb-motsatt has-[:checked]:shadow-[0_0_20px_-4px_var(--color-jb-rosa)] has-[:checked]:scale-[1.04] ${
+                    tillbehor === val
+                      ? ""
+                      : "border-jb-linje text-jb-text hover:-translate-y-0.5 hover:border-jb-rosa"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="tillbehor"
+                    value={val}
+                    checked={tillbehor === val}
+                    onChange={() => {
+                      setTillbehor(val);
+                      setFel("");
+                    }}
+                    className="sr-only"
+                  />
+                  <span aria-hidden className="text-2xl leading-none">
+                    {tillbehorEmoji[val]}
+                  </span>
+                  <span className="text-sm font-semibold">{val}</span>
                 </label>
               ))}
             </div>

@@ -287,7 +287,7 @@ export const menyn: MenuItem[] = [
     kategori: "kebab-gyros",
     namn: "Tallrik",
     beskrivning:
-      "Isbergssallad, rödkål, lök, gurka, tomat, fefferoni, saltgurka & sås. Välj mellan ris eller pommes",
+      "Isbergssallad, rödkål, lök, gurka, tomat, fefferoni, saltgurka & sås",
     pris: 134,
     tillganglig: true,
   },
@@ -618,6 +618,14 @@ export const kategoriKraverProtein: Kategori[] = ["kebab-gyros"];
  * från sides-menyn, som läggs på priset.
  */
 export const kategoriHarSideval: Kategori[] = ["smash-burgare"];
+
+/** Tillbehör som ingår i priset - gästen väljer bara vilket, inte om. */
+export const tillbehorval = ["Ris", "Pommes"] as const;
+
+export type Tillbehor = (typeof tillbehorval)[number];
+
+/** Rätter (per id) där gästen måste välja ris eller pommes. Ingen prisskillnad. */
+export const rattKraverTillbehor: string[] = ["kebab-tallrik"];
 
 /* -------------------------------------------------------------------------
  * Uppslag som resten av appen använder. Rör inte.

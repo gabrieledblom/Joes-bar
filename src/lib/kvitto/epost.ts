@@ -45,7 +45,12 @@ function hamtningsrad(order: Order): string {
 function textversion(order: Order): string {
   const rader = order.rader
     .map((r) => {
-      const tillagg = [r.protein, r.sideNamn ? `Med ${r.sideNamn}` : null, r.notering]
+      const tillagg = [
+        r.protein,
+        r.tillbehor,
+        r.sideNamn ? `Med ${r.sideNamn}` : null,
+        r.notering,
+      ]
         .filter(Boolean)
         .join(", ");
       return `${r.antal} x ${r.namn}${tillagg ? ` (${tillagg})` : ""}  ${orenTillKronor(r.styckprisOren * r.antal)} kr`;
@@ -71,7 +76,12 @@ function textversion(order: Order): string {
 function htmlversion(order: Order): string {
   const rader = order.rader
     .map((r) => {
-      const tillagg = [r.protein, r.sideNamn ? `Med ${r.sideNamn}` : null, r.notering]
+      const tillagg = [
+        r.protein,
+        r.tillbehor,
+        r.sideNamn ? `Med ${r.sideNamn}` : null,
+        r.notering,
+      ]
         .filter(Boolean)
         .join(", ");
       return `<tr>
