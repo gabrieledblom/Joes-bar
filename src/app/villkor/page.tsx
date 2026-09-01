@@ -115,17 +115,19 @@ export default function Villkorssida() {
               const priser = ratterIKategori(kategori.id)
                 .map((r) => r.pris)
                 .filter((p): p is number => p !== null);
+              const lagst = priser.length ? Math.min(...priser) : null;
+              const hogst = priser.length ? Math.max(...priser) : null;
               return (
                 <li key={kategori.id} className="flex justify-between gap-6">
                   <span>{kategori.namn}</span>
                   <span className="tabular-nums text-jb-text">
-                    {priser.length === 0
+                    {lagst === null
                       ? "Pris kommer snart"
-                      : priser.length === 1
-                        ? formateraPris(priser[0])
-                        : `${formateraPris(Math.min(...priser))} - ${formateraPris(
-                            Math.max(...priser),
-                          )}`}
+                      : lagst === hogst
+                        ? // Alla rätter i kategorin kostar lika mycket (t.ex.
+                          // Smash Burgare) - "147 kr - 147 kr" är förvirrande.
+                          formateraPris(lagst)
+                        : `${formateraPris(lagst)} - ${formateraPris(hogst as number)}`}
                   </span>
                 </li>
               );

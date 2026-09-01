@@ -54,7 +54,7 @@ describe("rätter som inte går att beställa", () => {
   it("avvisar en rätt utan pris", () => {
     expect(() =>
       valideraOchRaknaOm(
-        order({ rader: [{ rattId: "burgare-joes-original", antal: 1 }] }),
+        order({ rader: [{ rattId: "annat-fish-and-chips", antal: 1 }] }),
       ),
     ).toThrow(OrderFel);
   });

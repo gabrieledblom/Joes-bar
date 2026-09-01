@@ -168,16 +168,15 @@ export const menyn: MenuItem[] = [
     tillganglig: true,
   },
 
-  /* ---- SMASH BURGARE --------------------------------------------------
-   * Priserna saknas på tryckta menyn. Sätt dem här när de är bestämda,
-   * så släpps burgarna in i beställningen automatiskt.
+  /* ---- SMASH BURGARE ---------------------------------------------------
+   * Alla smash-burgare kostar samma pris.
    * ------------------------------------------------------------------- */
   {
     id: "burgare-joes-original",
     kategori: "smash-burgare",
     namn: "Joe's Original",
     beskrivning: "Cheddar, lök & husets dressing",
-    pris: null,
+    pris: 147,
     tillganglig: true,
   },
   {
@@ -185,7 +184,7 @@ export const menyn: MenuItem[] = [
     kategori: "smash-burgare",
     namn: "Smokey West",
     beskrivning: "BBQ, bacon & rökt cheddar",
-    pris: null,
+    pris: 147,
     tillganglig: true,
   },
   {
@@ -193,7 +192,7 @@ export const menyn: MenuItem[] = [
     kategori: "smash-burgare",
     namn: "Bacon Blvd",
     beskrivning: "Cheddar, bacon & dressing",
-    pris: null,
+    pris: 147,
     tillganglig: true,
   },
   {
@@ -201,7 +200,7 @@ export const menyn: MenuItem[] = [
     kategori: "smash-burgare",
     namn: "Crispy Bird",
     beskrivning: "Krispig kyckling, cheddar & aioli",
-    pris: null,
+    pris: 147,
     tillganglig: true,
   },
   {
@@ -209,7 +208,7 @@ export const menyn: MenuItem[] = [
     kategori: "smash-burgare",
     namn: "Black Gold",
     beskrivning: "Tryffelmajonnäs & cheddar",
-    pris: null,
+    pris: 147,
     tillganglig: true,
   },
   {
@@ -217,7 +216,7 @@ export const menyn: MenuItem[] = [
     kategori: "smash-burgare",
     namn: "Firebird",
     beskrivning: "Krispig kyckling, jalapeño & chillimajonnäs",
-    pris: null,
+    pris: 147,
     tillganglig: true,
   },
   {
@@ -225,7 +224,7 @@ export const menyn: MenuItem[] = [
     kategori: "smash-burgare",
     namn: "Hot Shot",
     beskrivning: "Jalapeño, cheddar & chillimajonnäs",
-    pris: null,
+    pris: 147,
     tillganglig: true,
   },
   {
@@ -233,7 +232,7 @@ export const menyn: MenuItem[] = [
     kategori: "smash-burgare",
     namn: "Green Light",
     beskrivning: "Halloumi & aioli",
-    pris: null,
+    pris: 147,
     tillganglig: true,
   },
 
