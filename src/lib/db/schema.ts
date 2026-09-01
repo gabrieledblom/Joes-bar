@@ -69,10 +69,12 @@ export interface OrderRad {
   rattId: string;
   namn: string;
   antal: number;
-  /** Styckpris i ören, som det stod när ordern lades. */
+  /** Styckpris i ören, som det stod när ordern lades - inkluderar en vald side. */
   styckprisOren: number;
   notering: string;
   protein?: string;
+  /** Namnet på en vald side, t.ex. till en smash-burgare. Priset ingår redan i styckprisOren. */
+  sideNamn?: string;
 }
 
 export type Order = typeof orders.$inferSelect;

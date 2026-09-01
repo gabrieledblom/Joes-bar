@@ -264,6 +264,11 @@ function Orderkort({
                   {rad.protein}
                 </span>
               ) : null}
+              {rad.sideNamn ? (
+                <span className="block text-base text-jb-cyan">
+                  Med {rad.sideNamn}
+                </span>
+              ) : null}
               {rad.notering ? (
                 <span className="block text-base text-jb-gul">
                   {rad.notering}

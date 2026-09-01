@@ -54,7 +54,12 @@ export async function skickaSmsKvitto(order: Order): Promise<boolean> {
  */
 function byggSmsText(order: Order): string {
   const rader = order.rader
-    .map((r) => `${r.antal}x ${r.namn}${r.protein ? ` (${r.protein})` : ""}`)
+    .map((r) => {
+      const tillagg = [r.protein, r.sideNamn ? `Med ${r.sideNamn}` : null]
+        .filter(Boolean)
+        .join(", ");
+      return `${r.antal}x ${r.namn}${tillagg ? ` (${tillagg})` : ""}`;
+    })
     .join(", ");
 
   const hamtning =

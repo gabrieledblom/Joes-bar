@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   garAttBestalla,
   hittaRatt,
+  kategoriHarSideval,
   kategoriKraverProtein,
   proteinval,
 } from "@/data/menu-data";
@@ -28,6 +29,7 @@ export const kundordersSchema = z.object({
         antal: z.number().int().min(1).max(99),
         notering: z.string().trim().max(200).optional().default(""),
         protein: z.enum(proteinval).optional(),
+        sideId: z.string().optional(),
       }),
     )
     .min(1, "Varukorgen är tom")
@@ -86,13 +88,30 @@ export function valideraOchRaknaOm(order: Kundorder): ValideradOrder {
     if (kategoriKraverProtein.includes(ratten.kategori) && !rad.protein) {
       throw new OrderFel(`Välj protein till ${ratten.namn}.`);
     }
+
+    let sidan;
+    if (rad.sideId) {
+      if (!kategoriHarSideval.includes(ratten.kategori)) {
+        throw new OrderFel(`${ratten.namn} går inte att välja en side till.`);
+      }
+      sidan = hittaRatt(rad.sideId);
+      if (!sidan || sidan.kategori !== "sides" || !garAttBestalla(sidan)) {
+        throw new OrderFel("Den valda siden finns inte längre.");
+      }
+    }
+
+    const styckprisOren =
+      kronorTillOren(ratten.pris as number) +
+      (sidan ? kronorTillOren(sidan.pris as number) : 0);
+
     return {
       rattId: ratten.id,
       namn: ratten.namn,
       antal: rad.antal,
-      styckprisOren: kronorTillOren(ratten.pris as number),
+      styckprisOren,
       notering: rad.notering ?? "",
       protein: rad.protein,
+      sideNamn: sidan?.namn,
     };
   });
 

@@ -21,6 +21,8 @@ export interface CartRad {
   antal: number;
   notering: string;
   protein?: Protein;
+  /** Vald side till t.ex. en smash-burgare. Priset läggs på burgarens pris. */
+  sideId?: string;
 }
 
 interface CartState {
@@ -38,12 +40,13 @@ type CartAction =
 
 const LAGRINGSNYCKEL = "joesbar-varukorg-v1";
 
-/** Två rader slås ihop bara om rätt, notering och protein är identiska. */
+/** Två rader slås ihop bara om rätt, notering, protein och side är identiska. */
 function sammaRad(a: Omit<CartRad, "radId">, b: CartRad): boolean {
   return (
     a.rattId === b.rattId &&
     a.notering.trim() === b.notering.trim() &&
-    a.protein === b.protein
+    a.protein === b.protein &&
+    a.sideId === b.sideId
   );
 }
 
@@ -167,7 +170,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const antalVaror = state.rader.reduce((n, r) => n + r.antal, 0);
     const summa = state.rader.reduce((n, r) => {
       const ratten = hittaRatt(r.rattId);
-      return n + (ratten?.pris ?? 0) * r.antal;
+      const sidan = r.sideId ? hittaRatt(r.sideId) : undefined;
+      return n + ((ratten?.pris ?? 0) + (sidan?.pris ?? 0)) * r.antal;
     }, 0);
     return {
       rader: state.rader,

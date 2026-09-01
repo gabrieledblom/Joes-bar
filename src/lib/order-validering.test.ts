@@ -72,6 +72,54 @@ describe("prisberäkning på servern", () => {
   });
 });
 
+describe("side till smash-burgare", () => {
+  it("lägger på sidens pris på burgarens styckpris", () => {
+    const { rader, summaOren } = valideraOchRaknaOm(
+      order({
+        rader: [
+          { rattId: "burgare-joes-og", antal: 1, sideId: "side-pommes" },
+        ],
+      }),
+    );
+    // Joe's OG kostar 147 kr, Pommes 47 kr.
+    expect(rader[0].styckprisOren).toBe(19400);
+    expect(rader[0].sideNamn).toBe("Pommes");
+    expect(summaOren).toBe(19400);
+  });
+
+  it("går bra utan side ('bara burgare')", () => {
+    const { rader } = valideraOchRaknaOm(
+      order({ rader: [{ rattId: "burgare-joes-og", antal: 1 }] }),
+    );
+    expect(rader[0].styckprisOren).toBe(14700);
+    expect(rader[0].sideNamn).toBeUndefined();
+  });
+
+  it("avvisar en side till en rätt som inte har sideval", () => {
+    expect(() =>
+      valideraOchRaknaOm(
+        order({
+          rader: [
+            { rattId: "pizza-the-classic", antal: 1, sideId: "side-pommes" },
+          ],
+        }),
+      ),
+    ).toThrow(/side/);
+  });
+
+  it("avvisar en side som inte finns", () => {
+    expect(() =>
+      valideraOchRaknaOm(
+        order({
+          rader: [
+            { rattId: "burgare-joes-og", antal: 1, sideId: "hittepa" },
+          ],
+        }),
+      ),
+    ).toThrow(OrderFel);
+  });
+});
+
 describe("rätter som inte går att beställa", () => {
   it("avvisar en rätt utan pris", () => {
     expect(() =>

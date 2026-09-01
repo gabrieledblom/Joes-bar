@@ -66,6 +66,7 @@ export function Kassa() {
             antal: r.antal,
             notering: r.notering,
             protein: r.protein,
+            sideId: r.sideId,
           })),
         }),
       });
@@ -96,6 +97,8 @@ export function Kassa() {
           {rader.map((rad) => {
             const ratt = hittaRatt(rad.rattId);
             if (!ratt) return null;
+            const sida = rad.sideId ? hittaRatt(rad.sideId) : undefined;
+            const radPris = (ratt.pris ?? 0) + (sida?.pris ?? 0);
             return (
               <li key={rad.radId} className="flex items-start gap-3 p-4">
                 <div className="min-w-0 flex-1">
@@ -103,6 +106,11 @@ export function Kassa() {
                   {rad.protein ? (
                     <p className="mt-0.5 text-sm text-jb-dampad">
                       {rad.protein}
+                    </p>
+                  ) : null}
+                  {sida ? (
+                    <p className="mt-0.5 text-sm text-jb-dampad">
+                      Med {sida.namn}
                     </p>
                   ) : null}
                   {rad.notering ? (
@@ -144,7 +152,7 @@ export function Kassa() {
                   </div>
                 </div>
                 <p className="shrink-0 tabular-nums text-jb-text">
-                  {formateraPris((ratt.pris ?? 0) * rad.antal)}
+                  {formateraPris(radPris * rad.antal)}
                 </p>
               </li>
             );

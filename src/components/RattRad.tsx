@@ -4,8 +4,11 @@ import { useEffect, useRef, useState } from "react";
 import { MinusIcon, PlusIcon, XIcon } from "@phosphor-icons/react/dist/ssr";
 import {
   garAttBestalla,
+  hittaRatt,
+  kategoriHarSideval,
   kategoriKraverProtein,
   proteinval,
+  ratterIKategori,
   type MenuItem,
   type Protein,
 } from "@/data/menu-data";
@@ -83,9 +86,17 @@ function BestallDialog({
   const [antal, setAntal] = useState(1);
   const [notering, setNotering] = useState("");
   const [protein, setProtein] = useState<Protein | "">("");
+  const [sideval, setSideval] = useState<"" | "bara" | "med-sides">("");
+  const [sideId, setSideId] = useState("");
   const [fel, setFel] = useState("");
 
   const kraverProtein = kategoriKraverProtein.includes(ratt.kategori);
+  const harSideval = kategoriHarSideval.includes(ratt.kategori);
+  const sides = harSideval
+    ? ratterIKategori("sides").filter(garAttBestalla)
+    : [];
+  const valdSida = sideId ? hittaRatt(sideId) : undefined;
+  const radPris = (ratt.pris ?? 0) + (sideval === "med-sides" ? (valdSida?.pris ?? 0) : 0);
 
   // <dialog showModal()> ger fokusfälla, Esc och inert bakgrund från
   // webbläsaren. Att bygga det för hand blir alltid sämre.
@@ -99,11 +110,20 @@ function BestallDialog({
       setFel("Välj protein innan du lägger till.");
       return;
     }
+    if (harSideval && !sideval) {
+      setFel("Välj 'Bara burgare' eller 'Med sides' innan du lägger till.");
+      return;
+    }
+    if (harSideval && sideval === "med-sides" && !sideId) {
+      setFel("Välj en side innan du lägger till.");
+      return;
+    }
     laggTill({
       rattId: ratt.id,
       antal,
       notering: notering.trim(),
       protein: protein || undefined,
+      sideId: sideval === "med-sides" ? sideId : undefined,
     });
     stang();
   }
@@ -171,6 +191,73 @@ function BestallDialog({
           </fieldset>
         ) : null}
 
+        {harSideval ? (
+          <fieldset className="mt-6">
+            <legend className="text-sm font-medium text-jb-text">
+              Vill du ha en side?
+            </legend>
+            <div className="mt-2.5 grid grid-cols-2 gap-2">
+              {(
+                [
+                  ["bara", "Bara burgare"],
+                  ["med-sides", "Med sides"],
+                ] as const
+              ).map(([val, etikett]) => (
+                <label
+                  key={val}
+                  className={`cursor-pointer rounded-jb border px-3.5 py-2.5 text-center text-sm transition-colors has-[:checked]:border-jb-rosa has-[:checked]:bg-jb-rosa has-[:checked]:text-jb-motsatt ${
+                    sideval === val
+                      ? "border-jb-rosa"
+                      : "border-jb-linje text-jb-dampad hover:border-jb-dampad"
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="sideval"
+                    value={val}
+                    checked={sideval === val}
+                    onChange={() => {
+                      setSideval(val);
+                      if (val === "bara") setSideId("");
+                      setFel("");
+                    }}
+                    className="sr-only"
+                  />
+                  {etikett}
+                </label>
+              ))}
+            </div>
+
+            {sideval === "med-sides" ? (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {sides.map((side) => (
+                  <label
+                    key={side.id}
+                    className={`cursor-pointer rounded-jb border px-3.5 py-2.5 text-sm transition-colors has-[:checked]:border-jb-rosa has-[:checked]:bg-jb-rosa has-[:checked]:text-jb-motsatt ${
+                      sideId === side.id
+                        ? "border-jb-rosa"
+                        : "border-jb-linje text-jb-dampad hover:border-jb-dampad"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="side"
+                      value={side.id}
+                      checked={sideId === side.id}
+                      onChange={() => {
+                        setSideId(side.id);
+                        setFel("");
+                      }}
+                      className="sr-only"
+                    />
+                    {side.namn} · {formateraPris(side.pris ?? 0)}
+                  </label>
+                ))}
+              </div>
+            ) : null}
+          </fieldset>
+        ) : null}
+
         <div className="mt-6">
           <label
             htmlFor="notering"
@@ -229,7 +316,7 @@ function BestallDialog({
             type="submit"
             className="flex-1 rounded-jb bg-jb-rosa px-4 py-3.5 text-base font-semibold text-jb-motsatt transition-colors hover:bg-jb-rosa-mork active:scale-[0.99]"
           >
-            Lägg till {formateraPris((ratt.pris ?? 0) * antal)}
+            Lägg till {formateraPris(radPris * antal)}
           </button>
         </div>
       </form>

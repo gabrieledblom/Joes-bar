@@ -63,7 +63,7 @@ export const kategorier: KategoriInfo[] = [
   {
     id: "smash-burgare",
     namn: "Smash Burgare",
-    underrubrik: "Serveras med pommes",
+    underrubrik: "Handsmashade burgare",
     farg: "gul",
   },
   {
@@ -198,7 +198,8 @@ export const menyn: MenuItem[] = [
 
   /* ---- SMASH BURGARE ---------------------------------------------------
    * Alla smash-burgare kostar samma pris: 180 gram nötkött (eller friterad
-   * kyckling/halloumi), serveras med pommes.
+   * kyckling/halloumi). Ingen side ingår - gästen väljer "bara burgare"
+   * eller lägger till en side från sides-menyn, se kategoriHarSideval.
    * ------------------------------------------------------------------- */
   {
     id: "burgare-joes-og",
@@ -610,6 +611,13 @@ export type Protein = (typeof proteinval)[number];
 
 /** Rätter i den här kategorin kräver att gästen väljer protein. */
 export const kategoriKraverProtein: Kategori[] = ["kebab-gyros"];
+
+/**
+ * Rätter i den här kategorin kommer utan side. Gästen väljer i dialogen
+ * mellan "Bara burgare" eller "Med sides" - och i så fall exakt en side
+ * från sides-menyn, som läggs på priset.
+ */
+export const kategoriHarSideval: Kategori[] = ["smash-burgare"];
 
 /* -------------------------------------------------------------------------
  * Uppslag som resten av appen använder. Rör inte.
