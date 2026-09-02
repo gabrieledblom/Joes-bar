@@ -399,6 +399,14 @@ export const menyn: MenuItem[] = [
     pris: 18,
     tillganglig: true,
   },
+  {
+    id: "tillbehor-chilisas",
+    kategori: "tillbehor",
+    namn: "Chilisås",
+    beskrivning: "Extra portion",
+    pris: 16,
+    tillganglig: true,
+  },
 
   /* ---- SIDES ---------------------------------------------------------- */
   {
@@ -626,6 +634,37 @@ export type Tillbehor = (typeof tillbehorval)[number];
 
 /** Rätter (per id) där gästen måste välja ris eller pommes. Ingen prisskillnad. */
 export const rattKraverTillbehor: string[] = ["kebab-tallrik"];
+
+export interface Tillval {
+  id: string;
+  namn: string;
+  /** Extra kronor utöver rättens grundpris. */
+  prisTillagg: number;
+}
+
+/**
+ * Fria tillval per kategori - till skillnad från sideval/tillbehör är de
+ * här inte ett antingen-eller: gästen kan bocka för valfritt antal, även
+ * inget alls. Just nu bara pizza: glutenfri botten och veganost.
+ */
+export const kategoriTillval: Partial<Record<Kategori, Tillval[]>> = {
+  pizza: [
+    { id: "pizza-glutenfri-botten", namn: "Glutenfri botten", prisTillagg: 40 },
+    { id: "pizza-veganost", namn: "Veganost", prisTillagg: 30 },
+  ],
+};
+
+export function tillvalIKategori(kategori: Kategori): Tillval[] {
+  return kategoriTillval[kategori] ?? [];
+}
+
+export function hittaTillval(id: string): Tillval | undefined {
+  for (const lista of Object.values(kategoriTillval)) {
+    const funnet = lista.find((t) => t.id === id);
+    if (funnet) return funnet;
+  }
+  return undefined;
+}
 
 /* -------------------------------------------------------------------------
  * Uppslag som resten av appen använder. Rör inte.

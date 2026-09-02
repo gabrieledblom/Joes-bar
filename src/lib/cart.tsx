@@ -11,6 +11,7 @@ import {
 import {
   garAttBestalla,
   hittaRatt,
+  hittaTillval,
   type Protein,
   type Tillbehor,
 } from "@/data/menu-data";
@@ -26,6 +27,8 @@ export interface CartRad {
   sideId?: string;
   /** Ris eller pommes till t.ex. Tallrik. Ingen prisskillnad. */
   tillbehor?: Tillbehor;
+  /** Fria tillval, t.ex. glutenfri botten eller veganost till pizza. Läggs på priset. */
+  tillval?: string[];
 }
 
 interface CartState {
@@ -43,14 +46,21 @@ type CartAction =
 
 const LAGRINGSNYCKEL = "joesbar-varukorg-v1";
 
-/** Två rader slås ihop bara om rätt, notering, protein, side och tillbehör är identiska. */
+function sammaTillval(a: string[] = [], b: string[] = []): boolean {
+  if (a.length !== b.length) return false;
+  const bSorterad = [...b].sort();
+  return [...a].sort().every((id, i) => id === bSorterad[i]);
+}
+
+/** Två rader slås ihop bara om rätt, notering, protein, side, tillbehör och tillval är identiska. */
 function sammaRad(a: Omit<CartRad, "radId">, b: CartRad): boolean {
   return (
     a.rattId === b.rattId &&
     a.notering.trim() === b.notering.trim() &&
     a.protein === b.protein &&
     a.sideId === b.sideId &&
-    a.tillbehor === b.tillbehor
+    a.tillbehor === b.tillbehor &&
+    sammaTillval(a.tillval, b.tillval)
   );
 }
 
@@ -175,7 +185,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     const summa = state.rader.reduce((n, r) => {
       const ratten = hittaRatt(r.rattId);
       const sidan = r.sideId ? hittaRatt(r.sideId) : undefined;
-      return n + ((ratten?.pris ?? 0) + (sidan?.pris ?? 0)) * r.antal;
+      const tillvalPris = (r.tillval ?? []).reduce(
+        (t, id) => t + (hittaTillval(id)?.prisTillagg ?? 0),
+        0,
+      );
+      return n + ((ratten?.pris ?? 0) + (sidan?.pris ?? 0) + tillvalPris) * r.antal;
     }, 0);
     return {
       rader: state.rader,

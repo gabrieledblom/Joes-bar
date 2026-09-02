@@ -274,6 +274,11 @@ function Orderkort({
                   {rad.tillbehor}
                 </span>
               ) : null}
+              {rad.tillvalNamn && rad.tillvalNamn.length > 0 ? (
+                <span className="block text-base text-jb-cyan">
+                  {rad.tillvalNamn.join(", ")}
+                </span>
+              ) : null}
               {rad.notering ? (
                 <span className="block text-base text-jb-gul">
                   {rad.notering}

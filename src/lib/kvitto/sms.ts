@@ -59,6 +59,7 @@ function byggSmsText(order: Order): string {
         r.protein,
         r.tillbehor,
         r.sideNamn ? `Med ${r.sideNamn}` : null,
+        ...(r.tillvalNamn ?? []),
       ]
         .filter(Boolean)
         .join(", ");

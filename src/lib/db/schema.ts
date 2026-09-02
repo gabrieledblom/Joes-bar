@@ -77,6 +77,8 @@ export interface OrderRad {
   sideNamn?: string;
   /** Ris eller pommes, t.ex. till Tallrik. Ingen prisskillnad. */
   tillbehor?: string;
+  /** Fria tillval, t.ex. glutenfri botten eller veganost. Priset ingår redan i styckprisOren. */
+  tillvalNamn?: string[];
 }
 
 export type Order = typeof orders.$inferSelect;

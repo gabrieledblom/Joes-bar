@@ -49,6 +49,7 @@ function textversion(order: Order): string {
         r.protein,
         r.tillbehor,
         r.sideNamn ? `Med ${r.sideNamn}` : null,
+        ...(r.tillvalNamn ?? []),
         r.notering,
       ]
         .filter(Boolean)
@@ -80,6 +81,7 @@ function htmlversion(order: Order): string {
         r.protein,
         r.tillbehor,
         r.sideNamn ? `Med ${r.sideNamn}` : null,
+        ...(r.tillvalNamn ?? []),
         r.notering,
       ]
         .filter(Boolean)

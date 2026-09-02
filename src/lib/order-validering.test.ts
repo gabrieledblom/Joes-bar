@@ -120,6 +120,50 @@ describe("side till smash-burgare", () => {
   });
 });
 
+describe("fria tillval på pizza", () => {
+  it("lägger på tillvalens pris utan att kräva något val", () => {
+    const { rader } = valideraOchRaknaOm(
+      order({ rader: [{ rattId: "pizza-the-classic", antal: 1 }] }),
+    );
+    expect(rader[0].styckprisOren).toBe(11300);
+    expect(rader[0].tillvalNamn).toBeUndefined();
+  });
+
+  it("lägger på glutenfri botten och veganost på pizzans styckpris", () => {
+    const { rader, summaOren } = valideraOchRaknaOm(
+      order({
+        rader: [
+          {
+            rattId: "pizza-the-classic",
+            antal: 1,
+            tillval: ["pizza-glutenfri-botten", "pizza-veganost"],
+          },
+        ],
+      }),
+    );
+    // The Classic 113 kr + glutenfri botten 40 kr + veganost 30 kr.
+    expect(rader[0].styckprisOren).toBe(18300);
+    expect(rader[0].tillvalNamn).toEqual(["Glutenfri botten", "Veganost"]);
+    expect(summaOren).toBe(18300);
+  });
+
+  it("avvisar ett tillval som inte finns på rätten", () => {
+    expect(() =>
+      valideraOchRaknaOm(
+        order({
+          rader: [
+            {
+              rattId: "burgare-joes-og",
+              antal: 1,
+              tillval: ["pizza-glutenfri-botten"],
+            },
+          ],
+        }),
+      ),
+    ).toThrow(OrderFel);
+  });
+});
+
 describe("ris eller pommes till Tallrik", () => {
   it("kräver ett val av tillbehör", () => {
     expect(() =>

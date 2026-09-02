@@ -11,6 +11,7 @@ import {
   ratterIKategori,
   rattKraverTillbehor,
   tillbehorval,
+  tillvalIKategori,
   type MenuItem,
   type Protein,
   type Tillbehor,
@@ -94,6 +95,7 @@ function BestallDialog({
   const [sideval, setSideval] = useState<"" | "bara" | "med-sides">("");
   const [sideId, setSideId] = useState("");
   const [tillbehor, setTillbehor] = useState<Tillbehor | "">("");
+  const [valdaTillval, setValdaTillval] = useState<string[]>([]);
   const [fel, setFel] = useState("");
 
   const kraverProtein = kategoriKraverProtein.includes(ratt.kategori);
@@ -103,7 +105,21 @@ function BestallDialog({
     ? ratterIKategori("sides").filter(garAttBestalla)
     : [];
   const valdSida = sideId ? hittaRatt(sideId) : undefined;
-  const radPris = (ratt.pris ?? 0) + (sideval === "med-sides" ? (valdSida?.pris ?? 0) : 0);
+  const tillval = tillvalIKategori(ratt.kategori);
+  const tillvalPris = valdaTillval.reduce((n, id) => {
+    const t = tillval.find((t) => t.id === id);
+    return n + (t?.prisTillagg ?? 0);
+  }, 0);
+  const radPris =
+    (ratt.pris ?? 0) +
+    (sideval === "med-sides" ? (valdSida?.pris ?? 0) : 0) +
+    tillvalPris;
+
+  function vaxlaTillval(id: string) {
+    setValdaTillval((lista) =>
+      lista.includes(id) ? lista.filter((v) => v !== id) : [...lista, id],
+    );
+  }
 
   // <dialog showModal()> ger fokusfälla, Esc och inert bakgrund från
   // webbläsaren. Att bygga det för hand blir alltid sämre.
@@ -136,6 +152,7 @@ function BestallDialog({
       protein: protein || undefined,
       sideId: sideval === "med-sides" ? sideId : undefined,
       tillbehor: tillbehor || undefined,
+      tillval: valdaTillval.length > 0 ? valdaTillval : undefined,
     });
     stang();
   }
@@ -306,6 +323,34 @@ function BestallDialog({
                 ))}
               </div>
             ) : null}
+          </fieldset>
+        ) : null}
+
+        {tillval.length > 0 ? (
+          <fieldset className="mt-6">
+            <legend className="text-sm font-medium text-jb-text">
+              Vill du lägga till något?
+            </legend>
+            <div className="mt-2.5 flex flex-wrap gap-2">
+              {tillval.map((t) => (
+                <label
+                  key={t.id}
+                  className={`cursor-pointer rounded-jb border px-3.5 py-2.5 text-sm transition-colors has-[:checked]:border-jb-rosa has-[:checked]:bg-jb-rosa has-[:checked]:text-jb-motsatt ${
+                    valdaTillval.includes(t.id)
+                      ? "border-jb-rosa"
+                      : "border-jb-linje text-jb-dampad hover:border-jb-dampad"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={valdaTillval.includes(t.id)}
+                    onChange={() => vaxlaTillval(t.id)}
+                    className="sr-only"
+                  />
+                  {t.namn} · +{formateraPris(t.prisTillagg)}
+                </label>
+              ))}
+            </div>
           </fieldset>
         ) : null}
 

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { MinusIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr";
 import { useCart } from "@/lib/cart";
-import { hittaRatt } from "@/data/menu-data";
+import { hittaRatt, hittaTillval } from "@/data/menu-data";
 import { formateraPris } from "@/lib/pengar";
 import { bestallning } from "@/data/restaurang";
 
@@ -68,6 +68,7 @@ export function Kassa() {
             protein: r.protein,
             sideId: r.sideId,
             tillbehor: r.tillbehor,
+            tillval: r.tillval,
           })),
         }),
       });
@@ -99,7 +100,13 @@ export function Kassa() {
             const ratt = hittaRatt(rad.rattId);
             if (!ratt) return null;
             const sida = rad.sideId ? hittaRatt(rad.sideId) : undefined;
-            const radPris = (ratt.pris ?? 0) + (sida?.pris ?? 0);
+            const tillval = (rad.tillval ?? [])
+              .map((id) => hittaTillval(id))
+              .filter((t) => t !== undefined);
+            const radPris =
+              (ratt.pris ?? 0) +
+              (sida?.pris ?? 0) +
+              tillval.reduce((n, t) => n + t.prisTillagg, 0);
             return (
               <li key={rad.radId} className="flex items-start gap-3 p-4">
                 <div className="min-w-0 flex-1">
@@ -117,6 +124,11 @@ export function Kassa() {
                   {rad.tillbehor ? (
                     <p className="mt-0.5 text-sm text-jb-dampad">
                       {rad.tillbehor}
+                    </p>
+                  ) : null}
+                  {tillval.length > 0 ? (
+                    <p className="mt-0.5 text-sm text-jb-dampad">
+                      {tillval.map((t) => t.namn).join(", ")}
                     </p>
                   ) : null}
                   {rad.notering ? (

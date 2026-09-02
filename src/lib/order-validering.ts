@@ -2,11 +2,13 @@ import { z } from "zod";
 import {
   garAttBestalla,
   hittaRatt,
+  hittaTillval,
   kategoriHarSideval,
   kategoriKraverProtein,
   proteinval,
   rattKraverTillbehor,
   tillbehorval,
+  tillvalIKategori,
 } from "@/data/menu-data";
 import { bestallning } from "@/data/restaurang";
 import { kronorTillOren } from "./pengar";
@@ -33,6 +35,7 @@ export const kundordersSchema = z.object({
         protein: z.enum(proteinval).optional(),
         sideId: z.string().optional(),
         tillbehor: z.enum(tillbehorval).optional(),
+        tillval: z.array(z.string()).max(10).optional(),
       }),
     )
     .min(1, "Varukorgen är tom")
@@ -106,9 +109,24 @@ export function valideraOchRaknaOm(order: Kundorder): ValideradOrder {
       }
     }
 
+    const valdaTillval = (rad.tillval ?? []).map((id) => {
+      const tillval = tillvalIKategori(ratten.kategori).find(
+        (t) => t.id === id,
+      );
+      if (!tillval) {
+        throw new OrderFel(`${ratten.namn} har inget tillval med det id:t.`);
+      }
+      return tillval;
+    });
+    const tillvalPrisOren = valdaTillval.reduce(
+      (n, t) => n + kronorTillOren(t.prisTillagg),
+      0,
+    );
+
     const styckprisOren =
       kronorTillOren(ratten.pris as number) +
-      (sidan ? kronorTillOren(sidan.pris as number) : 0);
+      (sidan ? kronorTillOren(sidan.pris as number) : 0) +
+      tillvalPrisOren;
 
     return {
       rattId: ratten.id,
@@ -119,6 +137,8 @@ export function valideraOchRaknaOm(order: Kundorder): ValideradOrder {
       protein: rad.protein,
       sideNamn: sidan?.namn,
       tillbehor: rad.tillbehor,
+      tillvalNamn:
+        valdaTillval.length > 0 ? valdaTillval.map((t) => t.namn) : undefined,
     };
   });
 
