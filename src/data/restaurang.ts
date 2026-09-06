@@ -13,18 +13,18 @@ export const restaurang = {
   ort: "Järna",
   land: "Sweden",
 
-  // TODO: fyll i innan lansering
   adress: {
-    gata: "",
-    postnummer: "",
+    gata: "Turingevägen 5",
+    postnummer: "153 36",
     postort: "Järna",
   },
   /** Visningsformat, t.ex. "08-551 700 00" */
   telefon: "08-88 09 96",
   /** Uppringningsbart, t.ex. "+46855170000" */
   telefonE164: "+468880996",
+  // TODO: fyll i innan lansering
   epost: "",
-  orgnr: "",
+  orgnr: "559514-5219",
 
   /** Driver Stripe-redirects och länkar i kvitton. Sätt NEXT_PUBLIC_SITE_URL i Vercel. */
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
