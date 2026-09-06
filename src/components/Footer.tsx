@@ -69,6 +69,12 @@ export function Footer() {
           >
             Villkor och betalning
           </Link>
+          <Link
+            href="/integritetspolicy"
+            className="mt-2 block text-sm text-jb-rosa hover:underline"
+          >
+            Integritetspolicy
+          </Link>
         </div>
 
         <div>

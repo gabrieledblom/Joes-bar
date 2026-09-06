@@ -272,6 +272,28 @@ export function Kassa() {
         </p>
       ) : null}
 
+      <label htmlFor="samtycke" className="flex items-start gap-3 text-sm text-jb-dampad">
+        <input
+          id="samtycke"
+          name="samtycke"
+          type="checkbox"
+          required
+          className="mt-0.5 h-4 w-4 shrink-0 accent-jb-rosa"
+        />
+        <span>
+          Jag godkänner att mina uppgifter behandlas enligt{" "}
+          <Link
+            href="/integritetspolicy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-jb-rosa underline underline-offset-2"
+          >
+            integritetspolicyn
+          </Link>
+          .
+        </span>
+      </label>
+
       <button
         type="submit"
         disabled={skickar}

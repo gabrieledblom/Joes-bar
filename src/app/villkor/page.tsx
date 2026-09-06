@@ -184,6 +184,17 @@ export default function Villkorssida() {
             {restaurang.epost ? `, mejla ${restaurang.epost}` : ", hör av dig"}.
             Bokföringsunderlag måste vi enligt lag spara i sju år.
           </p>
+          <p className="mt-3">
+            Fullständig information om vilka uppgifter vi samlar in, varför
+            och vilka rättigheter du har finns i vår{" "}
+            <Link
+              href="/integritetspolicy"
+              className="text-jb-rosa underline underline-offset-2"
+            >
+              integritetspolicy
+            </Link>
+            .
+          </p>
         </Avsnitt>
 
         <Avsnitt rubrik="Allergier">
