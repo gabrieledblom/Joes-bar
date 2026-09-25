@@ -4,6 +4,7 @@ import {
   jsonb,
   pgEnum,
   pgTable,
+  serial,
   text,
   timestamp,
   uuid,
@@ -76,6 +77,17 @@ export const installningar = pgTable("installningar", {
   /** När det sattes. Gäller bara till nästa morgon, se butik.ts. */
   satt: timestamp("satt", { withTimezone: true }).notNull().defaultNow(),
 });
+
+/** Misslyckade inloggningsförsök, för att stoppa lösenordsgissning. */
+export const forsok = pgTable(
+  "forsok",
+  {
+    id: serial("id").primaryKey(),
+    nyckel: text("nyckel").notNull(),
+    tid: timestamp("tid", { withTimezone: true }).notNull().defaultNow(),
+  },
+  (t) => [index("forsok_nyckel_tid_idx").on(t.nyckel, t.tid)],
+);
 
 export interface OrderRad {
   rattId: string;

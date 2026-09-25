@@ -47,7 +47,13 @@ export default async function Ordersida({
   return (
     <>
       <Header />
-      {betald ? <TomVarukorg /> : null}
+      {/* Stripe har redan sagt "succeeded" när gästen skickas hit - töm då
+          varukorgen direkt, så ingen råkar beställa samma sak två gånger
+          medan vi väntar på bekräftelsen. */}
+      {betald ||
+      (order.status === "vantar_betalning" && sok.redirect_status === "succeeded") ? (
+        <TomVarukorg orderId={order.id} />
+      ) : null}
 
       <main className="mx-auto w-full max-w-xl px-4 py-12 sm:px-6">
         {betald ? (

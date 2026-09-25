@@ -124,7 +124,10 @@ export default function Integritetspolicysida() {
               <strong className="text-jb-text">
                 Vercel och Neon (eller Vercel Postgres)
               </strong>{" "}
-              - driftar webbplatsen respektive lagrar orderdatabasen.
+              - driftar webbplatsen respektive lagrar orderdatabasen. Vercel
+              kan behandla uppgifterna på servrar i USA, med de
+              skyddsåtgärder leverantören tillhandahåller (t.ex.
+              standardavtalsklausuler).
             </li>
           </ul>
           <p className="mt-3">

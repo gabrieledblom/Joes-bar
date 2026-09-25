@@ -8,6 +8,9 @@ const sakerhetshuvuden = [
   { key: "X-Frame-Options", value: "DENY" },
   { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+  // Webbläsaren använder bara https mot sajten i två år framåt, även om
+  // någon skriver http:// - ingen kan fånga upp betalningen på vägen.
+  { key: "Strict-Transport-Security", value: "max-age=63072000" },
   {
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=()",

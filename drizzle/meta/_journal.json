@@ -15,6 +15,13 @@
       "when": 1790333091849,
       "tag": "0001_installningar",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1790336330313,
+      "tag": "0002_forsok",
+      "breakpoints": true
     }
   ]
 }

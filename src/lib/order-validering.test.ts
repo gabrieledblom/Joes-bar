@@ -192,6 +192,41 @@ describe("ris eller pommes till Tallrik", () => {
   });
 });
 
+describe("val som inte hör till rätten", () => {
+  it("tar inte med protein eller ris/pommes till köket där de inte hör hemma", () => {
+    const { rader } = valideraOchRaknaOm(
+      order({
+        rader: [
+          {
+            rattId: "pizza-the-classic",
+            antal: 1,
+            protein: "Kebab",
+            tillbehor: "Ris",
+          },
+        ],
+      }),
+    );
+    expect(rader[0].protein).toBeUndefined();
+    expect(rader[0].tillbehor).toBeUndefined();
+  });
+
+  it("tar inte betalt två gånger för samma tillval", () => {
+    expect(() =>
+      valideraOchRaknaOm(
+        order({
+          rader: [
+            {
+              rattId: "pizza-the-classic",
+              antal: 1,
+              tillval: ["pizza-veganost", "pizza-veganost"],
+            },
+          ],
+        }),
+      ),
+    ).toThrow(/två gånger/);
+  });
+});
+
 describe("rätter som köket markerat slut", () => {
   it("avvisar en slutsåld rätt", () => {
     expect(() =>

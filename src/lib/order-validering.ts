@@ -123,6 +123,9 @@ export function valideraOchRaknaOm(
       }
     }
 
+    if (new Set(rad.tillval ?? []).size !== (rad.tillval ?? []).length) {
+      throw new OrderFel(`Samma tillval är valt två gånger till ${ratten.namn}.`);
+    }
     const valdaTillval = (rad.tillval ?? []).map((id) => {
       const tillval = tillvalIKategori(ratten.kategori).find(
         (t) => t.id === id,
@@ -148,9 +151,15 @@ export function valideraOchRaknaOm(
       antal: rad.antal,
       styckprisOren,
       notering: rad.notering ?? "",
-      protein: rad.protein,
+      // Bara val som hör till rätten följer med till köket. Ett protein på
+      // en pizza eller ris till en burgare ska inte bli en rad på lappen.
+      protein: kategoriKraverProtein.includes(ratten.kategori)
+        ? rad.protein
+        : undefined,
       sideNamn: sidan?.namn,
-      tillbehor: rad.tillbehor,
+      tillbehor: rattKraverTillbehor.includes(ratten.id)
+        ? rad.tillbehor
+        : undefined,
       tillvalNamn:
         valdaTillval.length > 0 ? valdaTillval.map((t) => t.namn) : undefined,
     };

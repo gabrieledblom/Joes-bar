@@ -103,9 +103,11 @@ export async function POST(request: Request) {
       // Vilka metoder som visas styrs i Stripe Dashboard under Payment
       // methods. Både Kort och Swish måste vara påslagna där.
       automatic_payment_methods: { enabled: true },
-      // Syns för gästen i bankappen och i Swish. Stripes Swish-villkor
-      // kräver att företagsnamnet framgår vid betalningen.
-      statement_descriptor_suffix: "JOES BAR",
+      // Kortutdraget visar kontots prefix (satt i Stripe) följt av det här,
+      // t.ex. "JOESBAR* JB-4821". Ordernumret gör att både gästen och Joe
+      // kan para ihop en dragning med en order. Gäller bara kort; Swish
+      // visar företagsnamnet från Stripe-kontot.
+      statement_descriptor_suffix: ordernummer,
       description: `${restaurang.namn} order ${ordernummer}`,
       metadata: {
         orderId: order.id,

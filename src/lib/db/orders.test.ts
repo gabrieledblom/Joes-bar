@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
+  hamtaKoksordrar,
+  hamtaOrder,
   markeraBetald,
   skapaOrderMedNummer,
   uppdateraOrder,
@@ -27,6 +29,25 @@ describe("ordernummer", () => {
     await expect(
       skapaOrderMedNummer(orderdata, () => "JB-3333", 5),
     ).rejects.toThrow(/ordernummer/);
+  });
+});
+
+describe("hamtaOrder", () => {
+  it("svarar 'finns inte' på en felskriven länk i stället för att krascha", async () => {
+    expect(await hamtaOrder("abc")).toBeUndefined();
+    expect(await hamtaOrder("../../etc")).toBeUndefined();
+  });
+});
+
+describe("köksskärmen", () => {
+  it("visar en order som skapades i förrgår men betalades nyss", async () => {
+    const order = await skapaOrderMedNummer(orderdata, () => "JB-8001");
+    await uppdateraOrder(order.id, {
+      skapad: new Date(Date.now() - 2 * 24 * 3_600_000),
+    });
+    await markeraBetald(order.id, { betald: new Date(), betaldMed: "swish" });
+    const ordrar = await hamtaKoksordrar();
+    expect(ordrar.map((o) => o.id)).toContain(order.id);
   });
 });
 

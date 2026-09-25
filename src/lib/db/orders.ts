@@ -87,7 +87,12 @@ export async function skapaOrderMedNummer(
   throw new Error("Hittade inget ledigt ordernummer.");
 }
 
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 export async function hamtaOrder(id: string): Promise<Order | undefined> {
+  // Postgres kastar ett fel för ett id som inte är ett giltigt uuid. En
+  // felskriven länk ska ge "finns inte", inte en kraschsida.
+  if (!UUID.test(id)) return undefined;
   if (!harDatabas()) return minne.get(id);
   const [order] = await db().select().from(orders).where(eq(orders.id, id));
   return order;
@@ -226,9 +231,11 @@ export async function raderaObetaldOrder(id: string): Promise<void> {
 }
 
 /**
- * Köksskärmens vy. Betalda ordrar, nyast först. Levererade och avbrutna
- * faller bort efter ett dygn så att skärmen inte växer i oändlighet under
- * ett pass.
+ * Köksskärmens vy. Betalda ordrar, nyast först. Levererade faller bort
+ * efter ett dygn så att skärmen inte växer i oändlighet under ett pass.
+ *
+ * Räknas från när ordern betalades, inte när den skapades: en gäst som låtit
+ * betalfliken stå öppen och betalar nästa dag ska ändå synas i köket.
  */
 export async function hamtaKoksordrar(): Promise<Order[]> {
   const synliga: OrderStatus[] = ["ny", "tillagas", "klar", "levererad"];
@@ -236,12 +243,17 @@ export async function hamtaKoksordrar(): Promise<Order[]> {
 
   if (!harDatabas()) {
     return [...minne.values()]
-      .filter((o) => synliga.includes(o.status) && o.skapad >= grans)
-      .sort((a, b) => b.skapad.getTime() - a.skapad.getTime());
+      .filter(
+        (o) => synliga.includes(o.status) && (o.betald ?? o.skapad) >= grans,
+      )
+      .sort(
+        (a, b) =>
+          (b.betald ?? b.skapad).getTime() - (a.betald ?? a.skapad).getTime(),
+      );
   }
   return db()
     .select()
     .from(orders)
-    .where(and(inArray(orders.status, synliga), gte(orders.skapad, grans)))
-    .orderBy(desc(orders.skapad));
+    .where(and(inArray(orders.status, synliga), gte(orders.betald, grans)))
+    .orderBy(desc(orders.betald));
 }
