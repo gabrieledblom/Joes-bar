@@ -192,6 +192,33 @@ describe("ris eller pommes till Tallrik", () => {
   });
 });
 
+describe("rätter som köket markerat slut", () => {
+  it("avvisar en slutsåld rätt", () => {
+    expect(() =>
+      valideraOchRaknaOm(order(), new Set(["pizza-the-classic"])),
+    ).toThrow(/slut för i dag/);
+  });
+
+  it("avvisar en slutsåld side till en burgare", () => {
+    expect(() =>
+      valideraOchRaknaOm(
+        order({
+          rader: [
+            { rattId: "burgare-joes-og", antal: 1, sideId: "side-pommes" },
+          ],
+        }),
+        new Set(["side-pommes"]),
+      ),
+    ).toThrow(/Pommes är tyvärr slut/);
+  });
+
+  it("släpper igenom allt annat", () => {
+    expect(() =>
+      valideraOchRaknaOm(order(), new Set(["pizza-capri"])),
+    ).not.toThrow();
+  });
+});
+
 describe("rätter som inte går att beställa", () => {
   it("avvisar en rätt utan pris", () => {
     expect(() =>

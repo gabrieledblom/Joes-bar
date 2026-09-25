@@ -7,13 +7,15 @@ import { MinusIcon, PlusIcon, TrashIcon } from "@phosphor-icons/react/dist/ssr";
 import { useCart } from "@/lib/cart";
 import { hittaRatt, hittaTillval } from "@/data/menu-data";
 import { formateraPris } from "@/lib/pengar";
-import { bestallning } from "@/data/restaurang";
+import { bestallning, restaurang } from "@/data/restaurang";
 import { kanBestalla } from "@/lib/oppettider";
+import { useButik } from "@/lib/butik-klient";
 
 type Typ = "avhamtning" | "bord";
 
 export function Kassa() {
   const { rader, summa, antalVaror, laddad, andraAntal, taBort } = useCart();
+  const butik = useButik();
   const router = useRouter();
 
   const [namn, setNamn] = useState("");
@@ -47,6 +49,10 @@ export function Kassa() {
   }
 
   const oppet = kanBestalla();
+  const slutIKorgen = rader.some(
+    (r) => butik.slut.has(r.rattId) || (r.sideId ? butik.slut.has(r.sideId) : false),
+  );
+  const blockerad = !oppet.ok || butik.pausad || slutIKorgen;
 
   async function skicka(e: React.FormEvent) {
     e.preventDefault();
@@ -103,6 +109,24 @@ export function Kassa() {
         >
           {oppet.meddelande} Varukorgen sparas tills dess.
         </p>
+      ) : butik.pausad ? (
+        <p
+          role="status"
+          className="rounded-jb border border-jb-orange/50 bg-jb-orange/10 px-4 py-3 text-sm text-jb-text"
+        >
+          Köket har pausat onlinebeställningen en stund.
+          {restaurang.telefon
+            ? ` Ring oss på ${restaurang.telefon} så tar vi din beställning.`
+            : ""}
+        </p>
+      ) : slutIKorgen ? (
+        <p
+          role="status"
+          className="rounded-jb border border-jb-orange/50 bg-jb-orange/10 px-4 py-3 text-sm text-jb-text"
+        >
+          Något i varukorgen har tagit slut för i dag. Ta bort det för att
+          kunna betala.
+        </p>
       ) : null}
 
       <section>
@@ -123,6 +147,12 @@ export function Kassa() {
               <li key={rad.radId} className="flex items-start gap-3 p-4">
                 <div className="min-w-0 flex-1">
                   <p className="text-base text-jb-text">{ratt.namn}</p>
+                  {butik.slut.has(ratt.id) || (sida && butik.slut.has(sida.id)) ? (
+                    <p className="mt-0.5 text-sm font-semibold text-jb-orange">
+                      {butik.slut.has(ratt.id) ? ratt.namn : sida?.namn} är slut
+                      för i dag
+                    </p>
+                  ) : null}
                   {rad.protein ? (
                     <p className="mt-0.5 text-sm text-jb-dampad">
                       {rad.protein}
@@ -308,7 +338,7 @@ export function Kassa() {
 
       <button
         type="submit"
-        disabled={skickar || !oppet.ok}
+        disabled={skickar || blockerad}
         className="w-full rounded-jb bg-jb-rosa px-6 py-4 text-base font-semibold text-jb-motsatt transition-colors hover:bg-jb-rosa-mork active:scale-[0.99] disabled:opacity-60"
       >
         {skickar ? "Förbereder betalning..." : `Betala ${formateraPris(summa)}`}

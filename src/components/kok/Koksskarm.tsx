@@ -5,6 +5,7 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   CheckIcon,
   FlaskIcon,
+  ForkKnifeIcon,
   LockSimpleIcon,
   SpeakerHighIcon,
   WarningIcon,
@@ -12,6 +13,8 @@ import {
 } from "@phosphor-icons/react/dist/ssr";
 import type { OrderRad } from "@/lib/db/schema";
 import { orenTillKronor } from "@/lib/pengar";
+import { useButik } from "@/lib/butik-klient";
+import { KokMenyPanel } from "./KokMenyPanel";
 
 /** Hur ofta skärmen frågar efter nya ordrar. */
 const POLL_MS = 3000;
@@ -100,6 +103,8 @@ export function Koksskarm() {
   const [bekraftade, setBekraftade] = useState<Set<string>>(new Set());
   const [laddad, setLaddad] = useState(false);
   const [aktionsFel, setAktionsFel] = useState("");
+  const [visaMeny, setVisaMeny] = useState(false);
+  const butik = useButik();
 
   const [senasteLyckadePoll, setSenasteLyckadePoll] = useState<number | null>(
     null,
@@ -373,6 +378,32 @@ export function Koksskarm() {
     }
   }
 
+  /** Avbryter ordern och betalar tillbaka hela beloppet. true om det gick. */
+  async function aterbetala(order: Koksorder): Promise<boolean> {
+    if (order.id.startsWith(FEJK_PREFIX)) {
+      setFejkOrdrar((lista) => lista.filter((o) => o.id !== order.id));
+      return true;
+    }
+    try {
+      const svar = await fetch(`/api/kok/ordrar/${order.id}/aterbetala`, {
+        method: "POST",
+      });
+      if (!svar.ok) {
+        const data = (await svar.json().catch(() => ({}))) as { fel?: string };
+        setAktionsFel(
+          data.fel ?? `Kunde inte återbetala ${order.ordernummer}. Försök igen.`,
+        );
+        return false;
+      }
+      setOrdrar((lista) => lista.filter((o) => o.id !== order.id));
+      setAktionsFel("");
+      return true;
+    } catch {
+      setAktionsFel(`Ingen kontakt - ${order.ordernummer} är inte återbetald. Försök igen.`);
+      return false;
+    }
+  }
+
   function simuleraNyOrder() {
     const tid = new Date().toISOString();
     setFejkOrdrar((lista) => [
@@ -462,6 +493,26 @@ export function Koksskarm() {
             {obekraftadeCount}
           </span>
         </div>
+
+        {butik.pausad ? (
+          <span className="rounded-jb bg-jb-orange px-3 py-2 text-sm font-semibold text-jb-motsatt">
+            BESTÄLLNING PAUSAD
+          </span>
+        ) : null}
+
+        <button
+          type="button"
+          onClick={() => setVisaMeny(true)}
+          className="flex items-center gap-2 rounded-jb border border-jb-linje px-4 py-2.5 text-sm text-jb-text hover:border-jb-rosa"
+        >
+          <ForkKnifeIcon size={18} aria-hidden />
+          Meny & mer
+          {butik.slut.size > 0 ? (
+            <span className="rounded-full bg-jb-orange px-2 text-xs font-semibold text-jb-motsatt tabular-nums">
+              {butik.slut.size} slut
+            </span>
+          ) : null}
+        </button>
 
         <div className="ml-auto flex items-center gap-4">
           {passetStartat && wakeLockAktiv ? (
@@ -557,6 +608,7 @@ export function Koksskarm() {
                       nu={nu}
                       arBekraftad={bekraftade.has(order.id)}
                       bekrafta={bekrafta}
+                      aterbetala={aterbetala}
                     />
                   ))}
                 </AnimatePresence>
@@ -605,6 +657,8 @@ export function Koksskarm() {
           </button>
         </div>
       ) : null}
+
+      {visaMeny ? <KokMenyPanel stang={() => setVisaMeny(false)} /> : null}
     </div>
   );
 }
@@ -617,6 +671,7 @@ function Orderkort({
   nu,
   arBekraftad,
   bekrafta,
+  aterbetala,
 }: {
   order: Koksorder;
   nasta?: Status;
@@ -625,8 +680,11 @@ function Orderkort({
   nu: number;
   arBekraftad: boolean;
   bekrafta: (id: string) => void;
+  aterbetala: (order: Koksorder) => Promise<boolean>;
 }) {
   const dampad = useReducedMotion();
+  const [fragarOmAterbetalning, setFragarOmAterbetalning] = useState(false);
+  const [aterbetalar, setAterbetalar] = useState(false);
   const startTid = new Date(order.betald ?? order.skapad).getTime();
   const sekunderSedan = Math.max(0, Math.floor((nu - startTid) / 1000));
   const minuter = Math.floor(sekunderSedan / 60);
@@ -747,6 +805,51 @@ function Orderkort({
           {knapp}
         </button>
       ) : null}
+
+      {/* Två steg med avsikt: en återbetalning går inte att ångra, och en
+          surfplatta i ett kök får lätt ett oavsiktligt tryck. */}
+      {fragarOmAterbetalning ? (
+        <div className="mt-4 rounded-jb border border-jb-orange/60 bg-jb-orange/10 p-3">
+          <p className="text-sm text-jb-text">
+            Avbryta {order.ordernummer} och betala tillbaka{" "}
+            {orenTillKronor(order.summaOren)} kr? Gästen får besked via sms eller
+            e-post.
+          </p>
+          <div className="mt-3 flex gap-2">
+            <button
+              type="button"
+              disabled={aterbetalar}
+              onClick={async () => {
+                setAterbetalar(true);
+                const lyckades = await aterbetala(order);
+                if (!lyckades) {
+                  setAterbetalar(false);
+                  setFragarOmAterbetalning(false);
+                }
+              }}
+              className="flex-1 rounded-jb bg-jb-orange px-3 py-3 text-sm font-semibold text-jb-motsatt disabled:opacity-60"
+            >
+              {aterbetalar ? "Återbetalar..." : "Ja, återbetala"}
+            </button>
+            <button
+              type="button"
+              disabled={aterbetalar}
+              onClick={() => setFragarOmAterbetalning(false)}
+              className="flex-1 rounded-jb border border-jb-linje px-3 py-3 text-sm text-jb-text"
+            >
+              Nej, behåll
+            </button>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={() => setFragarOmAterbetalning(true)}
+          className="mt-3 text-xs text-jb-dampad underline underline-offset-2 hover:text-jb-orange"
+        >
+          Avbryt order & återbetala
+        </button>
+      )}
     </motion.article>
   );
 }

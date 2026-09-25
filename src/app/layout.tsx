@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Anton, Geist, Geist_Mono } from "next/font/google";
 import { CartProvider } from "@/lib/cart";
+import { ButikProvider } from "@/lib/butik-klient";
 import { restaurang } from "@/data/restaurang";
 import "./globals.css";
 
@@ -50,7 +51,9 @@ export default function RootLayout({
       className={`${anton.variable} ${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-jb-botten text-jb-text">
-        <CartProvider>{children}</CartProvider>
+        <ButikProvider>
+          <CartProvider>{children}</CartProvider>
+        </ButikProvider>
       </body>
     </html>
   );

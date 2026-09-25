@@ -1,4 +1,14 @@
-import { and, desc, eq, gte, inArray, isNull } from "drizzle-orm";
+import {
+  and,
+  asc,
+  desc,
+  eq,
+  gte,
+  inArray,
+  isNotNull,
+  isNull,
+  lt,
+} from "drizzle-orm";
 import { db, harDatabas } from "./index";
 import { orders, type NyOrder, type Order, type OrderStatus } from "./schema";
 
@@ -162,6 +172,57 @@ export async function markeraBetald(
     )
     .returning();
   return order;
+}
+
+/** Betalda ordrar (även återbetalda) i tidsordning, för historik och bokföring. */
+export async function hamtaBetaldaOrdrar(fran: Date, till: Date): Promise<Order[]> {
+  if (!harDatabas()) {
+    return [...minne.values()]
+      .filter((o) => o.betald && o.betald >= fran && o.betald < till)
+      .sort((a, b) => a.betald!.getTime() - b.betald!.getTime());
+  }
+  return db()
+    .select()
+    .from(orders)
+    .where(
+      and(isNotNull(orders.betald), gte(orders.betald, fran), lt(orders.betald, till)),
+    )
+    .orderBy(asc(orders.betald));
+}
+
+/** Påbörjade beställningar som aldrig betalades, äldre än en viss tidpunkt. */
+export async function hamtaGamlaObetalda(
+  aldreAn: Date,
+  max = 50,
+): Promise<Order[]> {
+  const obetald: OrderStatus[] = ["vantar_betalning", "avbruten"];
+  if (!harDatabas()) {
+    return [...minne.values()]
+      .filter((o) => !o.betald && obetald.includes(o.status) && o.skapad < aldreAn)
+      .slice(0, max);
+  }
+  return db()
+    .select()
+    .from(orders)
+    .where(
+      and(
+        isNull(orders.betald),
+        inArray(orders.status, obetald),
+        lt(orders.skapad, aldreAn),
+      ),
+    )
+    .limit(max);
+}
+
+/** Tar bort en obetald order. Betalda ordrar är bokföring och rörs aldrig. */
+export async function raderaObetaldOrder(id: string): Promise<void> {
+  if (!harDatabas()) {
+    if (!minne.get(id)?.betald) minne.delete(id);
+    return;
+  }
+  await db()
+    .delete(orders)
+    .where(and(eq(orders.id, id), isNull(orders.betald)));
 }
 
 /**

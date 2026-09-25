@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { after, NextResponse } from "next/server";
 import { hamtaKoksordrar } from "@/lib/db/orders";
+import { rensaIBland } from "@/lib/rensning";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -12,6 +13,10 @@ export const dynamic = "force-dynamic";
  */
 export async function GET() {
   const ordrar = await hamtaKoksordrar();
+
+  // Köksskärmen är öppen varje pass, så här får rensningen av gamla obetalda
+  // beställningar en naturlig plats - efter svaret, så pollingen inte väntar.
+  after(rensaIBland);
 
   return NextResponse.json(
     {

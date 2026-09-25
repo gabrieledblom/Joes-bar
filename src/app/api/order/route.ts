@@ -11,6 +11,7 @@ import {
 } from "@/lib/order-validering";
 import { bestallning, restaurang } from "@/data/restaurang";
 import { kanBestalla } from "@/lib/oppettider";
+import { hamtaButiksstatus } from "@/lib/db/butik";
 
 export const runtime = "nodejs";
 
@@ -53,7 +54,23 @@ export async function POST(request: Request) {
     // Uppgifterna kontrolleras före Stripe, så att ett tomt telefonfält ger
     // ett begripligt fel även innan betalningen är konfigurerad.
     const { telefon, epost } = kravKontaktvag(tolkad.data);
-    const { rader, summaOren } = valideraOchRaknaOm(tolkad.data);
+
+    const butik = await hamtaButiksstatus();
+    if (butik.pausad) {
+      return NextResponse.json(
+        {
+          fel: `Köket har pausat onlinebeställningen en stund.${
+            restaurang.telefon ? ` Ring oss på ${restaurang.telefon} så tar vi din beställning.` : ""
+          }`,
+        },
+        { status: 503 },
+      );
+    }
+
+    const { rader, summaOren } = valideraOchRaknaOm(
+      tolkad.data,
+      new Set(butik.slut),
+    );
 
     if (!harStripe()) {
       return NextResponse.json(

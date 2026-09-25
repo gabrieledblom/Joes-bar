@@ -4,6 +4,7 @@ import { Footer } from "@/components/Footer";
 import { RattRad } from "@/components/RattRad";
 import { KorgFot } from "@/components/KorgFot";
 import { KategoriNav } from "@/components/KategoriNav";
+import { PausNotis } from "@/components/PausNotis";
 import { kategorier, ratterIKategori } from "@/data/menu-data";
 import { bestallning } from "@/data/restaurang";
 
@@ -42,7 +43,9 @@ export default function Menysida() {
             Onlinebeställning är tillfälligt stängd. Menyn gäller fortfarande i
             lokalen.
           </p>
-        ) : null}
+        ) : (
+          <PausNotis />
+        )}
 
         {kategorier.map((kategori) => {
           const ratter = ratterIKategori(kategori.id);

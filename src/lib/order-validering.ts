@@ -78,7 +78,11 @@ export function normaliseraEpost(inmatning: string): string | null {
  * beställa: okända rätter, rätter utan pris, rätter som är slut, och
  * kebabrätter utan valt protein.
  */
-export function valideraOchRaknaOm(order: Kundorder): ValideradOrder {
+export function valideraOchRaknaOm(
+  order: Kundorder,
+  /** Rätter köket markerat som slut för i dag. */
+  slut: ReadonlySet<string> = new Set(),
+): ValideradOrder {
   if (!bestallning.aktiv) {
     throw new OrderFel("Onlinebeställning är tillfälligt stängd.");
   }
@@ -90,6 +94,11 @@ export function valideraOchRaknaOm(order: Kundorder): ValideradOrder {
     }
     if (!garAttBestalla(ratten)) {
       throw new OrderFel(`${ratten.namn} går inte att beställa just nu.`);
+    }
+    if (slut.has(ratten.id)) {
+      throw new OrderFel(
+        `${ratten.namn} är tyvärr slut för i dag. Ta bort den ur varukorgen för att fortsätta.`,
+      );
     }
     if (kategoriKraverProtein.includes(ratten.kategori) && !rad.protein) {
       throw new OrderFel(`Välj protein till ${ratten.namn}.`);
@@ -106,6 +115,11 @@ export function valideraOchRaknaOm(order: Kundorder): ValideradOrder {
       sidan = hittaRatt(rad.sideId);
       if (!sidan || sidan.kategori !== "sides" || !garAttBestalla(sidan)) {
         throw new OrderFel("Den valda siden finns inte längre.");
+      }
+      if (slut.has(sidan.id)) {
+        throw new OrderFel(
+          `${sidan.namn} är tyvärr slut för i dag. Välj en annan side till ${ratten.namn}.`,
+        );
       }
     }
 

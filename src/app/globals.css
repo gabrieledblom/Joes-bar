@@ -39,7 +39,9 @@
 
   /* Accent - interaktion. Endast denna. */
   --color-jb-rosa: #ff2e88;
-  --color-jb-rosa-mork: #d81c6e;
+  /* Hover-läget på rosa knappar. Mörkare än så går inte: den mörka
+     knapptexten måste klara 4.5:1 även medan fingret/musen är på knappen. */
+  --color-jb-rosa-mork: #e42677;
 
   /* Kategoriidentitet - aldrig interaktion */
   --color-jb-gul: #ffc542;

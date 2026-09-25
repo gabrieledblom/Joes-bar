@@ -17,13 +17,16 @@ import {
   type Tillbehor,
 } from "@/data/menu-data";
 import { useCart } from "@/lib/cart";
+import { useButik } from "@/lib/butik-klient";
 import { formateraPris } from "@/lib/pengar";
 
 const tillbehorEmoji: Record<Tillbehor, string> = { Ris: "🍚", Pommes: "🍟" };
 
 export function RattRad({ ratt }: { ratt: MenuItem }) {
   const [oppen, setOppen] = useState(false);
-  const bestallbar = garAttBestalla(ratt);
+  const { slut } = useButik();
+  const arSlut = slut.has(ratt.id);
+  const bestallbar = garAttBestalla(ratt) && !arSlut;
 
   return (
     <li className="border-b border-jb-linje-svag last:border-b-0">
@@ -46,7 +49,11 @@ export function RattRad({ ratt }: { ratt: MenuItem }) {
 
         <span className="flex shrink-0 items-center gap-3">
           <span className="text-right">
-            {ratt.pris !== null ? (
+            {arSlut ? (
+              <span className="text-xs font-semibold uppercase tracking-wide text-jb-orange">
+                Slut för i dag
+              </span>
+            ) : ratt.pris !== null ? (
               <span className="text-base tabular-nums text-jb-text">
                 {formateraPris(ratt.pris)}
               </span>
@@ -89,6 +96,7 @@ function BestallDialog({
 }) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const { laggTill } = useCart();
+  const { slut } = useButik();
   const [antal, setAntal] = useState(1);
   const [notering, setNotering] = useState("");
   const [protein, setProtein] = useState<Protein | "">("");
@@ -102,7 +110,7 @@ function BestallDialog({
   const kraverTillbehor = rattKraverTillbehor.includes(ratt.id);
   const harSideval = kategoriHarSideval.includes(ratt.kategori);
   const sides = harSideval
-    ? ratterIKategori("sides").filter(garAttBestalla)
+    ? ratterIKategori("sides").filter((s) => garAttBestalla(s) && !slut.has(s.id))
     : [];
   const valdSida = sideId ? hittaRatt(sideId) : undefined;
   const tillval = tillvalIKategori(ratt.kategori);

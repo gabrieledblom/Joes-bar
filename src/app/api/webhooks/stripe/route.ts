@@ -55,6 +55,11 @@ export async function POST(request: Request) {
       case "payment_intent.canceled":
         await hanteraAvbruten(handelse.data.object);
         break;
+      // Återbetalning gjord direkt i Stripes dashboard: ta bort ordern från
+      // köksskärmen så att ingen lagar mat som redan är återbetald.
+      case "charge.refunded":
+        await hanteraAterbetald(handelse.data.object);
+        break;
       default:
         break;
     }
@@ -113,6 +118,20 @@ async function betalsatt(intent: Stripe.PaymentIntent): Promise<string | null> {
     // Betalsättet är bara information i historiken - ordern ska till köket ändå.
     return null;
   }
+}
+
+async function hanteraAterbetald(charge: Stripe.Charge) {
+  // Bara hela beloppet stänger ordern. En delåterbetalning (t.ex. för en
+  // bortglömd side) betyder att resten av maten fortfarande ska lagas.
+  if (charge.amount_refunded < charge.amount) return;
+  const intentId =
+    typeof charge.payment_intent === "string"
+      ? charge.payment_intent
+      : charge.payment_intent?.id;
+  if (!intentId) return;
+  const order = await hamtaOrderViaPaymentIntent(intentId);
+  if (!order || !order.betald || order.status === "avbruten") return;
+  await uppdateraOrder(order.id, { status: "avbruten" });
 }
 
 async function hanteraAvbruten(intent: Stripe.PaymentIntent) {

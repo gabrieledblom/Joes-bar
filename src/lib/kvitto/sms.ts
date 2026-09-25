@@ -11,22 +11,35 @@ const ELKS_URL = "https://api.46elks.com/a1/sms";
  */
 export async function skickaSmsKvitto(order: Order): Promise<boolean> {
   if (!order.kundTelefon) return false;
+  return skickaSms(order.kundTelefon, byggSmsText(order));
+}
 
-  const text = byggSmsText(order);
+/** Sms till gästen när köket avbrutit ordern och pengarna går tillbaka. */
+export async function skickaSmsAterbetald(order: Order): Promise<boolean> {
+  if (!order.kundTelefon) return false;
+  const text = [
+    `${restaurang.namn}: vi har tyvärr fått avbryta order ${order.ordernummer}.`,
+    `${orenTillKronor(order.summaOren)} kr betalas tillbaka till samma kort eller Swish inom några bankdagar.`,
+    restaurang.telefon ? `Frågor? Ring ${restaurang.telefon}.` : "",
+  ]
+    .filter(Boolean)
+    .join("\n");
+  return skickaSms(order.kundTelefon, text);
+}
+
+async function skickaSms(till: string, text: string): Promise<boolean> {
   const anvandare = process.env.ELKS_API_USERNAME;
   const losenord = process.env.ELKS_API_PASSWORD;
   const avsandare = (process.env.ELKS_SMS_FROM ?? "JoesBar").slice(0, 11);
 
   if (!anvandare || !losenord) {
-    console.info(
-      `[46elks mock] Till ${order.kundTelefon} från ${avsandare}:\n${text}`,
-    );
+    console.info(`[46elks mock] Till ${till} från ${avsandare}:\n${text}`);
     return false;
   }
 
   const kropp = new URLSearchParams({
     from: avsandare,
-    to: order.kundTelefon,
+    to: till,
     message: text,
   });
 

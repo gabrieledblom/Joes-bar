@@ -54,8 +54,9 @@ gästen väntar, skärmen är tom. Följ ordningen:
    URL, t.ex. `https://joesbar.vercel.app`.
 3. **Registrera webhooken** i Stripe Dashboard → Developers → Webhooks:
    - Endpoint: `https://DIN-URL/api/webhooks/stripe`
-   - Händelser: `payment_intent.succeeded`,
-     `payment_intent.payment_failed`, `payment_intent.canceled`
+   - Händelser: `payment_intent.succeeded`, `payment_intent.canceled`,
+     `charge.refunded` (den sista tar bort ordern från köksskärmen om någon
+     återbetalar direkt i Stripe)
 4. **Kopiera signeringshemligheten** (`whsec_...`) som Stripe visar, lägg in
    den som `STRIPE_WEBHOOK_SECRET` i Vercel.
 5. **Deploya om.** Miljövariabler slår igenom först vid ny deploy.
@@ -63,6 +64,25 @@ gästen väntar, skärmen är tom. Följ ordningen:
    ska dyka upp på `/kok` inom några sekunder.
 7. Byt till skarpa nycklar och **upprepa steg 3 till 5** - testläge och
    skarpt läge har varsin webhook och varsin hemlighet.
+
+### I köket, varje dag
+
+Allt görs från `/kok` under **Meny & mer**, utan kodändringar:
+
+- **Slut för i dag** - tryck på en rätt så försvinner den ur onlinemenyn.
+- **Pausa onlinebeställningen** - när köket är överbelastat. Gästerna ser
+  menyn men kan inte betala.
+- Båda nollställs av sig själva kl 05 nästa morgon.
+- **Historik & dagsrapport** - dagens betalda ordrar och summor, och hela
+  månaden som csv till bokföringen.
+- **Avbryt order & återbetala** finns på varje orderkort. Hela beloppet går
+  tillbaka via Stripe och gästen får besked. Delåterbetalningar görs i
+  Stripe.
+
+Onlinebeställningen stänger av sig själv utanför öppettiderna och
+`sistaOrderMinuterForeStangning` minuter före stängning
+(`src/data/restaurang.ts`). Obetalda påbörjade beställningar raderas
+automatiskt efter två dygn.
 
 ### Slå på Swish
 

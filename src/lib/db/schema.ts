@@ -65,6 +65,18 @@ export const orders = pgTable(
   ],
 );
 
+/**
+ * Det personalen ändrar under dagen utan att koden behöver ändras: rätter
+ * som tagit slut och om onlinebeställningen är pausad. En rad per sak
+ * ("pausad", "slut:pizza-capri"), så att två i köket som klickar samtidigt
+ * aldrig skriver över varandra.
+ */
+export const installningar = pgTable("installningar", {
+  nyckel: text("nyckel").primaryKey(),
+  /** När det sattes. Gäller bara till nästa morgon, se butik.ts. */
+  satt: timestamp("satt", { withTimezone: true }).notNull().defaultNow(),
+});
+
 export interface OrderRad {
   rattId: string;
   namn: string;
