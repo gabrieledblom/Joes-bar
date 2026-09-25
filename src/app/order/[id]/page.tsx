@@ -19,15 +19,30 @@ export const dynamic = "force-dynamic";
 
 export default async function Ordersida({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
   const { id } = await params;
+  const sok = await searchParams;
   const order = await hamtaOrder(id);
   if (!order) notFound();
 
-  const avbruten = order.status === "avbruten";
-  const betald = order.status !== "vantar_betalning" && !avbruten;
+  const aterbetald = order.status === "avbruten" && order.betald !== null;
+  const avbruten = order.status === "avbruten" && !aterbetald;
+  const betald = order.status !== "vantar_betalning" && order.status !== "avbruten";
+
+  // Stripe skickar tillbaka gästen hit med redirect_status=failed när Swish
+  // eller 3D Secure nekas. Betalningen är då fortfarande öppen och går att
+  // försöka igen - köket har inte fått något.
+  const clientSecret = sok.payment_intent_client_secret;
+  const nekad =
+    order.status === "vantar_betalning" && sok.redirect_status === "failed";
+  const forsokIgen =
+    nekad && typeof clientSecret === "string"
+      ? `/kassa/betalning?order=${order.id}&cs=${encodeURIComponent(clientSecret)}`
+      : "/kassa";
 
   return (
     <>
@@ -49,9 +64,11 @@ export default async function Ordersida({
         <h1 className="jb-display mt-4 text-4xl text-jb-text sm:text-5xl">
           {betald
             ? "Tack för din beställning"
-            : avbruten
-              ? "Betalningen gick inte igenom"
-              : "Väntar på betalning"}
+            : aterbetald
+              ? "Ordern är avbruten"
+              : avbruten || nekad
+                ? "Betalningen gick inte igenom"
+                : "Väntar på betalning"}
         </h1>
 
         <p className="mt-3 text-base text-jb-dampad">
@@ -59,17 +76,19 @@ export default async function Ordersida({
             ? order.typ === "bord"
               ? `Vi kommer ut med maten till bord ${order.bordsnummer}.`
               : `Maten är normalt klar efter cirka ${bestallning.tillagningsminuter} minuter.`
-            : avbruten
-              ? "Inga pengar har dragits och köket har inte fått någon order. Varukorgen finns kvar om du vill försöka igen."
-              : "Betalningen är inte bekräftad än. Sidan uppdateras när den går igenom."}
+            : aterbetald
+              ? `Vi har avbrutit ordern och betalar tillbaka ${orenTillKronor(order.summaOren)} kr till samma kort eller Swish. Det tar normalt några bankdagar.`
+              : avbruten || nekad
+                ? "Inga pengar har dragits och köket har inte fått någon order. Varukorgen finns kvar om du vill försöka igen."
+                : "Betalningen är inte bekräftad än. Sidan uppdateras när den går igenom."}
         </p>
-        {!betald && !avbruten ? <VantaPaBetalning /> : null}
-        {avbruten ? (
+        {order.status === "vantar_betalning" && !nekad ? <VantaPaBetalning /> : null}
+        {avbruten || nekad ? (
           <Link
-            href="/kassa"
+            href={forsokIgen}
             className="mt-6 inline-block rounded-jb bg-jb-rosa px-6 py-3.5 text-base font-semibold text-jb-motsatt transition-colors hover:bg-jb-rosa-mork"
           >
-            Tillbaka till kassan
+            Försök igen
           </Link>
         ) : null}
 

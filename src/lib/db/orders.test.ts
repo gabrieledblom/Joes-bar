@@ -42,9 +42,21 @@ describe("markeraBetald", () => {
     expect(andra).toBeUndefined();
   });
 
-  it("rör inte en avbruten order", async () => {
+  it("tar emot en betalning även om ordern hunnit avbrytas", async () => {
+    // Har Stripe dragit pengarna ska maten lagas - även om ordern t.ex.
+    // stängts efter ett nekat kort innan gästen betalade med ett annat.
     const order = await skapaOrderMedNummer(orderdata, () => "JB-5555");
     await uppdateraOrder(order.id, { status: "avbruten" });
+    const betald = await markeraBetald(order.id, {
+      betald: new Date(),
+      betaldMed: "card",
+    });
+    expect(betald?.status).toBe("ny");
+  });
+
+  it("väcker aldrig liv i en återbetald order", async () => {
+    const order = await skapaOrderMedNummer(orderdata, () => "JB-6666");
+    await uppdateraOrder(order.id, { status: "avbruten", betald: new Date() });
     expect(
       await markeraBetald(order.id, { betald: new Date(), betaldMed: null }),
     ).toBeUndefined();

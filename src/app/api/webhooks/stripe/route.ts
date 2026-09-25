@@ -48,7 +48,10 @@ export async function POST(request: Request) {
       case "payment_intent.succeeded":
         await hanteraBetald(handelse.data.object);
         break;
-      case "payment_intent.payment_failed":
+      // payment_intent.payment_failed hanteras medvetet INTE: ett nekat kort
+      // lämnar betalningen öppen, och gästen kan försöka igen med ett annat
+      // kort eller Swish. Att stänga ordern där gjorde att en lyckad andra
+      // betalning aldrig nådde köket. Bara "canceled" är slutgiltigt.
       case "payment_intent.canceled":
         await hanteraAvbruten(handelse.data.object);
         break;
@@ -77,7 +80,7 @@ async function hanteraBetald(intent: Stripe.PaymentIntent) {
   // flyttade den, så gästen får ett kvitto och inte ett per leverans.
   const uppdaterad = await markeraBetald(order.id, {
     betald: new Date(),
-    betaldMed: intent.payment_method_types?.[0] ?? null,
+    betaldMed: await betalsatt(intent),
   });
   if (!uppdaterad) return;
 
@@ -94,6 +97,22 @@ async function hanteraBetald(intent: Stripe.PaymentIntent) {
     kvittoSmsSkickat:
       sms.status === "fulfilled" && sms.value ? new Date() : null,
   });
+}
+
+/**
+ * Vilket betalsätt som faktiskt användes, "card" eller "swish".
+ * payment_method_types är bara vad som erbjöds, inte vad gästen valde.
+ */
+async function betalsatt(intent: Stripe.PaymentIntent): Promise<string | null> {
+  const metod = intent.payment_method;
+  if (!metod) return null;
+  if (typeof metod !== "string") return metod.type;
+  try {
+    return (await stripe().paymentMethods.retrieve(metod)).type;
+  } catch {
+    // Betalsättet är bara information i historiken - ordern ska till köket ändå.
+    return null;
+  }
 }
 
 async function hanteraAvbruten(intent: Stripe.PaymentIntent) {

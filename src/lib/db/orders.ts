@@ -1,4 +1,4 @@
-import { and, desc, eq, gte, inArray } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, isNull } from "drizzle-orm";
 import { db, harDatabas } from "./index";
 import { orders, type NyOrder, type Order, type OrderStatus } from "./schema";
 
@@ -131,23 +131,35 @@ export async function uppdateraOrder(
 }
 
 /**
- * Flyttar en order från "vantar_betalning" till "ny" i ett enda villkorat
- * anrop. Stripe kan leverera samma händelse två gånger samtidigt; bara ett
- * av anropen får tillbaka ordern, så kvittot skickas en gång.
+ * Flyttar en obetald order till "ny" i ett enda villkorat anrop. Stripe kan
+ * leverera samma händelse två gånger samtidigt; bara ett av anropen får
+ * tillbaka ordern, så kvittot skickas en gång.
+ *
+ * Även en "avbruten" order som aldrig betalats tas emot: har Stripe dragit
+ * pengarna ska maten lagas, oavsett vad som hänt med ordern innan.
  */
 export async function markeraBetald(
   id: string,
   data: Pick<NyOrder, "betald" | "betaldMed">,
 ): Promise<Order | undefined> {
+  const obetald: OrderStatus[] = ["vantar_betalning", "avbruten"];
   if (!harDatabas()) {
     const befintlig = minne.get(id);
-    if (!befintlig || befintlig.status !== "vantar_betalning") return undefined;
+    if (!befintlig || befintlig.betald || !obetald.includes(befintlig.status)) {
+      return undefined;
+    }
     return uppdateraOrder(id, { ...data, status: "ny" });
   }
   const [order] = await db()
     .update(orders)
     .set({ ...data, status: "ny", uppdaterad: nu() })
-    .where(and(eq(orders.id, id), eq(orders.status, "vantar_betalning")))
+    .where(
+      and(
+        eq(orders.id, id),
+        inArray(orders.status, obetald),
+        isNull(orders.betald),
+      ),
+    )
     .returning();
   return order;
 }
