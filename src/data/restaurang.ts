@@ -83,6 +83,8 @@ export const bestallning = {
   aktiv: true,
   /** Ungefärlig tid från betald order till avhämtning. Visas för gästen. */
   tillagningsminuter: 30,
+  /** Onlinebeställningen stängs så här många minuter före stängningstid. */
+  sistaOrderMinuterForeStangning: 15,
   /** Går att beställa i lokalen till ett bord? */
   bordsservering: true,
   /** Högsta bordsnummer som går att välja. */

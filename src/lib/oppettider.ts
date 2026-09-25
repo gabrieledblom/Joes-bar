@@ -1,4 +1,5 @@
 import {
+  bestallning,
   oppettider,
   type Oppettid,
   type Veckodag,
@@ -96,6 +97,8 @@ export interface Oppetstatus {
   oppnarKl: string | null;
   /** "23:00" medan det är öppet. */
   stangerKl: string | null;
+  /** Minuter kvar till stängning medan det är öppet, annars null. */
+  minuterKvar: number | null;
 }
 
 /** Minuter kvar tills stället öppnar igen, räknat från ett klockslag. */
@@ -137,6 +140,7 @@ export function oppetStatus(datum: Date = new Date()): Oppetstatus {
         andel: klamp(gangen / passlangd),
         oppnarKl: null,
         stangerKl: formateraKlockslag(stanger),
+        minuterKvar: stanger - (nu.minut + 1440),
       };
     }
   }
@@ -151,6 +155,7 @@ export function oppetStatus(datum: Date = new Date()): Oppetstatus {
         andel: klamp((nu.minut - oppnar) / (stanger - oppnar)),
         oppnarKl: null,
         stangerKl: formateraKlockslag(stanger),
+        minuterKvar: stanger - nu.minut,
       };
     }
   }
@@ -171,7 +176,35 @@ export function oppetStatus(datum: Date = new Date()): Oppetstatus {
     andel,
     oppnarKl: kommande?.oppnarKl ?? null,
     stangerKl: null,
+    minuterKvar: null,
   };
+}
+
+/**
+ * Går det att lägga en onlineorder just nu? En betald order när ingen står
+ * i köket är det värsta som kan hända: gästen har betalat och ingen lagar
+ * maten. Därför stängs beställningen också en stund före stängning.
+ */
+export function kanBestalla(datum: Date = new Date()): {
+  ok: boolean;
+  meddelande: string;
+} {
+  const status = oppetStatus(datum);
+  const oppnar = status.oppnarKl ? ` Vi öppnar igen ${status.oppnarKl}.` : "";
+
+  if (!status.oppet) {
+    return { ok: false, meddelande: `Vi har stängt just nu.${oppnar}` };
+  }
+  if (
+    status.minuterKvar !== null &&
+    status.minuterKvar <= bestallning.sistaOrderMinuterForeStangning
+  ) {
+    return {
+      ok: false,
+      meddelande: `Köket tar inte emot fler onlineordrar i kväll - vi stänger ${status.stangerKl}.`,
+    };
+  }
+  return { ok: true, meddelande: "" };
 }
 
 /** "25:00" betyder 01:00 natten efter. Gästen ska läsa 01:00. */

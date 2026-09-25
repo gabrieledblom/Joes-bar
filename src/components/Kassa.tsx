@@ -8,6 +8,7 @@ import { useCart } from "@/lib/cart";
 import { hittaRatt, hittaTillval } from "@/data/menu-data";
 import { formateraPris } from "@/lib/pengar";
 import { bestallning } from "@/data/restaurang";
+import { kanBestalla } from "@/lib/oppettider";
 
 type Typ = "avhamtning" | "bord";
 
@@ -44,6 +45,8 @@ export function Kassa() {
       </div>
     );
   }
+
+  const oppet = kanBestalla();
 
   async function skicka(e: React.FormEvent) {
     e.preventDefault();
@@ -93,6 +96,15 @@ export function Kassa() {
 
   return (
     <form onSubmit={skicka} className="mt-8 space-y-10">
+      {!oppet.ok ? (
+        <p
+          role="status"
+          className="rounded-jb border border-jb-orange/50 bg-jb-orange/10 px-4 py-3 text-sm text-jb-text"
+        >
+          {oppet.meddelande} Varukorgen sparas tills dess.
+        </p>
+      ) : null}
+
       <section>
         <h2 className="jb-display text-xl text-jb-text">Din beställning</h2>
         <ul className="mt-4 divide-y divide-jb-linje-svag rounded-jb border border-jb-linje">
@@ -296,7 +308,7 @@ export function Kassa() {
 
       <button
         type="submit"
-        disabled={skickar}
+        disabled={skickar || !oppet.ok}
         className="w-full rounded-jb bg-jb-rosa px-6 py-4 text-base font-semibold text-jb-motsatt transition-colors hover:bg-jb-rosa-mork active:scale-[0.99] disabled:opacity-60"
       >
         {skickar ? "Förbereder betalning..." : `Betala ${formateraPris(summa)}`}

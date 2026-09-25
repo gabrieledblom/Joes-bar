@@ -5,6 +5,7 @@ import { CheckCircleIcon, ClockIcon } from "@phosphor-icons/react/dist/ssr";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { TomVarukorg } from "@/components/TomVarukorg";
+import { VantaPaBetalning } from "@/components/VantaPaBetalning";
 import { hamtaOrder } from "@/lib/db/orders";
 import { orenTillKronor } from "@/lib/pengar";
 import { bestallning, restaurang } from "@/data/restaurang";
@@ -25,7 +26,8 @@ export default async function Ordersida({
   const order = await hamtaOrder(id);
   if (!order) notFound();
 
-  const betald = order.status !== "vantar_betalning" && order.status !== "avbruten";
+  const avbruten = order.status === "avbruten";
+  const betald = order.status !== "vantar_betalning" && !avbruten;
 
   return (
     <>
@@ -45,7 +47,11 @@ export default async function Ordersida({
         )}
 
         <h1 className="jb-display mt-4 text-4xl text-jb-text sm:text-5xl">
-          {betald ? "Tack för din beställning" : "Väntar på betalning"}
+          {betald
+            ? "Tack för din beställning"
+            : avbruten
+              ? "Betalningen gick inte igenom"
+              : "Väntar på betalning"}
         </h1>
 
         <p className="mt-3 text-base text-jb-dampad">
@@ -53,8 +59,19 @@ export default async function Ordersida({
             ? order.typ === "bord"
               ? `Vi kommer ut med maten till bord ${order.bordsnummer}.`
               : `Maten är normalt klar efter cirka ${bestallning.tillagningsminuter} minuter.`
-            : "Betalningen är inte bekräftad än. Sidan uppdateras när den går igenom."}
+            : avbruten
+              ? "Inga pengar har dragits och köket har inte fått någon order. Varukorgen finns kvar om du vill försöka igen."
+              : "Betalningen är inte bekräftad än. Sidan uppdateras när den går igenom."}
         </p>
+        {!betald && !avbruten ? <VantaPaBetalning /> : null}
+        {avbruten ? (
+          <Link
+            href="/kassa"
+            className="mt-6 inline-block rounded-jb bg-jb-rosa px-6 py-3.5 text-base font-semibold text-jb-motsatt transition-colors hover:bg-jb-rosa-mork"
+          >
+            Tillbaka till kassan
+          </Link>
+        ) : null}
 
         <div className="mt-8 rounded-jb border border-jb-linje bg-jb-yta p-5 sm:p-6">
           <p className="text-sm text-jb-dampad">Ordernummer</p>

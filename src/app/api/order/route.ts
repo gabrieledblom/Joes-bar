@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { stripe, harStripe } from "@/lib/stripe";
-import { skapaOrder, uppdateraOrder } from "@/lib/db/orders";
+import { skapaOrderMedNummer, uppdateraOrder } from "@/lib/db/orders";
 import { nyttOrdernummer } from "@/lib/ordernummer";
 import {
   kravKontaktvag,
@@ -10,6 +10,7 @@ import {
   valideraOchRaknaOm,
 } from "@/lib/order-validering";
 import { bestallning, restaurang } from "@/data/restaurang";
+import { kanBestalla } from "@/lib/oppettider";
 
 export const runtime = "nodejs";
 
@@ -25,6 +26,11 @@ export async function POST(request: Request) {
       { fel: "Onlinebeställning är tillfälligt stängd." },
       { status: 503 },
     );
+  }
+
+  const oppet = kanBestalla();
+  if (!oppet.ok) {
+    return NextResponse.json({ fel: oppet.meddelande }, { status: 409 });
   }
 
   let kropp: unknown;
@@ -58,20 +64,21 @@ export async function POST(request: Request) {
       );
     }
 
-    const ordernummer = nyttOrdernummer();
-
-    const order = await skapaOrder({
-      ordernummer,
-      status: "vantar_betalning",
-      kundNamn: tolkad.data.namn,
-      kundTelefon: telefon,
-      kundEpost: epost,
-      typ: tolkad.data.typ,
-      bordsnummer: tolkad.data.typ === "bord" ? tolkad.data.bordsnummer : null,
-      notering: tolkad.data.notering || null,
-      rader,
-      summaOren,
-    });
+    const order = await skapaOrderMedNummer(
+      {
+        status: "vantar_betalning",
+        kundNamn: tolkad.data.namn,
+        kundTelefon: telefon,
+        kundEpost: epost,
+        typ: tolkad.data.typ,
+        bordsnummer: tolkad.data.typ === "bord" ? tolkad.data.bordsnummer : null,
+        notering: tolkad.data.notering || null,
+        rader,
+        summaOren,
+      },
+      nyttOrdernummer,
+    );
+    const { ordernummer } = order;
 
     const paymentIntent = await stripe().paymentIntents.create({
       amount: summaOren,

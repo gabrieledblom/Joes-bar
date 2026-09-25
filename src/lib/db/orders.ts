@@ -39,6 +39,44 @@ export async function skapaOrder(data: NyOrder): Promise<Order> {
   return order;
 }
 
+/** Postgres felkod för brott mot en unik-begränsning. */
+const UNIK_KROCK = "23505";
+
+function arUnikKrock(fel: unknown): boolean {
+  const kod = (f: unknown) =>
+    typeof f === "object" && f !== null && "code" in f
+      ? (f as { code: unknown }).code
+      : undefined;
+  return (
+    kod(fel) === UNIK_KROCK ||
+    kod((fel as { cause?: unknown } | null)?.cause) === UNIK_KROCK
+  );
+}
+
+/**
+ * Ordernumren är korta för att kunna ropas upp, så de krockar ibland med ett
+ * gammalt nummer. Då dras ett nytt i stället för att gästens köp misslyckas.
+ */
+export async function skapaOrderMedNummer(
+  data: Omit<NyOrder, "ordernummer">,
+  nyttNummer: () => string,
+  maxForsok = 20,
+): Promise<Order> {
+  for (let forsok = 1; ; forsok++) {
+    const ordernummer = nyttNummer();
+    if (!harDatabas() && (await hamtaOrderViaNummer(ordernummer))) {
+      if (forsok >= maxForsok) break;
+      continue;
+    }
+    try {
+      return await skapaOrder({ ...data, ordernummer });
+    } catch (fel) {
+      if (!arUnikKrock(fel) || forsok >= maxForsok) throw fel;
+    }
+  }
+  throw new Error("Hittade inget ledigt ordernummer.");
+}
+
 export async function hamtaOrder(id: string): Promise<Order | undefined> {
   if (!harDatabas()) return minne.get(id);
   const [order] = await db().select().from(orders).where(eq(orders.id, id));
@@ -88,6 +126,28 @@ export async function uppdateraOrder(
     .update(orders)
     .set({ ...data, uppdaterad: nu() })
     .where(eq(orders.id, id))
+    .returning();
+  return order;
+}
+
+/**
+ * Flyttar en order från "vantar_betalning" till "ny" i ett enda villkorat
+ * anrop. Stripe kan leverera samma händelse två gånger samtidigt; bara ett
+ * av anropen får tillbaka ordern, så kvittot skickas en gång.
+ */
+export async function markeraBetald(
+  id: string,
+  data: Pick<NyOrder, "betald" | "betaldMed">,
+): Promise<Order | undefined> {
+  if (!harDatabas()) {
+    const befintlig = minne.get(id);
+    if (!befintlig || befintlig.status !== "vantar_betalning") return undefined;
+    return uppdateraOrder(id, { ...data, status: "ny" });
+  }
+  const [order] = await db()
+    .update(orders)
+    .set({ ...data, status: "ny", uppdaterad: nu() })
+    .where(and(eq(orders.id, id), eq(orders.status, "vantar_betalning")))
     .returning();
   return order;
 }

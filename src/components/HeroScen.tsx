@@ -28,6 +28,7 @@ const STANDARDLAGE: Oppetstatus = {
   andel: 0.5,
   oppnarKl: null,
   stangerKl: null,
+  minuterKvar: null,
 };
 
 export function HeroScen() {

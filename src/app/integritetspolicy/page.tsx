@@ -136,7 +136,9 @@ export default function Integritetspolicysida() {
         <Avsnitt rubrik="Hur länge vi sparar uppgifterna">
           <p>
             Betalda ordrar sparas i sju år som bokföringsunderlag, enligt
-            bokföringslagens krav. En order som aldrig betalas rensas löpande.
+            bokföringslagens krav. En påbörjad beställning som aldrig betalades
+            innehåller också ditt namn och din kontaktuppgift; vill du att den
+            tas bort, hör av dig så raderar vi den.
           </p>
         </Avsnitt>
 

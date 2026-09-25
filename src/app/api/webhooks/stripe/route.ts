@@ -1,7 +1,11 @@
 import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
-import { hamtaOrderViaPaymentIntent, uppdateraOrder } from "@/lib/db/orders";
+import {
+  hamtaOrderViaPaymentIntent,
+  markeraBetald,
+  uppdateraOrder,
+} from "@/lib/db/orders";
 import { skickaEpostKvitto } from "@/lib/kvitto/epost";
 import { skickaSmsKvitto } from "@/lib/kvitto/sms";
 
@@ -68,12 +72,10 @@ async function hanteraBetald(intent: Stripe.PaymentIntent) {
     return;
   }
 
-  // Stripe kan leverera samma händelse flera gånger. Utan den här spärren
-  // får gästen ett nytt sms varje gång.
-  if (order.status !== "vantar_betalning") return;
-
-  const uppdaterad = await uppdateraOrder(order.id, {
-    status: "ny",
+  // Stripe kan leverera samma händelse flera gånger, ibland samtidigt.
+  // markeraBetald ger bara tillbaka ordern till det anrop som faktiskt
+  // flyttade den, så gästen får ett kvitto och inte ett per leverans.
+  const uppdaterad = await markeraBetald(order.id, {
     betald: new Date(),
     betaldMed: intent.payment_method_types?.[0] ?? null,
   });

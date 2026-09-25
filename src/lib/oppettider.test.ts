@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { formateraKlockslag, oppetStatus, stockholmstid } from "./oppettider";
+import {
+  formateraKlockslag,
+  kanBestalla,
+  oppetStatus,
+  stockholmstid,
+} from "./oppettider";
 
 /**
  * Tiderna anges i UTC och räknas om till Järna. Sommartid i Sverige är
@@ -99,6 +104,38 @@ describe("andel genom passet", () => {
       expect(status.andel).toBeGreaterThanOrEqual(0);
       expect(status.andel).toBeLessThanOrEqual(1);
     }
+  });
+});
+
+describe("kanBestalla", () => {
+  it("tar emot ordrar mitt i ett pass", () => {
+    // Onsdag 18:00 i Järna
+    expect(kanBestalla(utc("2026-07-01T16:00:00Z")).ok).toBe(true);
+  });
+
+  it("stoppar ordrar en stängd måndag", () => {
+    const svar = kanBestalla(utc("2026-07-06T14:00:00Z"));
+    expect(svar.ok).toBe(false);
+    expect(svar.meddelande).toMatch(/stängt/);
+  });
+
+  it("stoppar ordrar mitt i natten", () => {
+    // Onsdag 03:00 i Järna
+    expect(kanBestalla(utc("2026-07-01T01:00:00Z")).ok).toBe(false);
+  });
+
+  it("stoppar ordrar strax före stängning", () => {
+    // Onsdag 22:50 i Järna, stänger 23:00
+    const svar = kanBestalla(utc("2026-07-01T20:50:00Z"));
+    expect(svar.ok).toBe(false);
+    expect(svar.meddelande).toMatch(/23:00/);
+  });
+
+  it("räknar minuterna kvar även efter midnatt", () => {
+    // Lördag 00:50 i Järna, fredagspasset stänger 01:00
+    expect(kanBestalla(utc("2026-07-03T22:50:00Z")).ok).toBe(false);
+    // Lördag 00:15 i Järna - 45 minuter kvar
+    expect(kanBestalla(utc("2026-07-03T22:15:00Z")).ok).toBe(true);
   });
 });
 
