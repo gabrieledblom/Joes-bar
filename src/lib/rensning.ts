@@ -35,14 +35,26 @@ export async function rensaObetalda(nu: Date = new Date()): Promise<number> {
           await stripe().paymentIntents.cancel(intentId);
         }
       } catch (fel) {
-        console.error(`Kunde inte stänga betalningen för ${order.ordernummer}`, fel);
-        continue;
+        // Betalningen finns inte i det här Stripe-kontot, t.ex. en testorder
+        // från innan nycklarna byttes. Då kan inga pengar ha dragits här.
+        if (!finnsInteHosStripe(fel)) {
+          console.error(`Kunde inte stänga betalningen för ${order.ordernummer}`, fel);
+          continue;
+        }
       }
     }
     await raderaObetaldOrder(order.id);
     raderade++;
   }
   return raderade;
+}
+
+function finnsInteHosStripe(fel: unknown): boolean {
+  return (
+    typeof fel === "object" &&
+    fel !== null &&
+    (fel as { code?: unknown }).code === "resource_missing"
+  );
 }
 
 /** Rensar som mest en gång i timmen per serverinstans, ofarligt att anropa ofta. */
