@@ -6,8 +6,7 @@ import {
   markeraBetald,
   uppdateraOrder,
 } from "@/lib/db/orders";
-import { skickaEpostKvitto } from "@/lib/kvitto/epost";
-import { skickaSmsKvitto } from "@/lib/kvitto/sms";
+import { skickaKvitto } from "@/lib/kvitto";
 
 export const runtime = "nodejs";
 
@@ -89,18 +88,13 @@ async function hanteraBetald(intent: Stripe.PaymentIntent) {
   });
   if (!uppdaterad) return;
 
-  // Kvittona får inte fälla webhooken: ordern är betald och ligger i köket
-  // även om ett sms fastnar hos operatören.
-  const [epost, sms] = await Promise.allSettled([
-    skickaEpostKvitto(uppdaterad),
-    skickaSmsKvitto(uppdaterad),
-  ]);
+  // Kvittot får inte fälla webhooken: ordern är betald och ligger i köket
+  // även om ett sms fastnar hos operatören. skickaKvitto kastar aldrig.
+  const skickat = await skickaKvitto(uppdaterad);
 
   await uppdateraOrder(order.id, {
-    kvittoEpostSkickat:
-      epost.status === "fulfilled" && epost.value ? new Date() : null,
-    kvittoSmsSkickat:
-      sms.status === "fulfilled" && sms.value ? new Date() : null,
+    kvittoEpostSkickat: skickat.epost ? new Date() : null,
+    kvittoSmsSkickat: skickat.sms ? new Date() : null,
   });
 }
 

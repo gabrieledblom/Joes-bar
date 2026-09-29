@@ -1,8 +1,7 @@
 import { NextResponse } from "next/server";
 import { hamtaOrder, uppdateraOrder } from "@/lib/db/orders";
 import { harStripe, stripe } from "@/lib/stripe";
-import { skickaEpostAterbetald } from "@/lib/kvitto/epost";
-import { skickaSmsAterbetald } from "@/lib/kvitto/sms";
+import { meddelaAterbetald } from "@/lib/kvitto";
 
 export const runtime = "nodejs";
 
@@ -59,10 +58,7 @@ export async function POST(
   const uppdaterad = await uppdateraOrder(id, { status: "avbruten" });
   if (uppdaterad) {
     // Meddelandet till gästen får inte fälla återbetalningen, som redan är gjord.
-    await Promise.allSettled([
-      skickaSmsAterbetald(uppdaterad),
-      skickaEpostAterbetald(uppdaterad),
-    ]);
+    await meddelaAterbetald(uppdaterad);
   }
 
   return NextResponse.json({ status: "avbruten" });

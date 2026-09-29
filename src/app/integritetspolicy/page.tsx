@@ -112,7 +112,7 @@ export default function Integritetspolicysida() {
             </li>
             <li>
               <strong className="text-jb-text">46elks</strong> (svenskt
-              bolag) - skickar sms-kvittot om du angett mobilnummer.
+              bolag) - skickar sms-kvittot om du bara angett mobilnummer.
             </li>
             <li>
               <strong className="text-jb-text">Resend</strong> - skickar

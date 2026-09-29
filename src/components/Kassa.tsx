@@ -246,6 +246,7 @@ export function Kassa() {
               typ="tel"
               varde={telefon}
               satt={setTelefon}
+              utanMarkering
               autoComplete="tel"
               placeholder="070-123 45 67"
             />
@@ -255,11 +256,13 @@ export function Kassa() {
               typ="email"
               varde={epost}
               satt={setEpost}
+              utanMarkering
               autoComplete="email"
               klass="mt-5"
             />
             <p className="mt-2 text-xs text-jb-dampad">
-              Fyll i minst ett av dem. Dit skickar vi kvitto och ordernummer.
+              Fyll i minst ett av dem. Kvittot skickas till din e-post, eller
+              som sms om du bara fyller i mobilnummer.
             </p>
           </div>
 
@@ -360,6 +363,7 @@ function Falt({
   satt,
   typ = "text",
   obligatorisk = false,
+  utanMarkering = false,
   klass = "",
   ...rest
 }: {
@@ -369,13 +373,15 @@ function Falt({
   satt: (v: string) => void;
   typ?: string;
   obligatorisk?: boolean;
+  /** Varken obligatoriskt eller frivilligt på egen hand, t.ex. "mobil eller e-post". */
+  utanMarkering?: boolean;
   klass?: string;
 } & React.InputHTMLAttributes<HTMLInputElement>) {
   return (
     <div className={klass}>
       <label htmlFor={id} className="block text-sm font-medium text-jb-text">
         {etikett}
-        {obligatorisk ? null : (
+        {obligatorisk || utanMarkering ? null : (
           <span className="ml-1.5 text-jb-dampad">(frivilligt)</span>
         )}
       </label>
