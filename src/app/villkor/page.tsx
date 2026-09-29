@@ -165,7 +165,8 @@ export default function Villkorssida() {
             förstörd.
           </p>
           <p className="mt-3">
-            Blir något fel med din beställning, hör av dig till oss samma dag
+            Blir något fel med din beställning, hör av dig till oss så snart du
+            märker det, helst samma dag
             {restaurang.telefon ? ` på ${restaurang.telefon}` : ""}. Vi lagar om
             eller betalar tillbaka. Återbetalning görs till samma betalsätt som
             du använde och tar normalt några bankdagar.
