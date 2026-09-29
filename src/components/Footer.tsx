@@ -102,7 +102,10 @@ export function Footer() {
       </div>
 
       <div className="border-t border-jb-linje-svag px-4 py-5 text-center text-xs text-jb-dampad sm:px-6">
-        Betalning sker säkert via Stripe med kort eller Swish.
+        <p>Betalning sker säkert via Stripe med kort eller Swish.</p>
+        {restaurang.byggare ? (
+          <p className="mt-2">Designad och byggd av {restaurang.byggare}</p>
+        ) : null}
       </div>
     </footer>
   );

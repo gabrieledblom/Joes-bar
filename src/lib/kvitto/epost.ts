@@ -67,6 +67,9 @@ async function skickaEpost(
   const { error } = await new Resend(nyckel).emails.send({
     from: fran,
     to: till,
+    // Svarar gästen på kvittot ska svaret nå restaurangen, inte studsa mot
+    // en avsändaradress som inte tar emot post.
+    replyTo: restaurang.epost || undefined,
     subject: amne,
     text,
     html,

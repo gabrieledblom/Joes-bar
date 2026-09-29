@@ -22,9 +22,12 @@ export const restaurang = {
   telefon: "08-88 09 96",
   /** Uppringningsbart, t.ex. "+46855170000" */
   telefonE164: "+468880996",
-  // TODO: fyll i innan lansering
-  epost: "",
+  /** Visas på sajten och används som svarsadress på kvittomejl. */
+  epost: "joesbarkok@gmail.com",
   orgnr: "559514-5219",
+
+  /** Visas längst ned på sajten. */
+  byggare: "G.E",
 
   /** Driver Stripe-redirects och länkar i kvitton. Sätt NEXT_PUBLIC_SITE_URL i Vercel. */
   url: process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
