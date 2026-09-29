@@ -30,7 +30,7 @@ export async function skickaSmsAterbetald(order: Order): Promise<boolean> {
 async function skickaSms(till: string, text: string): Promise<boolean> {
   const anvandare = process.env.ELKS_API_USERNAME;
   const losenord = process.env.ELKS_API_PASSWORD;
-  const avsandare = (process.env.ELKS_SMS_FROM ?? "JoesBar").slice(0, 11);
+  const avsandare = smsAvsandare(process.env.ELKS_SMS_FROM);
 
   if (!anvandare || !losenord) {
     console.info(`[46elks mock] Till ${till} från ${avsandare}:\n${text}`);
@@ -58,6 +58,18 @@ async function skickaSms(till: string, text: string): Promise<boolean> {
     return false;
   }
   return true;
+}
+
+/**
+ * 46elks godtar bara A-Z, a-z och 0-9 i ett avsändarnamn, max 11 tecken,
+ * och vägrar skicka annars ("Joe's Bar" gav 403). Ett telefonnummer
+ * (+46...) går igenom orört.
+ */
+export function smsAvsandare(inmatning: string | undefined): string {
+  const varde = (inmatning ?? "").trim();
+  if (/^\+\d{8,15}$/.test(varde)) return varde;
+  const rensat = varde.replace(/[^A-Za-z0-9]/g, "").slice(0, 11);
+  return /[A-Za-z]/.test(rensat) ? rensat : "JoesBar";
 }
 
 /**
