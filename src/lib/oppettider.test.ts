@@ -37,34 +37,57 @@ describe("stockholmstid", () => {
 });
 
 describe("öppet eller stängt", () => {
-  it("är stängt på måndagar", () => {
-    // Måndag 2026-07-06 16:00 i Järna
+  it("är öppet på måndagar", () => {
+    // Måndag 2026-07-06 16:00 i Järna, öppet 11:00-21:00
     const status = oppetStatus(utc("2026-07-06T14:00:00Z"));
+    expect(status.oppet).toBe(true);
+    expect(status.stangerKl).toBe("21:00");
+  });
+
+  it("är stängt på natten mellan två pass", () => {
+    // Måndag 03:00 i Järna - söndagen stängde 21:00, måndagen öppnar 11:00
+    const status = oppetStatus(utc("2026-07-06T01:00:00Z"));
     expect(status.oppet).toBe(false);
+    expect(status.oppnarKl).toBe("11:00");
   });
 
   it("är öppet en onsdag eftermiddag", () => {
-    // Onsdag 18:00 i Järna, öppet 14:30-23:00
+    // Onsdag 18:00 i Järna, öppet 11:00-21:00
     const status = oppetStatus(utc("2026-07-01T16:00:00Z"));
     expect(status.oppet).toBe(true);
-    expect(status.stangerKl).toBe("23:00");
+    expect(status.stangerKl).toBe("21:00");
   });
 
   it("är stängt precis innan öppning", () => {
-    // Onsdag 14:00 i Järna
-    const status = oppetStatus(utc("2026-07-01T12:00:00Z"));
+    // Onsdag 10:59 i Järna
+    const status = oppetStatus(utc("2026-07-01T08:59:00Z"));
     expect(status.oppet).toBe(false);
-    expect(status.oppnarKl).toBe("14:30");
+    expect(status.oppnarKl).toBe("11:00");
   });
 
   it("är öppet i samma minut som öppning", () => {
-    // Onsdag 14:30 i Järna
-    expect(oppetStatus(utc("2026-07-01T12:30:00Z")).oppet).toBe(true);
+    // Onsdag 11:00 i Järna
+    expect(oppetStatus(utc("2026-07-01T09:00:00Z")).oppet).toBe(true);
   });
 
   it("är stängt i samma minut som stängning", () => {
-    // Onsdag 23:00 i Järna
-    expect(oppetStatus(utc("2026-07-01T21:00:00Z")).oppet).toBe(false);
+    // Onsdag 21:00 i Järna
+    expect(oppetStatus(utc("2026-07-01T19:00:00Z")).oppet).toBe(false);
+  });
+
+  it("har olika öppning på helgen", () => {
+    // Lördag 11:30 i Järna - lördagen öppnar först 12:00
+    const lordag = oppetStatus(utc("2026-07-04T09:30:00Z"));
+    expect(lordag.oppet).toBe(false);
+    expect(lordag.oppnarKl).toBe("12:00");
+    // Söndag 11:30 i Järna - söndagen öppnar också 12:00
+    const sondag = oppetStatus(utc("2026-07-05T09:30:00Z"));
+    expect(sondag.oppet).toBe(false);
+    expect(sondag.oppnarKl).toBe("12:00");
+    // Söndag 12:00 - öppet, stänger 21:00
+    const oppet = oppetStatus(utc("2026-07-05T10:00:00Z"));
+    expect(oppet.oppet).toBe(true);
+    expect(oppet.stangerKl).toBe("21:00");
   });
 });
 
@@ -77,22 +100,23 @@ describe("stängning efter midnatt", () => {
   });
 
   it("är stängt efter att fredagspasset tagit slut", () => {
-    // Lördag 02:00 i Järna, lördagen öppnar 13:00
+    // Lördag 02:00 i Järna, lördagen öppnar 12:00
     const status = oppetStatus(utc("2026-07-04T00:00:00Z"));
     expect(status.oppet).toBe(false);
-    expect(status.oppnarKl).toBe("13:00");
+    expect(status.oppnarKl).toBe("12:00");
   });
 });
 
 describe("andel genom passet", () => {
   it("börjar nära noll vid öppning", () => {
-    const status = oppetStatus(utc("2026-07-01T12:35:00Z"));
+    // Onsdag 11:05 i Järna
+    const status = oppetStatus(utc("2026-07-01T09:05:00Z"));
     expect(status.andel).toBeLessThan(0.05);
   });
 
   it("slutar nära ett strax före stängning", () => {
-    // Onsdag 22:50 i Järna
-    const status = oppetStatus(utc("2026-07-01T20:50:00Z"));
+    // Onsdag 20:50 i Järna
+    const status = oppetStatus(utc("2026-07-01T18:50:00Z"));
     expect(status.andel).toBeGreaterThan(0.95);
   });
 
@@ -113,10 +137,17 @@ describe("kanBestalla", () => {
     expect(kanBestalla(utc("2026-07-01T16:00:00Z")).ok).toBe(true);
   });
 
-  it("stoppar ordrar en stängd måndag", () => {
-    const svar = kanBestalla(utc("2026-07-06T14:00:00Z"));
+  it("tar emot ordrar en måndag", () => {
+    // Måndag 16:00 i Järna
+    expect(kanBestalla(utc("2026-07-06T14:00:00Z")).ok).toBe(true);
+  });
+
+  it("stoppar ordrar på natten och säger när det öppnar", () => {
+    // Måndag 03:00 i Järna
+    const svar = kanBestalla(utc("2026-07-06T01:00:00Z"));
     expect(svar.ok).toBe(false);
     expect(svar.meddelande).toMatch(/stängt/);
+    expect(svar.meddelande).toMatch(/11:00/);
   });
 
   it("stoppar ordrar mitt i natten", () => {
@@ -125,10 +156,10 @@ describe("kanBestalla", () => {
   });
 
   it("stoppar ordrar strax före stängning", () => {
-    // Onsdag 22:50 i Järna, stänger 23:00
-    const svar = kanBestalla(utc("2026-07-01T20:50:00Z"));
+    // Onsdag 20:50 i Järna, stänger 21:00
+    const svar = kanBestalla(utc("2026-07-01T18:50:00Z"));
     expect(svar.ok).toBe(false);
-    expect(svar.meddelande).toMatch(/23:00/);
+    expect(svar.meddelande).toMatch(/21:00/);
   });
 
   it("räknar minuterna kvar även efter midnatt", () => {

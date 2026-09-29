@@ -93,9 +93,9 @@ export interface Oppetstatus {
    * Driver solens och månens bana över himlen.
    */
   andel: number;
-  /** "14:30" när det är stängt och vi vet när det öppnar igen. */
+  /** "11:00" när det är stängt och vi vet när det öppnar igen. */
   oppnarKl: string | null;
-  /** "23:00" medan det är öppet. */
+  /** "21:00" medan det är öppet. */
   stangerKl: string | null;
   /** Minuter kvar till stängning medan det är öppet, annars null. */
   minuterKvar: number | null;
@@ -163,7 +163,7 @@ export function oppetStatus(datum: Date = new Date()): Oppetstatus {
   const kommande = tillNastaOppning(nu);
 
   // Månens bana under en stängd period räknas inte mot schemat - en hel
-  // stängd måndag är 24 timmar, en natt mellan två pass kan vara 13. Bundet
+  // stängd dag är 24 timmar, en natt mellan två pass kan vara 10. Bundet
   // till den längden skulle månen antingen stå still i timtal eller (som i
   // en tidigare version) räkna baklänges och hamna gömd bakom huset. En
   // egen, kort cykel ger i stället en jämn, aldrig avstannande rörelse

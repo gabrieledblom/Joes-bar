@@ -49,13 +49,13 @@ export interface Oppettid {
 }
 
 export const oppettider: Record<Veckodag, Oppettid | null> = {
-  mon: null,
-  tue: { open: "14:30", close: "23:00" },
-  wed: { open: "14:30", close: "23:00" },
-  thu: { open: "14:30", close: "23:00" },
-  fri: { open: "14:30", close: "25:00" },
-  sat: { open: "13:00", close: "25:00" },
-  sun: { open: "13:00", close: "21:00" },
+  mon: { open: "11:00", close: "21:00" },
+  tue: { open: "11:00", close: "21:00" },
+  wed: { open: "11:00", close: "21:00" },
+  thu: { open: "11:00", close: "21:00" },
+  fri: { open: "11:00", close: "25:00" },
+  sat: { open: "12:00", close: "25:00" },
+  sun: { open: "12:00", close: "21:00" },
 };
 
 export const dagOrdning: Veckodag[] = [
