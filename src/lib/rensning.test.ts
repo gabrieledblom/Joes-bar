@@ -10,15 +10,13 @@ import { rensaObetalda } from "./rensning";
 // Minnesläge. Stripe är avstängt utom i testerna som slår på det.
 const stripeMock = vi.hoisted(() => ({
   pa: false,
-  retrieve: async (_id: string): Promise<{ status: string }> => ({
-    status: "canceled",
-  }),
+  retrieve: async (): Promise<{ status: string }> => ({ status: "canceled" }),
 }));
 vi.mock("@/lib/stripe", () => ({
   harStripe: () => stripeMock.pa,
   stripe: () => ({
     paymentIntents: {
-      retrieve: (id: string) => stripeMock.retrieve(id),
+      retrieve: () => stripeMock.retrieve(),
       cancel: async () => ({}),
     },
   }),

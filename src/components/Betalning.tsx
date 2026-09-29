@@ -97,7 +97,10 @@ function BetalFormular({ orderId }: { orderId: string }) {
     const { error } = await stripe.confirmPayment({
       elements,
       confirmParams: {
-        return_url: `${restaurang.url}/order/${orderId}`,
+        // Adressen gästen redan står på, inte en inställning: köper någon på
+        // www.joesbar.se ska de komma tillbaka dit, annars ligger varukorgen
+        // kvar i webbläsarens lagring för den andra adressen.
+        return_url: `${window.location.origin}/order/${orderId}`,
       },
     });
 

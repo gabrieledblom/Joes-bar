@@ -8,6 +8,23 @@
  */
 export const KOK_KAKA = "joesbar_kok";
 const GILTIG_I_DAGAR = 30;
+/**
+ * Inloggningen förnyas när ett dygn gått av de 30 dagarna. En surfplatta som
+ * används varje pass loggas alltså aldrig ut, och en som glömts bort i en
+ * månad gör det.
+ */
+const FORNYA_NAR_KVAR_DAGAR = GILTIG_I_DAGAR - 1;
+
+/** Samma kakinställningar överallt, så att en förnyad kaka ersätter den gamla. */
+export function kakAlternativ(maxAlder: number) {
+  return {
+    httpOnly: true,
+    sameSite: "lax" as const,
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+    maxAge: maxAlder,
+  };
+}
 
 function hemlighet(): string {
   const losen = process.env.KITCHEN_DASHBOARD_PASSWORD;
@@ -48,6 +65,13 @@ export async function skapaKoksToken(): Promise<{
   const maxAlder = GILTIG_I_DAGAR * 24 * 60 * 60;
   const utgar = Date.now() + maxAlder * 1000;
   return { varde: `${utgar}.${await signera(utgar)}`, maxAlder };
+}
+
+/** Ska en giltig kaka ersättas med en ny som gäller 30 dagar till? */
+export function bordFornyas(token: string | undefined, nu = Date.now()): boolean {
+  const utgar = Number(token?.split(".")[0]);
+  if (!Number.isFinite(utgar)) return false;
+  return utgar - nu < FORNYA_NAR_KVAR_DAGAR * 24 * 60 * 60 * 1000;
 }
 
 export async function tokenGiltig(token: string | undefined): Promise<boolean> {

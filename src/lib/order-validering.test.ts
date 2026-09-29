@@ -285,6 +285,25 @@ describe("rätter som inte går att beställa", () => {
   });
 });
 
+describe("tak för en onlinebeställning", () => {
+  it("avvisar en beställning över 10 000 kr", () => {
+    // 99 st Joe's OG à 147 kr = 14 553 kr.
+    expect(() =>
+      valideraOchRaknaOm(
+        order({ rader: [{ rattId: "burgare-joes-og", antal: 99 }] }),
+      ),
+    ).toThrow(/för stor/);
+  });
+
+  it("släpper igenom ett stort men rimligt sällskap", () => {
+    expect(() =>
+      valideraOchRaknaOm(
+        order({ rader: [{ rattId: "burgare-joes-og", antal: 20 }] }),
+      ),
+    ).not.toThrow();
+  });
+});
+
 describe("bordsbeställning", () => {
   it("kräver bordsnummer", () => {
     expect(() =>

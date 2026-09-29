@@ -18,6 +18,9 @@ const sakerhetshuvuden = [
 ];
 
 const nextConfig: NextConfig = {
+  // Ingen skyltning om vilket ramverk sajten kör: det hjälper bara den som
+  // letar efter kända sårbarheter.
+  poweredByHeader: false,
   async headers() {
     return [{ source: "/:path*", headers: sakerhetshuvuden }];
   },

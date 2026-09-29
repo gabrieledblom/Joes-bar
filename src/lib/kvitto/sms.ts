@@ -50,6 +50,7 @@ async function skickaSms(till: string, text: string): Promise<boolean> {
       "Content-Type": "application/x-www-form-urlencoded",
     },
     body: kropp,
+    signal: AbortSignal.timeout(10_000),
   });
 
   if (!svar.ok) {

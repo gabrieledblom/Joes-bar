@@ -12,8 +12,18 @@ import {
 import { bestallning, restaurang } from "@/data/restaurang";
 import { kanBestalla } from "@/lib/oppettider";
 import { hamtaButiksstatus } from "@/lib/db/butik";
+import { antalForsok, klientIp, registreraForsok } from "@/lib/db/begransning";
 
 export const runtime = "nodejs";
+
+/**
+ * Högst så många beställningar per ip och tiominutersfönster. Gott om
+ * utrymme för ett bord som beställer om flera gånger eller ett mobilnät med
+ * många gäster bakom samma adress, men stopp för den som skriptar hundratals
+ * beställningar för att fylla databasen eller testa stulna kort mot kassan.
+ */
+const MAX_ORDRAR = 30;
+const FONSTER_MS = 10 * 60 * 1000;
 
 /**
  * Skapar ordern i läget "vantar_betalning" och returnerar en PaymentIntent
@@ -71,6 +81,23 @@ export async function POST(request: Request) {
       tolkad.data,
       new Set(butik.slut),
     );
+
+    // Räknaren får aldrig stoppa en riktig gäst om databasen krånglar: hellre
+    // en oskyddad beställning än en stängd butik.
+    const ipNyckel = `order:${klientIp(request)}`;
+    try {
+      if ((await antalForsok(ipNyckel, FONSTER_MS)) >= MAX_ORDRAR) {
+        return NextResponse.json(
+          {
+            fel: "För många beställningar från samma uppkoppling. Vänta en stund eller ring oss.",
+          },
+          { status: 429 },
+        );
+      }
+      await registreraForsok(ipNyckel);
+    } catch (fel) {
+      console.error("Kunde inte räkna beställningar per ip", fel);
+    }
 
     if (!harStripe()) {
       return NextResponse.json(

@@ -13,7 +13,9 @@ vi.mock("./sms", () => ({
   skickaSmsAterbetald: (o: Order) => sms(o),
 }));
 
-const { skickaKvitto, meddelaAterbetald } = await import("./index");
+const { skickaKvitto, meddelaAterbetald, UTSKICK_TIDSGRANS_MS } = await import(
+  "./index"
+);
 
 function order(kundEpost: string | null, kundTelefon: string | null) {
   return { kundEpost, kundTelefon } as Order;
@@ -64,5 +66,16 @@ describe("ett meddelande till gästen, inte två", () => {
     await meddelaAterbetald(order("a@b.se", "+46701234567"));
     expect(epost).toHaveBeenCalledOnce();
     expect(sms).not.toHaveBeenCalled();
+  });
+
+  it("ger upp på ett utskick som hänger och provar sms i stället", async () => {
+    vi.useFakeTimers();
+    const fel = vi.spyOn(console, "error").mockImplementation(() => {});
+    epost.mockReturnValue(new Promise(() => {}));
+    const resultat = skickaKvitto(order("a@b.se", "+46701234567"));
+    await vi.advanceTimersByTimeAsync(UTSKICK_TIDSGRANS_MS + 1);
+    expect(await resultat).toEqual({ epost: false, sms: true });
+    fel.mockRestore();
+    vi.useRealTimers();
   });
 });

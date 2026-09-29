@@ -124,6 +124,9 @@ export function Koksskarm() {
   );
 
   // Läses in en gång: sparad larmvolym och om ?test=1 finns i url:en.
+  // localStorage och url:en finns bara i webbläsaren, så det kan inte läsas
+  // vid första renderingen utan att servern och klienten går isär.
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     try {
       const rad = window.localStorage.getItem(VOLYM_NYCKEL);
@@ -134,6 +137,7 @@ export function Koksskarm() {
     }
     setTestLage(new URLSearchParams(window.location.search).get("test") === "1");
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     volymRef.current = volym;
@@ -275,6 +279,15 @@ export function Koksskarm() {
         // Bara ett rent 200-svar räknas som lyckat - ett fel-svar ska synas
         // som samma tystnad som ingen kontakt alls, inte döljas av att
         // fetch() inte kastar på HTTP-fel.
+        if (svar.status === 401) {
+          // Inloggningen har gått ut. Utan det här ser det ut som tappad
+          // kontakt och larmar i timmar i stället för att be om lösenord.
+          avbruten = true;
+          // Full omladdning i stället för router: skärmen ska börja om från noll.
+          // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+          window.location.assign("/kok/logga-in");
+          return;
+        }
         if (svar.status !== 200) throw new Error(String(svar.status));
         const data = (await svar.json()) as { ordrar: Koksorder[] };
         if (avbruten) return;
@@ -325,14 +338,17 @@ export function Koksskarm() {
   // Larmen slås av/på utifrån vad som redan hänt - inte utifrån "ny sedan
   // sist". En order som legat obekräftad sedan innan passet startade ska
   // larma precis lika högt som en som just kom in.
+  // Larmfunktionerna använder bara refs, så de behöver inte vara beroenden.
   useEffect(() => {
     if (passetStartat && obekraftadeCount > 0) startaOrderLarm();
     else stoppaOrderLarm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [passetStartat, obekraftadeCount]);
 
   useEffect(() => {
     if (kontaktLarmAktiv) startaKontaktLarm();
     else stoppaKontaktLarm();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [kontaktLarmAktiv]);
 
   useEffect(() => {

@@ -144,7 +144,11 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         const tolkad = JSON.parse(ratt) as { rader?: CartRad[] };
         giltiga = (tolkad.rader ?? []).filter((r) => {
           const ratten = hittaRatt(r.rattId);
-          return ratten !== undefined && garAttBestalla(ratten);
+          if (ratten === undefined || !garAttBestalla(ratten)) return false;
+          // En vald side eller ett tillval som försvunnit ur menyn skulle
+          // annars ligga kvar osynligt och få servern att neka köpet.
+          if (r.sideId && hittaRatt(r.sideId)?.kategori !== "sides") return false;
+          return (r.tillval ?? []).every((id) => hittaTillval(id) !== undefined);
         });
       }
     } catch {

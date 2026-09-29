@@ -1,5 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { KOK_KAKA, tokenGiltig } from "@/lib/kok-auth";
+import {
+  KOK_KAKA,
+  bordFornyas,
+  kakAlternativ,
+  skapaKoksToken,
+  tokenGiltig,
+} from "@/lib/kok-auth";
 
 /**
  * Låser köksskärmen. Allt under /kok och /api/kok kräver en giltig kaka,
@@ -12,8 +18,16 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  if (await tokenGiltig(request.cookies.get(KOK_KAKA)?.value)) {
-    return NextResponse.next();
+  const token = request.cookies.get(KOK_KAKA)?.value;
+  if (await tokenGiltig(token)) {
+    const svar = NextResponse.next();
+    // Glidande inloggning: används skärmen förnyas kakan, så att den inte
+    // löper ut mitt i ett pass en dag om en månad.
+    if (bordFornyas(token)) {
+      const ny = await skapaKoksToken();
+      svar.cookies.set(KOK_KAKA, ny.varde, kakAlternativ(ny.maxAlder));
+    }
+    return svar;
   }
 
   if (pathname.startsWith("/api/")) {

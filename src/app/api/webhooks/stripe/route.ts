@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import type Stripe from "stripe";
 import { stripe } from "@/lib/stripe";
 import {
+  hamtaOrder,
   hamtaOrderViaPaymentIntent,
   markeraBetald,
   uppdateraOrder,
@@ -9,6 +10,10 @@ import {
 import { skickaKvitto } from "@/lib/kvitto";
 
 export const runtime = "nodejs";
+// Kvittot skickas medan Stripe väntar på svar. Går svaret inte fram i tid
+// försöker Stripe igen, men då är ordern redan flyttad och kvittot skickas
+// aldrig - så tiden måste räcka.
+export const maxDuration = 30;
 
 /**
  * Enda stället där en order blir betald. Klienten får aldrig markera en
@@ -73,10 +78,27 @@ export async function POST(request: Request) {
 }
 
 async function hanteraBetald(intent: Stripe.PaymentIntent) {
-  const order = await hamtaOrderViaPaymentIntent(intent.id);
+  // Först via betalningens id. Missade vi att spara det (databasen hickade
+  // mellan att betalningen skapades och att ordern uppdaterades) finns
+  // ordern ändå kvar via det id vi själva lade i betalningens metadata.
+  let order = await hamtaOrderViaPaymentIntent(intent.id);
+  if (!order && intent.metadata?.orderId) {
+    const perId = await hamtaOrder(intent.metadata.orderId);
+    if (perId && (!perId.stripePaymentIntentId || perId.stripePaymentIntentId === intent.id)) {
+      order = perId;
+      await uppdateraOrder(perId.id, { stripePaymentIntentId: intent.id });
+    }
+  }
   if (!order) {
-    console.error(`Ingen order hittad för PaymentIntent ${intent.id}`);
+    console.error(
+      `Ingen order hittad för PaymentIntent ${intent.id} - pengar har dragits utan order. Kolla Stripe.`,
+    );
     return;
+  }
+  if (intent.amount_received !== order.summaOren) {
+    console.error(
+      `Order ${order.ordernummer}: betalt belopp ${intent.amount_received} skiljer sig från ordersumman ${order.summaOren}.`,
+    );
   }
 
   // Stripe kan leverera samma händelse flera gånger, ibland samtidigt.

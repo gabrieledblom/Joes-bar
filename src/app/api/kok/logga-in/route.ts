@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import {
   KOK_KAKA,
   harKoksLosenord,
+  kakAlternativ,
   losenordStammer,
   skapaKoksToken,
 } from "@/lib/kok-auth";
@@ -37,8 +38,8 @@ export async function POST(request: Request) {
     );
   }
 
-  const data = await request.formData();
-  const losenord = String(data.get("losenord") ?? "");
+  const data = await request.formData().catch(() => null);
+  const losenord = String(data?.get("losenord") ?? "");
 
   if (!losenordStammer(losenord)) {
     await registreraForsok(nyckel);
@@ -48,12 +49,6 @@ export async function POST(request: Request) {
   await nollstallForsok(nyckel);
   const token = await skapaKoksToken();
   const svar = NextResponse.json({ ok: true });
-  svar.cookies.set(KOK_KAKA, token.varde, {
-    httpOnly: true,
-    sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
-    path: "/",
-    maxAge: token.maxAlder,
-  });
+  svar.cookies.set(KOK_KAKA, token.varde, kakAlternativ(token.maxAlder));
   return svar;
 }

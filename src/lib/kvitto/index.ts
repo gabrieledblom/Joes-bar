@@ -34,12 +34,24 @@ export function meddelaAterbetald(order: Order): Promise<Utskick> {
   return skickaEtt(order, skickaEpostAterbetald, skickaSmsAterbetald);
 }
 
-/** Ett utskick får aldrig fälla anropet som gör det. */
+/** Längre än så väntar vi inte på en leverantör. Webhooken måste hinna svara Stripe. */
+export const UTSKICK_TIDSGRANS_MS = 12_000;
+
+/** Ett utskick får varken fälla eller hänga anropet som gör det. */
 async function forsok(skicka: () => Promise<boolean>): Promise<boolean> {
+  let timer: ReturnType<typeof setTimeout> | undefined;
+  const tidsgrans = new Promise<boolean>((klar) => {
+    timer = setTimeout(() => {
+      console.error("Utskicket till gästen tog för lång tid och avbröts");
+      klar(false);
+    }, UTSKICK_TIDSGRANS_MS);
+  });
   try {
-    return await skicka();
+    return await Promise.race([skicka(), tidsgrans]);
   } catch (fel) {
     console.error("Kunde inte skicka meddelande till gästen", fel);
     return false;
+  } finally {
+    clearTimeout(timer);
   }
 }

@@ -13,7 +13,12 @@ export function stripe(): Stripe {
     );
   }
   if (!cachad) {
-    cachad = new Stripe(process.env.STRIPE_SECRET_KEY);
+    // Ett hängande anrop ska ge gästen ett felmeddelande efter en halv minut,
+    // inte hålla kassan låst. Stripe-biblioteket försöker om på nätverksfel.
+    cachad = new Stripe(process.env.STRIPE_SECRET_KEY, {
+      timeout: 20_000,
+      maxNetworkRetries: 2,
+    });
   }
   return cachad;
 }

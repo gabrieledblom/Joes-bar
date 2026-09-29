@@ -2,7 +2,6 @@ import { z } from "zod";
 import {
   garAttBestalla,
   hittaRatt,
-  hittaTillval,
   kategoriHarSideval,
   kategoriKraverProtein,
   proteinval,
@@ -50,6 +49,13 @@ export interface ValideradOrder {
 }
 
 export class OrderFel extends Error {}
+
+/**
+ * Tak för en onlinebeställning, i ören. Ingen vanlig gäst köper mat för mer
+ * än så - en större summa är oftast ett misstag (99 av något) eller någon som
+ * testar stulna kort. Större sällskap kan ringa.
+ */
+export const MAX_SUMMA_OREN = 1_000_000;
 
 /**
  * Normaliserar ett svenskt mobilnummer till E.164. 46elks kräver det
@@ -172,6 +178,12 @@ export function valideraOchRaknaOm(
 
   if (summaOren <= 0) {
     throw new OrderFel("Ordern saknar belopp.");
+  }
+
+  if (summaOren > MAX_SUMMA_OREN) {
+    throw new OrderFel(
+      "Beställningen är för stor för att läggas online. Ring oss så hjälper vi dig.",
+    );
   }
 
   if (order.typ === "bord" && order.bordsnummer === null) {
