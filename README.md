@@ -158,15 +158,18 @@ har därför `pris: null`:
 De syns på menyn men går inte att beställa. Fyll i priserna så släpps de in
 automatiskt.
 
-### Övriga uppgifter som saknas
+### Sökbarhet på Google
 
-`src/data/restaurang.ts` har tomma fält som måste fyllas i innan lansering:
-gatuadress, telefonnummer, e-post och organisationsnummer. Stripes
-Swish-villkor kräver att kontaktuppgifterna syns för gästen, och `/villkor`
-visar en tydlig varning så länge de saknas.
+Sajten är öppen för sökmotorer. `src/app/robots.ts` och `src/app/sitemap.ts`
+genererar `robots.txt` och `sitemap.xml` från `NEXT_PUBLIC_SITE_URL` - den
+måste vara den adress ni vill synas på, med `https://` och utan avslutande
+snedstreck (till exempel `https://joesbar.se`). Startsidan bär strukturerad
+data (`src/lib/strukturerad-data.ts`) med adress, telefon och öppettider,
+hämtade från `restaurang.ts`, så en ändrad öppettid följer med automatiskt.
 
-Sajten är dessutom märkt `noindex` tills innehållet är komplett. Ta bort
-`robots`-raden i `src/app/layout.tsx` när adress och telefon är på plats.
+Kassa, betalning, orderstatus och köksskärmen är `noindex` och syns inte i
+sökresultat. Efter en driftsättning: verifiera sajten i Google Search Console,
+skicka in `/sitemap.xml` och skapa eller gör anspråk på Google Företagsprofil.
 
 ---
 

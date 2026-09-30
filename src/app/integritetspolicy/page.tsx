@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: "Integritetspolicy",
   description:
     "Vilka personuppgifter Joe's Bar samlar in vid en beställning, varför, hur länge de sparas och vilka rättigheter du har enligt GDPR.",
+  alternates: { canonical: "/integritetspolicy" },
 };
 
 /**

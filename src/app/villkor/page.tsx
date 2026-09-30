@@ -16,6 +16,7 @@ export const metadata: Metadata = {
   title: "Kontakt och villkor",
   description:
     "Kontaktuppgifter, betalning, avhämtningstider och köpvillkor för Joe's Bar i Järna.",
+  alternates: { canonical: "/villkor" },
 };
 
 /**

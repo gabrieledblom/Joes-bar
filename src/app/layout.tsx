@@ -24,16 +24,25 @@ const geistMono = Geist_Mono({
   display: "swap",
 });
 
+const beskrivning =
+  "Pizza, smash burgare, kebab och sides i Järna. Beställ och betala online, hämta när det är klart.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(restaurang.url),
   title: {
-    default: `${restaurang.namn} · ${restaurang.tagline} · ${restaurang.ort}`,
+    default: `${restaurang.namn} ${restaurang.ort} · Pizza, smash burgare & kebab`,
     template: `%s · ${restaurang.namn}`,
   },
-  description:
-    "Pizza, smash burgare, kebab och sides i Järna. Beställ och betala online, hämta när det är klart.",
-  // Sajten hålls utanför Google tills adress och telefonnummer är ifyllda.
-  robots: { index: false, follow: false },
+  description: beskrivning,
+  // Sidor som inte ska hittas (kassa, betalning, order, kök) har egen noindex.
+  openGraph: {
+    type: "website",
+    siteName: restaurang.namn,
+    locale: "sv_SE",
+    title: `${restaurang.namn} ${restaurang.ort} · Pizza, smash burgare & kebab`,
+    description: beskrivning,
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {

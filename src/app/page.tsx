@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRightIcon, PhoneIcon } from "@phosphor-icons/react/dist/ssr";
 import { Header } from "@/components/Header";
@@ -8,6 +9,11 @@ import { Avslojning } from "@/components/Avslojning";
 import { kategorier, ratterIKategori } from "@/data/menu-data";
 import { bestallning, restaurang } from "@/data/restaurang";
 import { formateraPris } from "@/lib/pengar";
+import { restaurangJsonLd, tillScriptJson } from "@/lib/strukturerad-data";
+
+export const metadata: Metadata = {
+  alternates: { canonical: "/" },
+};
 
 const kategorifarg: Record<string, string> = {
   rosa: "bg-jb-rosa",
@@ -19,6 +25,11 @@ const kategorifarg: Record<string, string> = {
 export default function Startsida() {
   return (
     <>
+      {/* Restaurangen beskriven för Google: adress, telefon och öppettider. */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: tillScriptJson(restaurangJsonLd()) }}
+      />
       <Header />
 
       <main>

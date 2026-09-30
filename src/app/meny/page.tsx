@@ -9,9 +9,10 @@ import { kategorier, ratterIKategori } from "@/data/menu-data";
 import { bestallning } from "@/data/restaurang";
 
 export const metadata: Metadata = {
-  title: "Meny",
+  title: "Meny – pizza, smash burgare, kebab & sides",
   description:
     "Pizza, smash burgare, kebab och gyros, sides. Beställ online och hämta i Järna.",
+  alternates: { canonical: "/meny" },
 };
 
 const rubrikfarg: Record<string, string> = {
